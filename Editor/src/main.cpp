@@ -25,7 +25,7 @@ int main() {
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     while (!glfwWindowShouldClose(window))
     {      
-        glClearColor(fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
+        glClearColor((GLfloat)fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(window);
