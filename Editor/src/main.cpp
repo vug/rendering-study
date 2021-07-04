@@ -1,7 +1,9 @@
 #include <cmath>
 #include <iostream>
 
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+#include "glad/glad.h" // All headers will be included by glad
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -20,6 +22,7 @@ int main() {
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     while (!glfwWindowShouldClose(window))
     {      
         glClearColor(fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
