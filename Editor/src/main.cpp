@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 
 #include "GLFW/glfw3.h"
@@ -20,11 +21,11 @@ int main() {
 
     glfwMakeContextCurrent(window);
     while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        //glClear(GL_COLOR_BUFFER_BIT);
+    {      
+        glClearColor(fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        // glfwSwapBuffers(window);
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
