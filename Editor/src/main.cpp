@@ -29,46 +29,70 @@ int main() {
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+    // ImGui Init
+    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::StyleColorsDark();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-    io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    // platform/renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
-    float time = 1.0f / 60.f;
+    // styling
+    ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    bool showDemoWindow = false;
     while (!glfwWindowShouldClose(window))
     {      
-        glClearColor((GLfloat)fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glfwPollEvents();
 
-        float curr_time = (float)glfwGetTime();
-        io.DeltaTime = curr_time - time;
-        time = curr_time;
-
+        // ImGui Begin
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-        io.DisplaySize = ImVec2(width, height);
 
-        // OpenGL drawing commands here?
-
+        // ImGui UI
+        if(showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
         ImGui::Begin("My name is window, ImGui window");
         ImGui::Text("Hello There!");
+        ImGui::Checkbox("Show demo window", &showDemoWindow);
         ImGui::End();
+
+        // OpenGL Render
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        glClearColor((GLfloat)fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // ImGUI End
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // Update and Render additional Platform Windows (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context); //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+        }
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 
+    // ImGui Shutdown
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
