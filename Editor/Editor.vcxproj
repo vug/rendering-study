@@ -84,6 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ImGuiLayer.cpp" />
     <ClCompile Include="vendor\glad\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
@@ -95,6 +96,7 @@
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ImGuiLayer.h" />
     <ClInclude Include="vendor\glad\glad.h" />
     <ClInclude Include="vendor\GLFW\glfw3.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
