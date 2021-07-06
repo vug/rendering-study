@@ -26,9 +26,14 @@ int main() {
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
     glfwSetKeyCallback(window, key_callback);
-
+    
+    // OpenGL Init
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    std::cout << "OpenGL Info" << std::endl
+        << "  Renderer: " << glGetString(GL_VENDOR) << std::endl
+        << "  Vendor: " << glGetString(GL_RENDERER) << std::endl
+        << "  Version: " << glGetString(GL_VERSION) << std::endl;
 
     ImGuiLayer::Init(window);
 
@@ -45,11 +50,11 @@ int main() {
         ImGui::Checkbox("Show demo window", &showDemoWindow);
         ImGui::End();
 
-        // OpenGL Render
+        // OpenGL Begin
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        glClearColor((GLfloat)fmod(glfwGetTime(), 1.0), 1.0, 0.0, 1.0);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         ImGuiLayer::End();
