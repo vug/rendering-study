@@ -10,6 +10,7 @@
 
 #include "ImGuiLayer.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Buffer.h"
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -64,26 +65,24 @@ int main() {
     )";
     std::unique_ptr<Shader> shader;
     shader.reset(new Shader(vertexSrc, fragmentSrc));
-    unsigned int vertexArray, vertexBuffer, indexBuffer;
+    unsigned int vertexArray;
+    std::unique_ptr<VertexBuffer> vertexBuffer;
+    std::unique_ptr<IndexBuffer> indexBuffer;
     // Vertex Array
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
     // Vertex Buffer
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     float vertices[3 * 3] = {
         -0.5f, -0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
          0.0f,  0.5f, 0.0f,
     };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    vertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     // Index Buffer
-    glGenBuffers(1, &indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    unsigned int indices[3] = { 0, 1, 2 };
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    uint32_t indices[3] = { 0, 1, 2 };
+    indexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
 
     bool showDemoWindow = false;
     while (!glfwWindowShouldClose(window))
@@ -108,7 +107,7 @@ int main() {
         // OpenGL Render
         shader->Bind();
         glBindVertexArray(vertexArray);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
         ImGuiLayer::End();
         glfwSwapBuffers(window);
