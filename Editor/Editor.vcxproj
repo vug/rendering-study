@@ -85,6 +85,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="vendor\glad\glad.c" />
     <ClCompile Include="src\main.cpp" />
@@ -98,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ImGuiLayer.h" />
+    <ClInclude Include="src\Renderer\Buffer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="vendor\glad\glad.h" />
     <ClInclude Include="vendor\GLFW\glfw3.h" />
