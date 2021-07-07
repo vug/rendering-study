@@ -11,6 +11,7 @@
 #include "ImGuiLayer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
+#include "Renderer/VertexArray.h"
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -19,33 +20,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
-    switch (type) {
-        case ShaderDataType::Float:  return GL_FLOAT;
-        case ShaderDataType::Float2: return GL_FLOAT;
-        case ShaderDataType::Float3: return GL_FLOAT;
-        case ShaderDataType::Float4: return GL_FLOAT;
-        case ShaderDataType::Mat2:   return GL_FLOAT;
-        case ShaderDataType::Mat3:   return GL_FLOAT;
-        case ShaderDataType::Mat4:   return GL_FLOAT;
-        case ShaderDataType::Int:    return GL_INT;
-        case ShaderDataType::Int2:   return GL_INT;
-        case ShaderDataType::Int3:   return GL_INT;
-        case ShaderDataType::Int4:   return GL_INT;
-        case ShaderDataType::Bool:   return GL_BOOL;
-    }
-
-    assert(false); // Unknown ShaderDataType!
-    return 0;
-}
-
-
 int main() {
 	std::cout << "Welcome to Hackamonth Study Editor!" << std::endl;
 
     GLFWwindow* window;
     if (!glfwInit()) return -1;
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1024, 1024, "Hello World", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
     glfwSetKeyCallback(window, key_callback);
     
@@ -88,45 +68,80 @@ int main() {
             color = v_Color;
         }
     )";
-    std::unique_ptr<Shader> shader;
+    std::shared_ptr<Shader> shader;
     shader.reset(new Shader(vertexSrc, fragmentSrc));
-    unsigned int vertexArray;
-    std::unique_ptr<VertexBuffer> vertexBuffer;
-    std::unique_ptr<IndexBuffer> indexBuffer;
-    // Vertex Array
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
-    // Vertex Buffer
+
+    std::string blueShaderVertexSrc = R"(
+        #version 460 core
+
+        layout(location = 0) in vec3 a_Position;
+
+        out vec3 v_Position;
+
+        void main() {
+            v_Position = a_Position;
+            gl_Position = vec4(a_Position, 1.0);
+        }
+    )";
+    std::string blueShaderFragmentSrc = R"(
+        #version 460 core
+
+        layout(location = 0) out vec4 color;
+
+        in vec3 v_Position;
+
+        void main() {
+            color = vec4(0.2, 0.3, 0.8, 1.0);
+        }
+    )";
+    std::shared_ptr<Shader> blueShader;
+    blueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
+
+    std::shared_ptr<VertexArray> vertexArray;
+    vertexArray.reset(new VertexArray());
+
+    std::shared_ptr<VertexBuffer> vertexBuffer;
     float vertices[3 * 7] = {
         -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
          0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
          0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
     };
     vertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
-    {
-        BufferLayout layout = {
-            { ShaderDataType::Float3, "a_Position" },
-            { ShaderDataType::Float4, "a_Color" },
-        };
-        vertexBuffer->SetLayout(layout);
-    }
-    uint32_t index = 0;
-    const auto& layout = vertexBuffer->GetLayout();
-    for (const auto& element : layout) {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(
-            index, 
-            element.GetComponentCount(), 
-            ShaderDataTypeToOpenGLBaseType(element.Type), 
-            element.Normalized ? GL_TRUE : GL_FALSE, 
-            layout.GetStride(),
-            (const void*)element.Offset
-        );
-        index++;
-    }
-    // Index Buffer
+    BufferLayout layout = {
+        { ShaderDataType::Float3, "a_Position" },
+        { ShaderDataType::Float4, "a_Color" },
+    };
+    vertexBuffer->SetLayout(layout);
+    vertexArray->AddVertexBuffer(vertexBuffer);
+    
+
+    std::shared_ptr<IndexBuffer> indexBuffer;
     uint32_t indices[3] = { 0, 1, 2 };
     indexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
+    vertexArray->SetIndexBuffer(indexBuffer);
+
+    std::shared_ptr<VertexArray> squareVA;
+    squareVA.reset(new VertexArray());
+    float squareVertices[3 * 4] = {
+        -0.75f, -0.75f, 0.0f,
+         0.75f, -0.75f, 0.0f,
+         0.75f,  0.75f, 0.0f,
+        -0.75f,  0.75f, 0.0f,
+    };
+    std::shared_ptr<VertexBuffer> squareVB;
+    squareVB.reset(new VertexBuffer(squareVertices, sizeof(squareVertices)));
+    squareVB->SetLayout({
+        { ShaderDataType::Float3, "a_Position" },
+    });
+    squareVA->AddVertexBuffer(squareVB);
+
+    uint32_t squareIndices[3 * 2] = { 
+        0, 1, 2, 
+        2, 3, 0 
+    };
+    std::shared_ptr<IndexBuffer> squareIB;
+    squareIB.reset(new IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+    squareVA->SetIndexBuffer(squareIB);
 
     bool showDemoWindow = false;
     while (!glfwWindowShouldClose(window))
@@ -149,9 +164,12 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // OpenGL Render
+        blueShader->Bind();
+        squareVA->Bind();
+        glDrawElements(GL_TRIANGLES, squareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
         shader->Bind();
-        glBindVertexArray(vertexArray);
-        glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+        vertexArray->Bind();
+        glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
         ImGuiLayer::End();
         glfwSwapBuffers(window);
