@@ -45,7 +45,7 @@
     <ClCompile Include="src\ImGuiLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
+    <ClCompile Include="src\Renderer\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,7 +86,7 @@
     <ClInclude Include="src\ImGuiLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shader.h">
+    <ClInclude Include="src\Renderer\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -85,7 +85,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ImGuiLayer.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="vendor\glad\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
@@ -98,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ImGuiLayer.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="vendor\glad\glad.h" />
     <ClInclude Include="vendor\GLFW\glfw3.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
