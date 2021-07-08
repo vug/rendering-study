@@ -3,7 +3,6 @@
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
-#include "glad/glad.h" // All headers will be included by glad
 #include "imgui/imgui.h"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
@@ -12,6 +11,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
+#include "Renderer/Renderer.h"
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -31,11 +31,7 @@ int main() {
     
     // OpenGL Init
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    std::cout << "OpenGL Info" << std::endl
-        << "  Renderer: " << glGetString(GL_VENDOR) << std::endl
-        << "  Vendor: " << glGetString(GL_RENDERER) << std::endl
-        << "  Version: " << glGetString(GL_VERSION) << std::endl;
+    RendererAPI::PrintInfo();
 
     ImGuiLayer::Init(window);
 
@@ -157,19 +153,23 @@ int main() {
         ImGui::End();
 
         // OpenGL Begin
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        glViewport(0, 0, width, height);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        //int width, height;
+        //glfwGetFramebufferSize(window, &width, &height);
+        //glViewport(0, 0, width, height); // helps with resize
+
+        RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+        RenderCommand::Clear();
 
         // OpenGL Render
+        Renderer::BeginScene();
+
         blueShader->Bind();
-        squareVA->Bind();
-        glDrawElements(GL_TRIANGLES, squareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::Submit(squareVA);
+
         shader->Bind();
-        vertexArray->Bind();
-        glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::Submit(vertexArray);
+
+        Renderer::EndScene();
 
         ImGuiLayer::End();
         glfwSwapBuffers(window);
