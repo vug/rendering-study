@@ -12,6 +12,7 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/OrthographicCamera.h"
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -25,7 +26,7 @@ int main() {
 
     GLFWwindow* window;
     if (!glfwInit()) return -1;
-    window = glfwCreateWindow(1024, 1024, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
     glfwSetKeyCallback(window, key_callback);
     
@@ -42,13 +43,15 @@ int main() {
         layout(location = 0) in vec3 a_Position;
         layout(location = 1) in vec4 a_Color;
 
+        uniform mat4 u_ViewProjection;
+
         out vec3 v_Position;
         out vec4 v_Color;
 
         void main() {
             v_Position = a_Position;
             v_Color = a_Color;
-            gl_Position = vec4(a_Position, 1.0);
+            gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
         }
     )";
     std::string fragmentSrc = R"(
@@ -72,11 +75,13 @@ int main() {
 
         layout(location = 0) in vec3 a_Position;
 
+        uniform mat4 u_ViewProjection;
+
         out vec3 v_Position;
 
         void main() {
             v_Position = a_Position;
-            gl_Position = vec4(a_Position, 1.0);
+            gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
         }
     )";
     std::string blueShaderFragmentSrc = R"(
@@ -139,6 +144,11 @@ int main() {
     squareIB.reset(new IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
     squareVA->SetIndexBuffer(squareIB);
 
+    //OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f);
+    OrthographicCamera camera(-1.6f, 1.6f, -0.9, 0.9f);
+    camera.SetPosition({ 0.5f, 0.5f, 0.0f });
+    camera.SetRotation(45.0f);
+
     bool showDemoWindow = false;
     while (!glfwWindowShouldClose(window))
     {      
@@ -153,21 +163,18 @@ int main() {
         ImGui::End();
 
         // OpenGL Begin
-        //int width, height;
-        //glfwGetFramebufferSize(window, &width, &height);
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
         //glViewport(0, 0, width, height); // helps with resize
 
         RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         RenderCommand::Clear();
 
         // OpenGL Render
-        Renderer::BeginScene();
+        Renderer::BeginScene(camera);
 
-        blueShader->Bind();
-        Renderer::Submit(squareVA);
-
-        shader->Bind();
-        Renderer::Submit(vertexArray);
+        Renderer::Submit(blueShader, squareVA);
+        Renderer::Submit(shader, vertexArray);
 
         Renderer::EndScene();
 
