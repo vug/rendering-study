@@ -146,14 +146,57 @@ int main() {
 
     //OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f);
     OrthographicCamera camera(-1.6f, 1.6f, -0.9, 0.9f);
-    camera.SetPosition({ 0.5f, 0.5f, 0.0f });
-    camera.SetRotation(45.0f);
+    camera.SetRotation(0.0f);
+    camera.SetPosition({ 0.0f, 0.0f, 0.0f });
+    float cameraMoveSpeed = 0.1f;
+    float cameraRotationSpeed = 2.0f;
 
     bool showDemoWindow = false;
     while (!glfwWindowShouldClose(window))
     {      
         glfwPollEvents();
         ImGuiLayer::Begin();
+
+        auto left = glfwGetKey(window, GLFW_KEY_LEFT);
+        auto right = glfwGetKey(window, GLFW_KEY_RIGHT);
+        auto up = glfwGetKey(window, GLFW_KEY_UP);
+        auto down = glfwGetKey(window, GLFW_KEY_DOWN);
+
+        if (left == GLFW_PRESS || left == GLFW_REPEAT) {
+            auto p = camera.GetPosition();
+            p.x -= cameraMoveSpeed;
+            camera.SetPosition(p);
+        }
+        else if (right == GLFW_PRESS || right == GLFW_REPEAT) {
+            auto p = camera.GetPosition();
+            p.x += cameraMoveSpeed;
+            camera.SetPosition(p);
+        }
+
+        if (up == GLFW_PRESS || left == GLFW_REPEAT) {
+            auto p = camera.GetPosition();
+            p.y += cameraMoveSpeed;
+            camera.SetPosition(p);
+        }
+        else if (down == GLFW_PRESS || left == GLFW_REPEAT) {
+            auto p = camera.GetPosition();
+            p.y -= cameraMoveSpeed;
+            camera.SetPosition(p);
+        }
+
+        auto a_key = glfwGetKey(window, GLFW_KEY_A);
+        if (a_key == GLFW_PRESS || a_key == GLFW_REPEAT) {
+            auto r = camera.GetRotation();
+            r += cameraRotationSpeed;
+            camera.SetRotation(r);
+        }
+
+        auto d_key = glfwGetKey(window, GLFW_KEY_D);
+        if (d_key == GLFW_PRESS || d_key == GLFW_REPEAT) {
+            auto r = camera.GetRotation();
+            r -= cameraRotationSpeed;
+            camera.SetRotation(r);
+        }
 
         // ImGui UI
         if(showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
