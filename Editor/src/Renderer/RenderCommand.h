@@ -1,24 +1,15 @@
 #pragma once
+#include <memory>
 
-#include "RendererAPI.h"
+#include <glm/glm.hpp>
+
+#include "VertexArray.h"
 
 class RenderCommand {
 public:
-	inline static void Init() {
-		rendererAPI->Init();
-	}
-
-	inline static void SetClearColor(const glm::vec4& color) {
-		rendererAPI->SetClearColor(color);
-	}
-
-	inline static void Clear() {
-		rendererAPI->Clear();
-	}
-
-	inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) {
-		rendererAPI->DrawIndexed(vertexArray);
-	}
-private:
-	static RendererAPI* rendererAPI;
+	static void Init();
+	static void PrintInfo();
+	static void SetClearColor(const glm::vec4& color);
+	static void Clear();
+	static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);
 };

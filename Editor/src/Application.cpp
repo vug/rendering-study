@@ -30,7 +30,7 @@ int Application::Run() {
     glfwSwapInterval(1); // VSync enabled. (0 for disabling)
 
     Renderer::Init();
-    RendererAPI::PrintInfo();
+    RenderCommand::PrintInfo();
 
     ImGuiLayer::Init(window);
 
