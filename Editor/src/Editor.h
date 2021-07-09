@@ -29,7 +29,9 @@ private:
 	std::shared_ptr<IndexBuffer> squareIB;
 
 	OrthographicCamera camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+	glm::vec3 cameraPosition = { 0.0f, 0.0f, 0.0f };
     float cameraMoveSpeed = 5.0f;
+	float cameraAngle = 0.0f;
     float cameraRotationSpeed = 180.0f;
 	bool showDemoWindow = false;
 };

@@ -125,38 +125,17 @@ void Editor::OnImGuiRender() {
 }
 
 void Editor::OnUpdate(Timestep ts) {
-    if (IsKeyHeld(GLFW_KEY_LEFT)) {
-        auto p = camera.GetPosition();
-        p.x -= cameraMoveSpeed * ts;
-        camera.SetPosition(p);
-    }
-    else if (IsKeyHeld(GLFW_KEY_RIGHT)) {
-        auto p = camera.GetPosition();
-        p.x += cameraMoveSpeed * ts;
-        camera.SetPosition(p);
-    }
+    if (IsKeyHeld(GLFW_KEY_LEFT)) cameraPosition.x -= cameraMoveSpeed * ts;
+    else if (IsKeyHeld(GLFW_KEY_RIGHT)) cameraPosition.x += cameraMoveSpeed * ts;
 
-    if (IsKeyHeld(GLFW_KEY_UP)) {
-        auto p = camera.GetPosition();
-        p.y += cameraMoveSpeed * ts;
-        camera.SetPosition(p);
-    }
-    else if (IsKeyHeld(GLFW_KEY_DOWN)) {
-        auto p = camera.GetPosition();
-        p.y -= cameraMoveSpeed * ts;
-        camera.SetPosition(p);
-    }
+    if (IsKeyHeld(GLFW_KEY_UP)) cameraPosition.y += cameraMoveSpeed * ts;
+    else if (IsKeyHeld(GLFW_KEY_DOWN)) cameraPosition.y -= cameraMoveSpeed * ts;
 
-    if (IsKeyHeld(GLFW_KEY_A)) {
-        auto r = camera.GetRotation();
-        r += cameraRotationSpeed * ts;
-        camera.SetRotation(r);
-    }
-    else if (IsKeyHeld(GLFW_KEY_D)) {
-        auto r = camera.GetRotation();
-        r -= cameraRotationSpeed * ts;
-        camera.SetRotation(r);
-    }
+    if (IsKeyHeld(GLFW_KEY_A)) cameraAngle += cameraRotationSpeed * ts;
+    else if (IsKeyHeld(GLFW_KEY_D)) cameraAngle -= cameraRotationSpeed * ts;
+
+    camera.SetPosition(cameraPosition);
+    camera.SetRotation(cameraAngle);
 
     Renderer::BeginScene(camera);
     Renderer::Submit(blueShader, squareVA);
