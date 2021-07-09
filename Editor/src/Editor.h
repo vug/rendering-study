@@ -23,7 +23,7 @@ private:
 	std::shared_ptr<VertexBuffer> vertexBuffer;
 	std::shared_ptr<IndexBuffer> indexBuffer;
 
-	std::shared_ptr<Shader> flatColorShader;
+	std::shared_ptr<Shader> flatColorShader, textureShader;
 	std::shared_ptr<VertexArray> squareVA;
 	std::shared_ptr<VertexBuffer> squareVB;
 	std::shared_ptr<IndexBuffer> squareIB;
