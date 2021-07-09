@@ -8,6 +8,7 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographicCamera.h"
+#include "Renderer/Texture.h"
 
 class Editor : public Application {
 public:
@@ -27,6 +28,9 @@ private:
 	std::shared_ptr<VertexArray> squareVA;
 	std::shared_ptr<VertexBuffer> squareVB;
 	std::shared_ptr<IndexBuffer> squareIB;
+
+	std::shared_ptr<Texture2D> texture;
+	int diffuseTextureSlot = 0;
 
 	OrthographicCamera camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
 	glm::vec3 cameraPosition = { 0.0f, 0.0f, 0.0f };
