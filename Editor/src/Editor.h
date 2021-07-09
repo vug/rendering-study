@@ -23,7 +23,7 @@ private:
 	std::shared_ptr<VertexBuffer> vertexBuffer;
 	std::shared_ptr<IndexBuffer> indexBuffer;
 
-	std::shared_ptr<Shader> blueShader;
+	std::shared_ptr<Shader> flatColorShader;
 	std::shared_ptr<VertexArray> squareVA;
 	std::shared_ptr<VertexBuffer> squareVB;
 	std::shared_ptr<IndexBuffer> squareIB;
@@ -32,6 +32,8 @@ private:
 	glm::vec3 cameraPosition = { 0.0f, 0.0f, 0.0f };
     float cameraMoveSpeed = 5.0f;
 	float cameraAngle = 0.0f;
-    float cameraRotationSpeed = 180.0f;
+	float cameraRotationSpeed = 180.0f;
+	glm::vec3 squarePosition;
+	float squareMoveSpeed = 1.0f;
 	bool showDemoWindow = false;
 };
