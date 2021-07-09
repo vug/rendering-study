@@ -19,6 +19,7 @@ private:
 class Application {
 public:
 	int Run();
+	bool IsKeyHeld(int key);
 protected:
 	Application(std::string name);
 private:

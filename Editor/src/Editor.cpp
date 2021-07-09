@@ -125,42 +125,34 @@ void Editor::OnImGuiRender() {
 }
 
 void Editor::OnUpdate(Timestep ts) {
-    auto left = glfwGetKey(window, GLFW_KEY_LEFT);
-    auto right = glfwGetKey(window, GLFW_KEY_RIGHT);
-    auto up = glfwGetKey(window, GLFW_KEY_UP);
-    auto down = glfwGetKey(window, GLFW_KEY_DOWN);
-
-    if (left == GLFW_PRESS || left == GLFW_REPEAT) {
+    if (IsKeyHeld(GLFW_KEY_LEFT)) {
         auto p = camera.GetPosition();
         p.x -= cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
-    else if (right == GLFW_PRESS || right == GLFW_REPEAT) {
+    else if (IsKeyHeld(GLFW_KEY_RIGHT)) {
         auto p = camera.GetPosition();
         p.x += cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
 
-    if (up == GLFW_PRESS || left == GLFW_REPEAT) {
+    if (IsKeyHeld(GLFW_KEY_UP)) {
         auto p = camera.GetPosition();
         p.y += cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
-    else if (down == GLFW_PRESS || left == GLFW_REPEAT) {
+    else if (IsKeyHeld(GLFW_KEY_DOWN)) {
         auto p = camera.GetPosition();
         p.y -= cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
 
-    auto a_key = glfwGetKey(window, GLFW_KEY_A);
-    if (a_key == GLFW_PRESS || a_key == GLFW_REPEAT) {
+    if (IsKeyHeld(GLFW_KEY_A)) {
         auto r = camera.GetRotation();
         r += cameraRotationSpeed * ts;
         camera.SetRotation(r);
     }
-
-    auto d_key = glfwGetKey(window, GLFW_KEY_D);
-    if (d_key == GLFW_PRESS || d_key == GLFW_REPEAT) {
+    else if (IsKeyHeld(GLFW_KEY_D)) {
         auto r = camera.GetRotation();
         r -= cameraRotationSpeed * ts;
         camera.SetRotation(r);
