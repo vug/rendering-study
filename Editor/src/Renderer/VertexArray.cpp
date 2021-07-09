@@ -44,19 +44,18 @@ void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuf
 
     assert(vertexBuffer->GetLayout().GetElements().size()); // Vertex Buffer has no Layout!
 
-    uint32_t index = 0;
     const auto& layout = vertexBuffer->GetLayout();
     for (const auto& element : layout) {
-        glEnableVertexAttribArray(index);
+        glEnableVertexAttribArray(vertexBufferIndex);
         glVertexAttribPointer(
-            index,
+            vertexBufferIndex,
             element.GetComponentCount(),
             ShaderDataTypeToOpenGLBaseType(element.Type),
             element.Normalized ? GL_TRUE : GL_FALSE,
             layout.GetStride(),
             (const void*)(intptr_t)element.Offset
         );
-        index++;
+        vertexBufferIndex++;
     }
 
     vertexBuffers.push_back(vertexBuffer);

@@ -131,6 +131,9 @@
     <ClInclude Include="vendor\KHR\khrplatform.h" />
     <ClInclude Include="vendor\stb\stb_image.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\Checkerboard.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

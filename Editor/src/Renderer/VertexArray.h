@@ -21,5 +21,6 @@ public:
 private:
 	uint32_t rendererID;
 	std::vector<std::shared_ptr<VertexBuffer>> vertexBuffers;
+	uint32_t vertexBufferIndex = 0;
 	std::shared_ptr<IndexBuffer> indexBuffer;
 };
