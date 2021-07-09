@@ -4,11 +4,17 @@
 #include "RendererAPI.h"
 
 void RendererAPI::PrintInfo() {
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     std::cout << "OpenGL Info" << std::endl
         << "  Renderer: " << glGetString(GL_VENDOR) << std::endl
         << "  Vendor: " << glGetString(GL_RENDERER) << std::endl
         << "  Version: " << glGetString(GL_VERSION) << std::endl;
+}
+
+void RendererAPI::Init() {
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void RendererAPI::SetClearColor(const glm::vec4& color) {

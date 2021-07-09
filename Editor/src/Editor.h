@@ -30,6 +30,7 @@ private:
 	std::shared_ptr<IndexBuffer> squareIB;
 
 	std::shared_ptr<Texture2D> texture;
+	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
 	OrthographicCamera camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);

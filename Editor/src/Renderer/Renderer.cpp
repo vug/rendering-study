@@ -3,6 +3,10 @@
 
 Renderer::SceneData* Renderer::sceneData = new Renderer::SceneData;
 
+void Renderer::Init() {
+	RenderCommand::Init();
+}
+
 void Renderer::BeginScene(OrthographicCamera& camera) {
 	sceneData->viewProjectionMatrix = camera.GetViewProjectionMatrix();
 }

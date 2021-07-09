@@ -25,12 +25,15 @@ int Application::Run() {
     if (!glfwInit()) return -1;
     window = glfwCreateWindow(1280, 720, name.c_str(), NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
-
     glfwSetKeyCallback(window, key_callback);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // VSync enabled. (0 for disabling)
+
+    Renderer::Init();
     RendererAPI::PrintInfo();
+
     ImGuiLayer::Init(window);
+
     OnInit();
     
     while (!glfwWindowShouldClose(window))

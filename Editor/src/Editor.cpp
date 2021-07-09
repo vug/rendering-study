@@ -107,14 +107,14 @@ void Editor::OnInit() {
 
         void main() {
             color = texture(u_Texture, v_TexCoord);
-            //color = vec4(v_TexCoord, 0.0, 1.0);
         }
     )";
     textureShader.reset(new Shader(textureShaderVertexSrc, textureShaderFragmentSrc));
-    
-    texture.reset(new Texture2D("assets/textures/Checkerboard.png"));
     textureShader->Bind();
     textureShader->UploadUniformInt("u_Texture", diffuseTextureSlot);
+    
+    texture.reset(new Texture2D("assets/textures/Checkerboard.png"));
+    textureWithAlpha.reset(new Texture2D("assets/textures/ChernoLogo.png"));
        
     vertexArray.reset(new VertexArray());  
     float vertices[3 * 7] = {
@@ -209,6 +209,10 @@ void Editor::OnUpdate(Timestep ts) {
 
     texture->Bind(diffuseTextureSlot);
     Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+    textureWithAlpha->Bind(diffuseTextureSlot);
+    Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
     Renderer::EndScene();
 }
 

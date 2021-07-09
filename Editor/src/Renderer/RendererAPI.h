@@ -9,6 +9,7 @@
 class RendererAPI {
 public:
 	static void PrintInfo();
+	void Init();
 
 	void SetClearColor(const glm::vec4& color);
 	void Clear();

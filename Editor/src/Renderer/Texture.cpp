@@ -14,13 +14,25 @@ Texture2D::Texture2D(const std::string& path)
 	width = w;
 	height = h;
 
+	GLenum internalFormat = 0, dataFormat = 0; // storage format, format of file
+	if (channels == 4) {
+		internalFormat = GL_RGBA8;
+		dataFormat = GL_RGBA;
+	}
+	else if (channels == 3) {
+		internalFormat = GL_RGB8;
+		dataFormat = GL_RGB;
+	}
+	assert(internalFormat && dataFormat); // Format not supported.
+
 	glCreateTextures(GL_TEXTURE_2D, 1, &rendererID);
-	glTextureStorage2D(rendererID, 1, GL_RGB8, width, height);
+	// GL_RED for one channel texture
+	glTextureStorage2D(rendererID, 1, internalFormat, width, height);
 
 	glTextureParameteri(rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTextureSubImage2D(rendererID, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTextureSubImage2D(rendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
 
 	stbi_image_free(data);
 }
