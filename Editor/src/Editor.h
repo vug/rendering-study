@@ -35,5 +35,6 @@ private:
 	float cameraRotationSpeed = 180.0f;
 	glm::vec3 squarePosition;
 	float squareMoveSpeed = 1.0f;
+	glm::vec3 squareColor = { 0.2f, 03.f, 0.8f };
 	bool showDemoWindow = false;
 };

@@ -4,6 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Editor.h"
 
@@ -71,10 +72,10 @@ void Editor::OnInit() {
 
         in vec3 v_Position;
 
-        uniform vec4 u_Color;
+        uniform vec3 u_Color;
 
         void main() {
-            color = u_Color;
+            color = vec4(u_Color, 1.0);
         }
     )";
     flatColorShader.reset(new Shader(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
@@ -122,9 +123,12 @@ void Editor::OnInit() {
 
 void Editor::OnImGuiRender() {
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
-    ImGui::Begin("My name is window, ImGui window");
+    ImGui::Begin("Settings");
+    ImGui::ColorEdit3("Square Color", glm::value_ptr(squareColor));
+
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
     ImGui::Text(fps.c_str());
+
     ImGui::Checkbox("Show demo window", &showDemoWindow);
     ImGui::End();
 }
@@ -153,18 +157,14 @@ void Editor::OnUpdate(Timestep ts) {
     glm::mat4 transform = glm::translate(glm::mat4(1.0f), squarePosition);
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-    glm::vec4 blueColor(0.2, 0.3, 0.8, 1.0);
-    glm::vec4 redColor(0.8, 0.2, 0.3, 1.0);
     Renderer::BeginScene(camera);
     Renderer::Submit(shader, vertexArray);
+    flatColorShader->Bind();
+    flatColorShader->UploadUniformFloat3("u_Color", squareColor);
     for (int y = 0; y < 20; y++) {
         for (int x = 0; x < 20; x++) {
             glm::vec3 deltaPos(x * 0.11f, y * 0.11f, 0.0f);
             glm::mat4 transform = glm::translate(glm::mat4(1.0f), deltaPos + squarePosition) * scale;
-            if (x % 2 == 0) // better to batch and render all object with same shader in a single draw command
-                flatColorShader->UploadUniformFloat4("u_Color", redColor);
-            else
-                flatColorShader->UploadUniformFloat4("u_Color", blueColor);
             Renderer::Submit(flatColorShader, squareVA, transform);
         }
     }
