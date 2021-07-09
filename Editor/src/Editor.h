@@ -13,10 +13,10 @@ class Editor : public Application {
 public:
 	Editor();
 private:
-	void OnInit();
-	void OnUpdate();
-	void OnImGuiRender();
-	void OnShutdown();
+	void OnInit() override;
+	void OnUpdate(Timestep ts) override;
+	void OnImGuiRender() override;
+	void OnShutdown() override;
 private:
 	std::shared_ptr<Shader> shader;
 	std::shared_ptr<VertexArray> vertexArray;
@@ -29,7 +29,7 @@ private:
 	std::shared_ptr<IndexBuffer> squareIB;
 
 	OrthographicCamera camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
-    float cameraMoveSpeed = 0.1f;
-    float cameraRotationSpeed = 2.0f;
+    float cameraMoveSpeed = 5.0f;
+    float cameraRotationSpeed = 180.0f;
 	bool showDemoWindow = false;
 };

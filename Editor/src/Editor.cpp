@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 
 #include "GLFW/glfw3.h"
@@ -117,12 +118,13 @@ void Editor::OnInit() {
 void Editor::OnImGuiRender() {
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
     ImGui::Begin("My name is window, ImGui window");
-    ImGui::Text("Hello There!");
+    std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
+    ImGui::Text(fps.c_str());
     ImGui::Checkbox("Show demo window", &showDemoWindow);
     ImGui::End();
 }
 
-void Editor::OnUpdate() {
+void Editor::OnUpdate(Timestep ts) {
     auto left = glfwGetKey(window, GLFW_KEY_LEFT);
     auto right = glfwGetKey(window, GLFW_KEY_RIGHT);
     auto up = glfwGetKey(window, GLFW_KEY_UP);
@@ -130,37 +132,37 @@ void Editor::OnUpdate() {
 
     if (left == GLFW_PRESS || left == GLFW_REPEAT) {
         auto p = camera.GetPosition();
-        p.x -= cameraMoveSpeed;
+        p.x -= cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
     else if (right == GLFW_PRESS || right == GLFW_REPEAT) {
         auto p = camera.GetPosition();
-        p.x += cameraMoveSpeed;
+        p.x += cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
 
     if (up == GLFW_PRESS || left == GLFW_REPEAT) {
         auto p = camera.GetPosition();
-        p.y += cameraMoveSpeed;
+        p.y += cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
     else if (down == GLFW_PRESS || left == GLFW_REPEAT) {
         auto p = camera.GetPosition();
-        p.y -= cameraMoveSpeed;
+        p.y -= cameraMoveSpeed * ts;
         camera.SetPosition(p);
     }
 
     auto a_key = glfwGetKey(window, GLFW_KEY_A);
     if (a_key == GLFW_PRESS || a_key == GLFW_REPEAT) {
         auto r = camera.GetRotation();
-        r += cameraRotationSpeed;
+        r += cameraRotationSpeed * ts;
         camera.SetRotation(r);
     }
 
     auto d_key = glfwGetKey(window, GLFW_KEY_D);
     if (d_key == GLFW_PRESS || d_key == GLFW_REPEAT) {
         auto r = camera.GetRotation();
-        r -= cameraRotationSpeed;
+        r -= cameraRotationSpeed * ts;
         camera.SetRotation(r);
     }
 

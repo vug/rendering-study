@@ -28,12 +28,18 @@ int Application::Run() {
 
     glfwSetKeyCallback(window, key_callback);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // VSync enabled. (0 for disabling)
     RendererAPI::PrintInfo();
     ImGuiLayer::Init(window);
     OnInit();
     
     while (!glfwWindowShouldClose(window))
     {
+        float time = (float)glfwGetTime();
+        Timestep timestep = time - lastFrameTime;
+        framesPerSecond = 1.0f / timestep;
+        lastFrameTime = time;
+
         glfwPollEvents();
         ImGuiLayer::Begin();
         OnImGuiRender();
@@ -44,7 +50,7 @@ int Application::Run() {
         RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         RenderCommand::Clear();
 
-        OnUpdate();
+        OnUpdate(timestep);
 
         ImGuiLayer::End();
         glfwSwapBuffers(window);
