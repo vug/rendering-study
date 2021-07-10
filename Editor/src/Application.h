@@ -15,16 +15,21 @@ public:
 protected:
 	Application(std::string name);
 	void RegisterScrollListener(ScrollListener* listener);
+	void RegisterWindowListener(WindowListener* listener);
+protected:
+	GLFWwindow* window = nullptr;
+	std::string name = "Application";
+	float framesPerSecond = -1.0f;
 private:
 	virtual void OnInit() = 0;
 	virtual void OnUpdate(Timestep ts) = 0;
 	virtual void OnImGuiRender() = 0;
 	virtual void OnShutdown() = 0;
-	float lastFrameTime = 0.0f;
+
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+	static void windowSizeCallback(GLFWwindow* window, int width, int height);
+private:
+	float lastFrameTime = 0.0f;
 	std::vector<ScrollListener*> scrollListeners;
-protected:
-	GLFWwindow* window = nullptr;
-	std::string name = "Application";
-	float framesPerSecond = -1.0f;
+	std::vector<WindowListener*> windowListeners;
 };

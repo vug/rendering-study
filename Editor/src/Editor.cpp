@@ -18,6 +18,7 @@ Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f), cameraCon
 
 void Editor::OnInit() {
     RegisterScrollListener(&cameraController);
+    RegisterWindowListener(&cameraController);
 
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
     shaderLibrary.Load("assets/shaders/FlatColor.glsl");

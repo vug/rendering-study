@@ -32,9 +32,7 @@ void OrthographicCameraController::OnScrollUpdate(float xOffset, float yOffset) 
     camera.SetProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel);
 }
 
-bool OrthographicCameraController::OnWindowResized() {
-    // change aspect ratio here?
-    // aspectRatio = (float)app.GetWindows().GetWidth() / (float)app.GetWindows().GetHeight();
+void OrthographicCameraController::OnWindowResize(int width, int height) {
+    aspectRatio = (float)width / (float)height;
     camera.SetProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel);
-    return false;
 }
