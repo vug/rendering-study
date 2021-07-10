@@ -88,6 +88,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\ImGuiLayer.cpp" />
+    <ClCompile Include="src\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Renderer\RenderCommand.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Editor.h" />
     <ClInclude Include="src\ImGuiLayer.h" />
+    <ClInclude Include="src\OrthographicCameraController.h" />
     <ClInclude Include="src\Renderer\Buffer.h" />
     <ClInclude Include="src\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Renderer\RenderCommand.h" />

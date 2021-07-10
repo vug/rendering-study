@@ -14,7 +14,7 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographicCamera.h"
 
-Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f) { }
+Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f), cameraController(*this, 1280.0f / 720.0f) { }
 
 void Editor::OnInit() {
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
@@ -77,18 +77,7 @@ void Editor::OnImGuiRender() {
 }
 
 void Editor::OnUpdate(Timestep ts) {
-    // Camera Control
-    if (IsKeyHeld(GLFW_KEY_LEFT)) cameraPosition.x -= cameraMoveSpeed * ts;
-    else if (IsKeyHeld(GLFW_KEY_RIGHT)) cameraPosition.x += cameraMoveSpeed * ts;
-
-    if (IsKeyHeld(GLFW_KEY_UP)) cameraPosition.y += cameraMoveSpeed * ts;
-    else if (IsKeyHeld(GLFW_KEY_DOWN)) cameraPosition.y -= cameraMoveSpeed * ts;
-
-    if (IsKeyHeld(GLFW_KEY_A)) cameraAngle += cameraRotationSpeed * ts;
-    else if (IsKeyHeld(GLFW_KEY_D)) cameraAngle -= cameraRotationSpeed * ts;
-
-    camera.SetPosition(cameraPosition);
-    camera.SetRotation(cameraAngle);
+    cameraController.OnUpdate(ts);
 
     // Square Control
     if (IsKeyHeld(GLFW_KEY_J)) squarePosition.x -= squareMoveSpeed * ts;
@@ -100,7 +89,7 @@ void Editor::OnUpdate(Timestep ts) {
     glm::mat4 transform = glm::translate(glm::mat4(1.0f), squarePosition);
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-    Renderer::BeginScene(camera);
+    Renderer::BeginScene(cameraController.GetCamera());
 
     auto triangleShader = shaderLibrary.Get("VertexPosColor");
     Renderer::Submit(triangleShader, vertexArray, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));

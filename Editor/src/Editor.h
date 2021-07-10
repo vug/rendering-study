@@ -8,6 +8,7 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographicCamera.h"
+#include "OrthographicCameraController.h"
 #include "Renderer/Texture.h"
 
 class Editor : public Application {
@@ -26,11 +27,8 @@ private:
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
-	OrthographicCamera camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
-	glm::vec3 cameraPosition = { 0.0f, 0.0f, 0.0f };
-    float cameraMoveSpeed = 5.0f;
-	float cameraAngle = 0.0f;
-	float cameraRotationSpeed = 180.0f;
+	OrthographicCameraController cameraController;
+
 	glm::vec3 squarePosition;
 	float squareMoveSpeed = 1.0f;
 	glm::vec3 squareColor = { 0.2f, 03.f, 0.8f };

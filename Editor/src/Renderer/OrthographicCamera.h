@@ -6,6 +6,8 @@ class OrthographicCamera {
 public:
 	OrthographicCamera(float left, float right, float bottom, float top); // near=-1, far=1 by default
 
+	void SetProjection(float left, float right, float bottom, float top);
+
 	const glm::vec3& GetPosition() const { return position; }
 	void SetPosition(const glm::vec3& position) { this->position = position; RecalculateViewMatrix(); }
 
