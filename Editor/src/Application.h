@@ -1,20 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
 #include "GLFW/glfw3.h"
 
-// Basically this is a float with some helper functions.
-class Timestep {
-public:
-	Timestep(float time = 0.0f) : time(time) {}
-
-	operator float() const { return time; }
-
-	float GetSeconds() const { return time; }
-	float GetMilliseconds() const { return time * 1000.0f; }
-private:
-	float time;
-};
+#include "Timestep.h"
+#include "Input.h"
 
 class Application {
 public:
@@ -22,12 +14,15 @@ public:
 	bool IsKeyHeld(int key);
 protected:
 	Application(std::string name);
+	void RegisterScrollListener(ScrollListener* listener);
 private:
 	virtual void OnInit() = 0;
 	virtual void OnUpdate(Timestep ts) = 0;
 	virtual void OnImGuiRender() = 0;
 	virtual void OnShutdown() = 0;
 	float lastFrameTime = 0.0f;
+	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+	std::vector<ScrollListener*> scrollListeners;
 protected:
 	GLFWwindow* window = nullptr;
 	std::string name = "Application";

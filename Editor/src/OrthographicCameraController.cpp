@@ -1,5 +1,7 @@
 #include "OrthographicCameraController.h"
 
+#include <iostream>
+
 OrthographicCameraController::OrthographicCameraController(Application& app, float aspectRatio)
     : app(app), aspectRatio(aspectRatio), camera(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel) {
 }
@@ -24,11 +26,10 @@ void OrthographicCameraController::OnUpdate(Timestep ts) {
     camera.SetRotation(cameraRotation);
 }
 
-
-bool OrthographicCameraController::OnMouseScrolled() {
-    // zoomLevel -= scrollAmount
+void OrthographicCameraController::OnScrollUpdate(float xOffset, float yOffset) {
+    zoomLevel -= yOffset * 0.25f;
+    zoomLevel = std::max(zoomLevel, 0.25f);
     camera.SetProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel);
-    return false;
 }
 
 bool OrthographicCameraController::OnWindowResized() {

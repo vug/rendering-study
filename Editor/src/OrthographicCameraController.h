@@ -1,18 +1,22 @@
 #pragma once
 
 #include "Renderer/OrthographicCamera.h"
-#include "Application.h"
 
-class OrthographicCameraController {
+#include "Application.h"
+#include "Input.h"
+
+class OrthographicCameraController : public ScrollListener {
 public:
 	OrthographicCameraController(Application& app, float aspectRatio); // AspectRatio * 2 units
 
 	void OnUpdate(Timestep ts);
+	void OnScrollUpdate(float xOffset, float yOffset) override;
 
 	OrthographicCamera& GetCamera() { return camera; }
 	const OrthographicCamera& GetCamera() const { return camera; }
+
+	const float GetZoomLevel() const { return zoomLevel; }
 private:
-	bool OnMouseScrolled();
 	bool OnWindowResized();
 private:
 	Application& app;

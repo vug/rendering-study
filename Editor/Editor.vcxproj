@@ -111,6 +111,7 @@
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Editor.h" />
     <ClInclude Include="src\ImGuiLayer.h" />
+    <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\OrthographicCameraController.h" />
     <ClInclude Include="src\Renderer\Buffer.h" />
     <ClInclude Include="src\Renderer\OrthographicCamera.h" />
@@ -119,6 +120,7 @@
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
     <ClInclude Include="src\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Timestep.h" />
     <ClInclude Include="vendor\glad\glad.h" />
     <ClInclude Include="vendor\GLFW\glfw3.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />

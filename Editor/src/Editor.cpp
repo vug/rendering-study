@@ -17,6 +17,8 @@
 Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f), cameraController(*this, 1280.0f / 720.0f) { }
 
 void Editor::OnInit() {
+    RegisterScrollListener(&cameraController);
+
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
     shaderLibrary.Load("assets/shaders/FlatColor.glsl");
     auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
@@ -71,6 +73,9 @@ void Editor::OnImGuiRender() {
 
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
     ImGui::Text(fps.c_str());
+
+    std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
+    ImGui::Text(zoomLevel.c_str());
 
     ImGui::Checkbox("Show demo window", &showDemoWindow);
     ImGui::End();

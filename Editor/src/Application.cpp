@@ -14,18 +14,30 @@
 Application::Application(std::string name) 
     : name(name) { }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    std::cout << "key: " << key << std::endl;
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+void Application::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    std::cout << "x: " << xoffset << ", " << "y: " << yoffset << std::endl;
+    auto app = (Application*)glfwGetWindowUserPointer(window);
+    for (auto listener : app->scrollListeners) {
+        listener->OnScrollUpdate(xoffset, yoffset);
+    }
+}
+
+void Application::RegisterScrollListener(ScrollListener* listener) {
+    scrollListeners.push_back(listener);
 }
 
 int Application::Run() {
     if (!glfwInit()) return -1;
     window = glfwCreateWindow(1280, 720, name.c_str(), NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
+    glfwSetWindowUserPointer(window, this);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetScrollCallback(window, Application::scrollCallback);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // VSync enabled. (0 for disabling)
 
