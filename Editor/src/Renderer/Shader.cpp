@@ -35,7 +35,7 @@ Shader::~Shader() {
 }
 
 std::string Shader::ReadFile(const std::string& filepath) {
-	std::ifstream in(filepath, std::ios::in, std::ios::binary);
+	std::ifstream in(filepath, std::ios::in | std::ios::binary);
 	std::string result;
 	if (in) {
 		in.seekg(0, std::ios::end);
