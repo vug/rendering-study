@@ -17,73 +17,11 @@
 Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f) { }
 
 void Editor::OnInit() {
-    std::string vertexSrc = R"(
-        #version 460 core
-
-        layout(location = 0) in vec3 a_Position;
-        layout(location = 1) in vec4 a_Color;
-
-        uniform mat4 u_ViewProjection;
-        uniform mat4 u_Transform;
-
-        out vec3 v_Position;
-        out vec4 v_Color;
-
-        void main() {
-            v_Position = a_Position;
-            v_Color = a_Color;
-            gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-        }
-    )";
-    std::string fragmentSrc = R"(
-        #version 460 core
-
-        layout(location = 0) out vec4 color;
-
-        in vec3 v_Position;
-        in vec4 v_Color;
-
-        void main() {
-            color = vec4(v_Position * 0.5 + 0.5, 1.0);
-            color = v_Color;
-        }
-    )";
-    shader.reset(new Shader("VertexPosColor", vertexSrc, fragmentSrc));
-
-    std::string flatColorShaderVertexSrc = R"(
-        #version 460 core
-
-        layout(location = 0) in vec3 a_Position;
-
-        uniform mat4 u_ViewProjection;
-        uniform mat4 u_Transform;
-
-        out vec3 v_Position;
-
-        void main() {
-            v_Position = a_Position;
-            gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-        }
-    )";
-    std::string flatColorShaderFragmentSrc = R"(
-        #version 460 core
-
-        layout(location = 0) out vec4 color;
-
-        in vec3 v_Position;
-
-        uniform vec3 u_Color;
-
-        void main() {
-            color = vec4(u_Color, 1.0);
-        }
-    )";
-    flatColorShader.reset(new Shader("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
-
-    textureShader.reset(new Shader("assets/shaders/Texture.glsl"));
+    shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
+    shaderLibrary.Load("assets/shaders/FlatColor.glsl");
+    auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
     textureShader->Bind();
     textureShader->UploadUniformInt("u_Texture", diffuseTextureSlot);
-    
     texture.reset(new Texture2D("assets/textures/Checkerboard.png"));
     textureWithAlpha.reset(new Texture2D("assets/textures/ChernoLogo.png"));
        
@@ -93,7 +31,7 @@ void Editor::OnInit() {
          0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
          0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
     };
-    vertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
+    const auto vertexBuffer = std::make_shared<VertexBuffer>(vertices, (uint32_t)sizeof(vertices));
     BufferLayout layout = {
         { ShaderDataType::Float3, "a_Position" },
         { ShaderDataType::Float4, "a_Color" },
@@ -102,7 +40,7 @@ void Editor::OnInit() {
     vertexArray->AddVertexBuffer(vertexBuffer);
 
     uint32_t indices[3] = { 0, 1, 2 };
-    indexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
+    const auto indexBuffer = std::make_shared<IndexBuffer>(indices, (uint32_t)(sizeof(indices) / sizeof(uint32_t)));
     vertexArray->SetIndexBuffer(indexBuffer);
 
     squareVA.reset(new VertexArray());
@@ -112,20 +50,17 @@ void Editor::OnInit() {
          0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
         -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
     };
-    
-    squareVB.reset(new VertexBuffer(squareVertices, sizeof(squareVertices)));
+    const auto squareVB = std::make_shared<VertexBuffer>(squareVertices, (uint32_t)sizeof(squareVertices));
     squareVB->SetLayout({
         { ShaderDataType::Float3, "a_Position" },
         { ShaderDataType::Float2, "a_TexCoord" },
         });
     squareVA->AddVertexBuffer(squareVB);
-
     uint32_t squareIndices[3 * 2] = {
         0, 1, 2,
         2, 3, 0
-    };
-    
-    squareIB.reset(new IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+    };    
+    const auto squareIB = std::make_shared<IndexBuffer>(squareIndices, (uint32_t)(sizeof(squareIndices) / sizeof(uint32_t)));
     squareVA->SetIndexBuffer(squareIB);
 }
 
@@ -166,8 +101,11 @@ void Editor::OnUpdate(Timestep ts) {
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
     Renderer::BeginScene(camera);
-    // Triangle
-    // Renderer::Submit(shader, vertexArray);
+
+    auto triangleShader = shaderLibrary.Get("VertexPosColor");
+    Renderer::Submit(triangleShader, vertexArray, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+
+    auto flatColorShader = shaderLibrary.Get("FlatColor");
     flatColorShader->Bind();
     flatColorShader->UploadUniformFloat3("u_Color", squareColor);
     for (int y = 0; y < 20; y++) {
@@ -178,6 +116,7 @@ void Editor::OnUpdate(Timestep ts) {
         }
     }
 
+    auto textureShader = shaderLibrary.Get("Texture");
     texture->Bind(diffuseTextureSlot);
     Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 

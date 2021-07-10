@@ -19,16 +19,9 @@ private:
 	void OnImGuiRender() override;
 	void OnShutdown() override;
 private:
-	std::shared_ptr<Shader> shader;
+	ShaderLibrary shaderLibrary;
 	std::shared_ptr<VertexArray> vertexArray;
-	std::shared_ptr<VertexBuffer> vertexBuffer;
-	std::shared_ptr<IndexBuffer> indexBuffer;
-
-	std::shared_ptr<Shader> flatColorShader, textureShader;
 	std::shared_ptr<VertexArray> squareVA;
-	std::shared_ptr<VertexBuffer> squareVB;
-	std::shared_ptr<IndexBuffer> squareIB;
-
 	std::shared_ptr<Texture2D> texture;
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
