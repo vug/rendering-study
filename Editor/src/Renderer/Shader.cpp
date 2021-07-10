@@ -194,3 +194,35 @@ void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+// Shader Library
+void ShaderLibrary::Add(const std::string& name, const std::shared_ptr<Shader>& shader) {
+	assert(!Exists(name)); // Shader already exists!
+	shaders[name] = shader;
+}
+
+void ShaderLibrary::Add(const std::shared_ptr<Shader>& shader) {
+	auto& name = shader->GetName();
+	Add(name, shader);
+}
+
+std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& filepath) {
+	auto shader = std::make_shared<Shader>(filepath);
+	Add(shader);
+	return shader;
+}
+
+std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath) {
+	auto shader = std::make_shared<Shader>(filepath);
+	Add(name, shader);
+	return shader;
+}
+
+std::shared_ptr<Shader> ShaderLibrary::Get(const std::string& name) {
+	assert(Exists(name)); // Shader not found!
+	return shaders[name];
+}
+
+bool ShaderLibrary::Exists(const std::string& name) const {
+	return shaders.find(name) != shaders.end();
+}
+
