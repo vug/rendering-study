@@ -1,5 +1,5 @@
+#include <array>
 #include <iostream>
-#include <vector>
 #include <fstream>
 
 #include "glad/glad.h"
@@ -75,8 +75,9 @@ std::unordered_map<GLenum, std::string> Shader::PreProcess(const std::string& so
 
 void Shader::Compile(std::unordered_map<GLenum, std::string>& shaderSources) {
 	GLuint program = glCreateProgram();
-	std::vector<GLenum> glShaderIDs;
-	glShaderIDs.reserve(shaderSources.size());
+	assert(shaderSources.size() <= 2); // We only support a vertex and a fragment shader for now.
+	std::array<GLenum, 2> glShaderIDs;
+	int glShaderIdIndex = 0;
 	for (auto& kv : shaderSources) {
 		GLenum type = kv.first;
 		const std::string& source = kv.second;
@@ -109,7 +110,7 @@ void Shader::Compile(std::unordered_map<GLenum, std::string>& shaderSources) {
 		}
 
 		glAttachShader(program, shader);
-		glShaderIDs.push_back(shader);
+		glShaderIDs[glShaderIdIndex++] = shader;
 	}
 
 	glLinkProgram(program);
