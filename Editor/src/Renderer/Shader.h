@@ -9,12 +9,14 @@ typedef unsigned int GLenum;
 
 class Shader {
 public:
-	Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
+	Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 	Shader(const std::string& filepath);
 	~Shader();
 
 	void Bind() const;
 	void Unbind() const;
+
+	const std::string& GetName() const { return name; }
 
 	void UploadUniformInt(const std::string& name, int value);
 	void UploadUniformFloat(const std::string& name, float value);
@@ -31,4 +33,5 @@ private:
 	void Compile(std::unordered_map<GLenum, std::string>& shaderSources);
 private:
 	uint32_t rendererID;
+	std::string name;
 };

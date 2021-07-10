@@ -48,7 +48,7 @@ void Editor::OnInit() {
             color = v_Color;
         }
     )";
-    shader.reset(new Shader(vertexSrc, fragmentSrc));
+    shader.reset(new Shader("VertexPosColor", vertexSrc, fragmentSrc));
 
     std::string flatColorShaderVertexSrc = R"(
         #version 460 core
@@ -78,7 +78,7 @@ void Editor::OnInit() {
             color = vec4(u_Color, 1.0);
         }
     )";
-    flatColorShader.reset(new Shader(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+    flatColorShader.reset(new Shader("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
 
     textureShader.reset(new Shader("assets/shaders/Texture.glsl"));
     textureShader->Bind();

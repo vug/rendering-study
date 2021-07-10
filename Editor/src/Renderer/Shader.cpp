@@ -1,6 +1,7 @@
 #include <array>
-#include <iostream>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
@@ -21,9 +22,13 @@ Shader::Shader(const std::string& filepath) {
 	std::string source = ReadFile(filepath);
 	auto shaderSources = PreProcess(source);
 	Compile(shaderSources);
+
+	std::filesystem::path path = filepath;
+	name = path.stem().string();
 }
 
-Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) {
+Shader::Shader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource) 
+	: name(name) {
 	std::unordered_map<GLenum, std::string> sources;
 	sources[GL_VERTEX_SHADER] = vertexSource;
 	sources[GL_FRAGMENT_SHADER] = fragmentSource;
