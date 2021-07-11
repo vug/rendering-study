@@ -86,6 +86,10 @@ int Application::Run() {
     return 0;
 }
 
+void Application::Close() {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
 bool Application::IsKeyHeld(int key) {
     int keyState = glfwGetKey(window, key);
     return keyState == GLFW_PRESS || keyState == GLFW_REPEAT;

@@ -14,6 +14,7 @@ public:
 	bool IsKeyHeld(int key);
 protected:
 	Application(std::string name);
+	void Close();
 	void RegisterScrollListener(ScrollListener* listener);
 	void RegisterWindowListener(WindowListener* listener);
 protected:
