@@ -116,7 +116,7 @@ void Editor::OnUpdate(Timestep ts) {
     Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
     textureWithAlpha->Bind(diffuseTextureSlot);
-    Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+    Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
 
     Renderer::EndScene();
 }
