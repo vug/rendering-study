@@ -46,5 +46,3 @@ Texture2D::~Texture2D() {
 void Texture2D::Bind(uint32_t slot) const {
 	glBindTextureUnit(slot, rendererID);
 }
-
-//std::shared_ptr<Texture2D> Texture2D::Create(const std::string& path) {}
