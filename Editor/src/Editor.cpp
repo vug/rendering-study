@@ -25,10 +25,10 @@ void Editor::OnInit() {
     auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
     textureShader->Bind();
     textureShader->UploadUniformInt("u_Texture", diffuseTextureSlot);
-    texture.reset(new Texture2D("assets/textures/Checkerboard.png"));
+    textureCheckerboard.reset(new Texture2D("assets/textures/Checkerboard.png"));
     textureWithAlpha.reset(new Texture2D("assets/textures/ChernoLogo.png"));
        
-    vertexArray.reset(new VertexArray());  
+    triangleVA.reset(new VertexArray());  
     float vertices[3 * 7] = {
         -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
          0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
@@ -40,11 +40,11 @@ void Editor::OnInit() {
         { ShaderDataType::Float4, "a_Color" },
     };
     vertexBuffer->SetLayout(layout);
-    vertexArray->AddVertexBuffer(vertexBuffer);
+    triangleVA->AddVertexBuffer(vertexBuffer);
 
     uint32_t indices[3] = { 0, 1, 2 };
     const auto indexBuffer = std::make_shared<IndexBuffer>(indices, (uint32_t)(sizeof(indices) / sizeof(uint32_t)));
-    vertexArray->SetIndexBuffer(indexBuffer);
+    triangleVA->SetIndexBuffer(indexBuffer);
 
     squareVA.reset(new VertexArray());
     float squareVertices[(3 + 2) * 4] = {
@@ -148,7 +148,7 @@ void Editor::OnImGuiRender() {
 
         ImGui::Checkbox("Show demo window", &showDemoWindow);
 
-        uint32_t textureID = texture->GetRendererID();
+        uint32_t textureID = textureCheckerboard->GetRendererID();
         ImGui::Image((void*)textureID, ImVec2(256.0f, 256.0f));
         ImGui::End();
 
@@ -168,8 +168,8 @@ void Editor::OnImGuiRender() {
 
         ImGui::Checkbox("Show demo window", &showDemoWindow);
 
-        uint32_t textureID = texture->GetRendererID();
         ImGui::Image((void*)textureID, ImVec2(256.0f, 256.0f));
+        uint32_t textureID = textureCheckerboard->GetRendererID();
         ImGui::End();
     }
 }
@@ -190,7 +190,7 @@ void Editor::OnUpdate(Timestep ts) {
     Renderer::BeginScene(cameraController.GetCamera());
 
     auto triangleShader = shaderLibrary.Get("VertexPosColor");
-    Renderer::Submit(triangleShader, vertexArray, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+    Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
 
     auto flatColorShader = shaderLibrary.Get("FlatColor");
     flatColorShader->Bind();
@@ -204,7 +204,7 @@ void Editor::OnUpdate(Timestep ts) {
     }
 
     auto textureShader = shaderLibrary.Get("Texture");
-    texture->Bind(diffuseTextureSlot);
+    textureCheckerboard->Bind(diffuseTextureSlot);
     Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
     textureWithAlpha->Bind(diffuseTextureSlot);

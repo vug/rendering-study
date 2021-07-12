@@ -21,9 +21,9 @@ private:
 	void OnShutdown() override;
 private:
 	ShaderLibrary shaderLibrary;
-	std::shared_ptr<VertexArray> vertexArray;
+	std::shared_ptr<VertexArray> triangleVA;
 	std::shared_ptr<VertexArray> squareVA;
-	std::shared_ptr<Texture2D> texture;
+	std::shared_ptr<Texture2D> textureCheckerboard;
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
