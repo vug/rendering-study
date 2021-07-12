@@ -27,13 +27,9 @@ private:
 	OrthographicCameraController cameraController;
 
 	std::shared_ptr<VertexArray> triangleVA;
-	std::shared_ptr<VertexArray> squareVA;
 	std::shared_ptr<Texture2D> textureCheckerboard;
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
-	glm::vec3 squarePosition;
-	float squareMoveSpeed = 1.0f;
-	glm::vec3 squareColor = { 0.2f, 03.f, 0.8f };
 	bool showDemoWindow = false;
 };
