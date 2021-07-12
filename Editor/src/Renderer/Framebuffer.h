@@ -22,8 +22,10 @@ public:
 
 	void Bind();
 	void Unbind();
+
+	void Resize(uint32_t width, uint32_t height);
 private:
-	uint32_t rendererID;
-	uint32_t colorAttachment, depthAttachment;
+	uint32_t rendererID = 0;
+	uint32_t colorAttachment = 0, depthAttachment = 0;
 	FramebufferSpecification specification;
 };
