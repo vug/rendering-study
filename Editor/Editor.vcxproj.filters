@@ -164,6 +164,9 @@
     <ClInclude Include="src\Listener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vendor\entt\entt.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\Checkerboard.png">

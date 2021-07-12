@@ -124,6 +124,7 @@
     <ClInclude Include="src\Renderer\Texture.h" />
     <ClInclude Include="src\Renderer\VertexArray.h" />
     <ClInclude Include="src\Timestep.h" />
+    <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\glad\glad.h" />
     <ClInclude Include="vendor\GLFW\glfw3.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
