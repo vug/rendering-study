@@ -23,9 +23,8 @@ void Editor::OnInit() {
     //RegisterWindowListener(&cameraController);
 
     activeScene = std::make_shared<Scene>();
-    auto square1 = activeScene->CreateEntity();
+    auto square1 = activeScene->CreateEntity("Square1");
     selectedObject = square1;
-    activeScene->Reg().emplace<TransformComponent>(square1);
     activeScene->Reg().emplace<QuadRendererComponent>(square1, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
 
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");

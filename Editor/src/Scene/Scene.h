@@ -9,7 +9,7 @@ public:
 	Scene();
 	~Scene();
 
-	entt::entity CreateEntity();
+	entt::entity CreateEntity(const std::string& name = std::string());
 
 	entt::registry& Reg() { return Registry; }
 

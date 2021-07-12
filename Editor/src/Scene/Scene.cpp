@@ -13,9 +13,13 @@ Scene::~Scene() {
 
 }
 
-entt::entity Scene::CreateEntity()
-{
-	return Registry.create();
+// Creates an Entity and gives a Tag and Transform component
+entt::entity Scene::CreateEntity(const std::string& name) {
+	entt::entity entity = Registry.create();
+	Registry.emplace<TransformComponent>(entity);
+	auto& tag = Registry.emplace<TagComponent>(entity, name);
+	tag.Tag = name.empty() ? "UnnamedObject" : name;
+	return entity;
 }
 
 void Scene::OnUpdate(Timestep ts) {
