@@ -32,5 +32,6 @@ private:
 	int diffuseTextureSlot = 0;
 
 	entt::entity selectedObject;
+	float objectMoveSpeed = 5.0f;
 	bool showDemoWindow = false;
 };

@@ -82,10 +82,19 @@ void Editor::OnUpdate(Timestep ts) {
 
     // Square Control
     if (GetIsViewportPaneFocused()) {
-        if (Input::IsKeyHeld(GLFW_KEY_J)) squarePosition.x -= squareMoveSpeed * ts;
-        else if (Input::IsKeyHeld(GLFW_KEY_L)) squarePosition.x += squareMoveSpeed * ts;
-        if (Input::IsKeyHeld(GLFW_KEY_I)) squarePosition.y += squareMoveSpeed * ts;
-        else if (Input::IsKeyHeld(GLFW_KEY_K)) squarePosition.y -= squareMoveSpeed * ts;
+        glm::mat4& selectedTransform = activeScene->Reg().get<TransformComponent>(selectedObject);
+        glm::mat4 deltaTransform = glm::mat4(1.0f);
+        float deltaDistance = objectMoveSpeed * ts;
+        if (Input::IsKeyHeld(GLFW_KEY_J))
+            deltaTransform = glm::translate(glm::mat4(1.0f), { -deltaDistance, 0.0f, 0.0f });
+        else if (Input::IsKeyHeld(GLFW_KEY_L))
+            deltaTransform = glm::translate(glm::mat4(1.0f), { +deltaDistance, 0.0f, 0.0f });
+        if (Input::IsKeyHeld(GLFW_KEY_I))
+            deltaTransform = glm::translate(glm::mat4(1.0f), { 0.0f, +deltaDistance, 0.0f, });
+        else if (Input::IsKeyHeld(GLFW_KEY_K)) 
+            deltaTransform = glm::translate(glm::mat4(1.0f), { 0.0f, -deltaDistance, 0.0f, });
+
+        selectedTransform *= deltaTransform;
     }
 
     Renderer::BeginScene(cameraController.GetCamera());
