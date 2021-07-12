@@ -10,6 +10,7 @@
 #include "Renderer/OrthographicCamera.h"
 #include "OrthographicCameraController.h"
 #include "Renderer/Texture.h"
+#include "Renderer/Framebuffer.h"
 
 class Editor : public Application {
 public:
@@ -21,6 +22,8 @@ private:
 	void OnShutdown() override;
 private:
 	ShaderLibrary shaderLibrary;
+	std::shared_ptr<Framebuffer> viewportFramebuffer;
+	glm::vec2 viewportSize = { 0.0f, 0.0f };
 	std::shared_ptr<VertexArray> triangleVA;
 	std::shared_ptr<VertexArray> squareVA;
 	std::shared_ptr<Texture2D> textureCheckerboard;

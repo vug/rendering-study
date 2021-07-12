@@ -70,9 +70,6 @@ int Application::Run() {
         ImGuiLayer::Begin();
         OnImGuiRender();
 
-        RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-        RenderCommand::Clear();
-
         OnUpdate(timestep);
 
         ImGuiLayer::End();

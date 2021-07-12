@@ -12,6 +12,7 @@ public:
 	void OnUpdate(Timestep ts);
 	void OnScrollUpdate(float xOffset, float yOffset) override;
 	void OnWindowResize(int width, int height) override;
+	void OnViewportResized(float width, float height);
 
 	OrthographicCamera& GetCamera() { return camera; }
 	const OrthographicCamera& GetCamera() const { return camera; }
