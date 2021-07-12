@@ -21,6 +21,8 @@ protected:
 	void Close();
 	void RegisterScrollListener(ScrollListener* listener);
 	void RegisterWindowListener(WindowListener* listener);
+	const bool& GetIsViewportPaneFocused() { return isViewportPaneFocused; }
+	const bool& GetIsViewportPaneHovered() { return isViewportPaneHovered; }
 protected:
 	GLFWwindow* window = nullptr;
 	std::string name = "Application";
@@ -44,4 +46,6 @@ private:
 	std::vector<WindowListener*> windowListeners;
 	std::shared_ptr<Framebuffer> viewportFramebuffer;
 	glm::vec2 viewportSize = { 0.0f, 0.0f };
+	bool isViewportPaneFocused = false;
+	bool isViewportPaneHovered = false;
 };

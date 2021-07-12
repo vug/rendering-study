@@ -146,6 +146,8 @@ int Application::Run() {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
+        isViewportPaneFocused = ImGui::IsWindowFocused();
+        isViewportPaneHovered = ImGui::IsWindowHovered();
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         if (viewportPanelSize.x != viewportSize.x || viewportPanelSize.y != viewportSize.y) {
             viewportFramebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
