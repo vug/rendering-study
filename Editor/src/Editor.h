@@ -31,5 +31,6 @@ private:
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
+	entt::entity selectedObject;
 	bool showDemoWindow = false;
 };

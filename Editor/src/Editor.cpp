@@ -9,6 +9,7 @@
 #include "Editor.h"
 
 #include "Input.h"
+#include "Scene/Components.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
@@ -22,6 +23,10 @@ void Editor::OnInit() {
     //RegisterWindowListener(&cameraController);
 
     activeScene = std::make_shared<Scene>();
+    auto square1 = activeScene->CreateEntity();
+    selectedObject = square1;
+    activeScene->Reg().emplace<TransformComponent>(square1);
+    activeScene->Reg().emplace<QuadRendererComponent>(square1, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
 
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
     //auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
@@ -53,7 +58,8 @@ void Editor::OnImGuiRender() {
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
 
     ImGui::Begin("Settings");
-    ImGui::ColorEdit3("Square Color", glm::value_ptr(squareColor));
+    auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedObject);
+    ImGui::ColorEdit3("Square Color", glm::value_ptr(selectedQuad.Color));
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
     ImGui::Text(fps.c_str());
     std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
