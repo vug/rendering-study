@@ -4,6 +4,7 @@
 
 #include "Application.h"
 
+#include "Scene/Scene.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
@@ -21,6 +22,7 @@ private:
 	void OnShutdown() override;
 	void OnViewportResize(float width, float height) override;
 private:
+	std::shared_ptr<Scene> activeScene;
 	ShaderLibrary shaderLibrary;
 	OrthographicCameraController cameraController;
 

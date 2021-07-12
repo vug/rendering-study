@@ -21,6 +21,8 @@ void Editor::OnInit() {
     RegisterScrollListener(&cameraController);
     //RegisterWindowListener(&cameraController);
 
+    activeScene = std::make_shared<Scene>();
+
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
     shaderLibrary.Load("assets/shaders/FlatColor.glsl");
     auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
@@ -89,6 +91,7 @@ void Editor::OnUpdate(Timestep ts) {
     if (GetIsViewportPaneFocused()) {
         cameraController.OnUpdate(ts);
     }
+
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     RenderCommand::Clear();
 
@@ -101,28 +104,31 @@ void Editor::OnUpdate(Timestep ts) {
     }
 
     Renderer::BeginScene(cameraController.GetCamera());
+    activeScene->OnUpdate(ts);
+    // Non-Scene example rendering commands. Will be removed or moved into a Scene
+    {
+        auto triangleShader = shaderLibrary.Get("VertexPosColor");
+        Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
 
-    auto triangleShader = shaderLibrary.Get("VertexPosColor");
-    Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
-
-    static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-    auto flatColorShader = shaderLibrary.Get("FlatColor");
-    flatColorShader->Bind();
-    flatColorShader->UploadUniformFloat3("u_Color", squareColor);
-    for (int y = 0; y < 20; y++) {
-        for (int x = 0; x < 20; x++) {
-            glm::vec3 deltaPos(x * 0.11f, y * 0.11f, 0.0f);
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), deltaPos + squarePosition) * scale;
-            Renderer::Submit(flatColorShader, squareVA, transform);
+        static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+        auto flatColorShader = shaderLibrary.Get("FlatColor");
+        flatColorShader->Bind();
+        flatColorShader->UploadUniformFloat3("u_Color", squareColor);
+        for (int y = 0; y < 20; y++) {
+            for (int x = 0; x < 20; x++) {
+                glm::vec3 deltaPos(x * 0.11f, y * 0.11f, 0.0f);
+                glm::mat4 transform = glm::translate(glm::mat4(1.0f), deltaPos + squarePosition) * scale;
+                Renderer::Submit(flatColorShader, squareVA, transform);
+            }
         }
+
+        auto textureShader = shaderLibrary.Get("Texture");
+        textureCheckerboard->Bind(diffuseTextureSlot);
+        Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+        textureWithAlpha->Bind(diffuseTextureSlot);
+        Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
     }
-
-    auto textureShader = shaderLibrary.Get("Texture");
-    textureCheckerboard->Bind(diffuseTextureSlot);
-    Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-
-    textureWithAlpha->Bind(diffuseTextureSlot);
-    Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
 
     Renderer::EndScene();
 }

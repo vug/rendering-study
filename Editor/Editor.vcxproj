@@ -97,6 +97,7 @@
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="vendor\glad\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
@@ -123,6 +124,8 @@
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
     <ClInclude Include="src\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Scene\Components.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Timestep.h" />
     <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\glad\glad.h" />
