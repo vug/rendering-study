@@ -35,6 +35,9 @@ Application::Application(std::string name)
 
 void Application::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     auto app = (Application*)glfwGetWindowUserPointer(window);
+    if (!app->isViewportPaneFocused || !app->isViewportPaneHovered) {
+        return;
+    }
     for (auto listener : app->scrollListeners) {
         listener->OnScrollUpdate((float)xoffset, (float)yoffset);
     }
