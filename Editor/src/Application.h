@@ -4,9 +4,11 @@
 #include <vector>
 
 #include "GLFW/glfw3.h"
+#include <glm/glm.hpp>
 
 #include "Timestep.h"
 #include "Listener.h"
+#include "Renderer/Framebuffer.h"
 
 class Application {
 public:
@@ -24,7 +26,11 @@ protected:
 	std::string name = "Application";
 	float framesPerSecond = -1.0f;
 private:
+	// To prepare rendering entities
 	virtual void OnInit() = 0;
+	// Will be called when viewport pane is resized
+	virtual void OnViewportResize(float width, float height) = 0;
+	// Rendering commands and user interaction will be written into this method
 	virtual void OnUpdate(Timestep ts) = 0;
 	virtual void OnImGuiRender() = 0;
 	virtual void OnShutdown() = 0;
@@ -36,4 +42,6 @@ private:
 	float lastFrameTime = 0.0f;
 	std::vector<ScrollListener*> scrollListeners;
 	std::vector<WindowListener*> windowListeners;
+	std::shared_ptr<Framebuffer> viewportFramebuffer;
+	glm::vec2 viewportSize = { 0.0f, 0.0f };
 };
