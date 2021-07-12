@@ -6,7 +6,7 @@
 #include "GLFW/glfw3.h"
 
 #include "Timestep.h"
-#include "Input.h"
+#include "Listener.h"
 
 class Application {
 public:
@@ -14,8 +14,6 @@ public:
 
 	static Application& Get() { return *instance; }
 	GLFWwindow* GetWindow() { return window; }
-
-	bool IsKeyHeld(int key);
 protected:
 	Application(std::string name);
 	void Close();

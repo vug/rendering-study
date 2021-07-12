@@ -2,24 +2,26 @@
 
 #include <iostream>
 
-OrthographicCameraController::OrthographicCameraController(Application& app, float aspectRatio)
-    : app(app), aspectRatio(aspectRatio), camera(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel) {
+#include "Input.h"
+
+OrthographicCameraController::OrthographicCameraController(float aspectRatio)
+    : aspectRatio(aspectRatio), camera(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel) {
 }
 
 void OrthographicCameraController::OnUpdate(Timestep ts) {
-    if (app.IsKeyHeld(GLFW_KEY_A)) 
+    if (Input::IsKeyHeld(GLFW_KEY_A)) 
         cameraPosition.x -= cameraTranslationSpeed * ts;
-    else if (app.IsKeyHeld(GLFW_KEY_D))
+    else if (Input::IsKeyHeld(GLFW_KEY_D))
         cameraPosition.x += cameraTranslationSpeed * ts;
 
-    if (app.IsKeyHeld(GLFW_KEY_W)) 
+    if (Input::IsKeyHeld(GLFW_KEY_W))
         cameraPosition.y += cameraTranslationSpeed * ts;
-    else if (app.IsKeyHeld(GLFW_KEY_S)) 
+    else if (Input::IsKeyHeld(GLFW_KEY_S))
         cameraPosition.y -= cameraTranslationSpeed * ts;
 
-    if (app.IsKeyHeld(GLFW_KEY_Q)) 
+    if (Input::IsKeyHeld(GLFW_KEY_Q))
         cameraRotation += cameraRotationSpeed * ts;
-    else if (app.IsKeyHeld(GLFW_KEY_E)) 
+    else if (Input::IsKeyHeld(GLFW_KEY_E))
         cameraRotation -= cameraRotationSpeed * ts;
 
     camera.SetPosition(cameraPosition);

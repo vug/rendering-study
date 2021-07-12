@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Timestep.h"
+#include "Application.h"
 
-class ScrollListener {
+class Input {
 public:
-	virtual void OnScrollUpdate(float xOffset, float yOffset) = 0;
+	static bool IsKeyHeld(int key) {
+		int keyState = glfwGetKey(Application::Get().GetWindow(), key);
+		return keyState == GLFW_PRESS || keyState == GLFW_REPEAT;
+	}
 };
 
-class WindowListener {
-public:
-	virtual void OnWindowResize(int width, int height) = 0;
-};
+
+

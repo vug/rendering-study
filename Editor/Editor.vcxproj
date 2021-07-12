@@ -113,6 +113,7 @@
     <ClInclude Include="src\Editor.h" />
     <ClInclude Include="src\ImGuiLayer.h" />
     <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\OrthographicCameraController.h" />
     <ClInclude Include="src\Renderer\Buffer.h" />
     <ClInclude Include="src\Renderer\Framebuffer.h" />

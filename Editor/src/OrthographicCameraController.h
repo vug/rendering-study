@@ -2,12 +2,12 @@
 
 #include "Renderer/OrthographicCamera.h"
 
-#include "Application.h"
-#include "Input.h"
+#include "Listener.h"
+#include "Timestep.h"
 
 class OrthographicCameraController : public ScrollListener, public WindowListener {
 public:
-	OrthographicCameraController(Application& app, float aspectRatio); // AspectRatio * 2 units
+	OrthographicCameraController(float aspectRatio); // AspectRatio * 2 units
 
 	void OnUpdate(Timestep ts);
 	void OnScrollUpdate(float xOffset, float yOffset) override;
@@ -19,7 +19,6 @@ public:
 
 	const float GetZoomLevel() const { return zoomLevel; }
 private:
-	Application& app;
 	float aspectRatio;
 	float zoomLevel = 1.0f;
 	OrthographicCamera camera;

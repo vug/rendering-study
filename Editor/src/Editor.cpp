@@ -8,13 +8,14 @@
 
 #include "Editor.h"
 
+#include "Input.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographicCamera.h"
 
-Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f), cameraController(*this, 1280.0f / 720.0f) { }
+Editor::Editor() : Application("Ugur's Editor"), squarePosition(0.0f), cameraController(1280.0f / 720.0f) { }
 
 void Editor::OnInit() {
     RegisterScrollListener(&cameraController);
@@ -174,11 +175,11 @@ void Editor::OnUpdate(Timestep ts) {
     RenderCommand::Clear();
 
     // Square Control
-    if (IsKeyHeld(GLFW_KEY_J)) squarePosition.x -= squareMoveSpeed * ts;
-    else if (IsKeyHeld(GLFW_KEY_L)) squarePosition.x += squareMoveSpeed * ts;
+    if (Input::IsKeyHeld(GLFW_KEY_J)) squarePosition.x -= squareMoveSpeed * ts;
+    else if (Input::IsKeyHeld(GLFW_KEY_L)) squarePosition.x += squareMoveSpeed * ts;
 
-    if (IsKeyHeld(GLFW_KEY_I)) squarePosition.y += squareMoveSpeed * ts;
-    else if (IsKeyHeld(GLFW_KEY_K)) squarePosition.y -= squareMoveSpeed * ts;
+    if (Input::IsKeyHeld(GLFW_KEY_I)) squarePosition.y += squareMoveSpeed * ts;
+    else if (Input::IsKeyHeld(GLFW_KEY_K)) squarePosition.y -= squareMoveSpeed * ts;
 
     glm::mat4 transform = glm::translate(glm::mat4(1.0f), squarePosition);
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
