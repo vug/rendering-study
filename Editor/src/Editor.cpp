@@ -86,15 +86,19 @@ void Editor::OnViewportResize(float width, float height) {
 }
 
 void Editor::OnUpdate(Timestep ts) {
-    cameraController.OnUpdate(ts);
+    if (GetIsViewportPaneFocused()) {
+        cameraController.OnUpdate(ts);
+    }
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     RenderCommand::Clear();
 
     // Square Control
-    if (Input::IsKeyHeld(GLFW_KEY_J)) squarePosition.x -= squareMoveSpeed * ts;
-    else if (Input::IsKeyHeld(GLFW_KEY_L)) squarePosition.x += squareMoveSpeed * ts;
-    if (Input::IsKeyHeld(GLFW_KEY_I)) squarePosition.y += squareMoveSpeed * ts;
-    else if (Input::IsKeyHeld(GLFW_KEY_K)) squarePosition.y -= squareMoveSpeed * ts;
+    if (GetIsViewportPaneFocused()) {
+        if (Input::IsKeyHeld(GLFW_KEY_J)) squarePosition.x -= squareMoveSpeed * ts;
+        else if (Input::IsKeyHeld(GLFW_KEY_L)) squarePosition.x += squareMoveSpeed * ts;
+        if (Input::IsKeyHeld(GLFW_KEY_I)) squarePosition.y += squareMoveSpeed * ts;
+        else if (Input::IsKeyHeld(GLFW_KEY_K)) squarePosition.y -= squareMoveSpeed * ts;
+    }
 
     Renderer::BeginScene(cameraController.GetCamera());
 
