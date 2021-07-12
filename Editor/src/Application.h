@@ -11,6 +11,10 @@
 class Application {
 public:
 	int Run();
+
+	static Application& Get() { return *instance; }
+	GLFWwindow* GetWindow() { return window; }
+
 	bool IsKeyHeld(int key);
 protected:
 	Application(std::string name);
@@ -30,6 +34,7 @@ private:
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	static void windowSizeCallback(GLFWwindow* window, int width, int height);
 private:
+	static Application* instance;
 	float lastFrameTime = 0.0f;
 	std::vector<ScrollListener*> scrollListeners;
 	std::vector<WindowListener*> windowListeners;
