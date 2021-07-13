@@ -28,9 +28,9 @@ void Editor::OnInit() {
     activeScene->Reg().emplace<QuadRendererComponent>(square1, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
     
     mainCameraEntity = activeScene->CreateEntity("Camera1");
-    activeScene->Reg().emplace<CameraComponent>(mainCameraEntity, glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+    activeScene->Reg().emplace<CameraComponent>(mainCameraEntity);
     secondCameraEntity = activeScene->CreateEntity("Clip-Space Camera");
-    activeScene->Reg().emplace<CameraComponent>(secondCameraEntity, glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+    activeScene->Reg().emplace<CameraComponent>(secondCameraEntity);
     activeScene->Reg().get<CameraComponent>(secondCameraEntity).Primary = false;
 
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
@@ -89,6 +89,7 @@ void Editor::OnImGuiRender() {
 
 void Editor::OnViewportResize(float width, float height) {
     cameraController.OnViewportResized(width, height);
+    activeScene->OnViewportResize((uint32_t)width, (uint32_t)height);
 }
 
 void Editor::OnUpdate(Timestep ts) {

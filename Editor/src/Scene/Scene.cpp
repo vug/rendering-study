@@ -49,3 +49,12 @@ void Scene::OnUpdate(Timestep ts) {
 		Renderer::EndScene();
 	}
 }
+
+void Scene::OnViewportResize(uint32_t width, uint32_t height) {
+	auto view = Registry.view<CameraComponent>();
+	for (auto [entity, camera] : view.each()) {
+		if (!camera.FixedAspectRatio) {
+			camera.Camera.SetViewportSize(width, height);
+		}
+	}
+}
