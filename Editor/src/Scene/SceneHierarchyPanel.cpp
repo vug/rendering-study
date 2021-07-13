@@ -68,4 +68,51 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 			ImGui::TreePop();
 		}
 	}
+
+	if (handle.all_of<CameraComponent>()) {
+		if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
+			auto& camera = handle.get<CameraComponent>().Camera;
+			
+			const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
+			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
+			if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
+					if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
+					{
+						currentProjectionTypeString = projectionTypeStrings[i];
+						camera.SetProjectionType((SceneCamera::ProjectionType)i);
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
+
+			}
+			else if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
+				float size = camera.GetOrthographicSize();
+				if (ImGui::DragFloat("Size", &size)) {
+					camera.SetOrthographicSize(size);
+				}
+
+				float near = camera.GetOrthographicNearClip();
+				if (ImGui::DragFloat("Near", &near)) {
+					camera.SetOrthographicNearClip(near);
+				}
+
+				float far = camera.GetOrthographicFarClip();
+				if (ImGui::DragFloat("Far", &far)) {
+					camera.SetOrthographicFarClip(far);
+				}
+			}
+
+			ImGui::TreePop();
+		}
+	}
 }
