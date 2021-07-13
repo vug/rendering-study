@@ -4,14 +4,13 @@
 #include "RenderCommand.h"
 #include "Shader.h"
 
-Renderer::SceneData* Renderer::sceneData = new Renderer::SceneData;
-
 // Hard-coded data for Renderer to provide ready-made draw commands such as DrawFlatQuad
 struct RendererData {
 	std::shared_ptr<VertexArray> quadVertexArray;
 	std::shared_ptr<VertexBuffer> quadVertexBuffer;
 	std::shared_ptr<Shader> flatShader;
 	glm::vec4 QuadVertexPositions[4];
+	glm::mat4 viewProj;
 };
 static RendererData rendererData;
 
@@ -42,8 +41,12 @@ void Renderer::Init() {
 	rendererData.flatShader = std::make_shared<Shader>("assets/shaders/FlatColor.glsl");
 }
 
+void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform) {
+	rendererData.viewProj = camera.GetProjection() * glm::inverse(cameraTransform);
+}
+
 void Renderer::BeginScene(OrthographicCamera& camera) {
-	sceneData->viewProjectionMatrix = camera.GetViewProjectionMatrix();
+	rendererData.viewProj = camera.GetViewProjectionMatrix();
 }
 
 void Renderer::EndScene() {
@@ -52,7 +55,7 @@ void Renderer::EndScene() {
 
 void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform) {
 	shader->Bind();
-	shader->UploadUniformMat4("u_ViewProjection", sceneData->viewProjectionMatrix);
+	shader->UploadUniformMat4("u_ViewProjection", rendererData.viewProj);
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
 
 	vertexArray->Bind();
