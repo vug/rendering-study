@@ -14,6 +14,7 @@ public:
 	void OnImguiRender();
 private:
 	void DrawEntityNode(entt::entity entity);
+	void DrawComponents(entt::entity entity);
 private:
 	std::shared_ptr<Scene> context;
 	entt::entity selectionContext = entt::null;
