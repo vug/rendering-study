@@ -79,6 +79,15 @@ void Editor::OnImGuiRender() {
         activeScene->Reg().get<CameraComponent>(mainCameraEntity).Primary = useCamera1;
         activeScene->Reg().get<CameraComponent>(secondCameraEntity).Primary = !useCamera1;
     }
+
+    {
+        auto& camera2 = activeScene->Reg().get<CameraComponent>(secondCameraEntity).Camera;
+        float orthoSize = camera2.GetOrthographicSize();
+        if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize)) {
+            camera2.SetOrthographicSize(orthoSize);
+        }
+
+    }
     ImGui::Separator();
 
     auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedEntity);
