@@ -57,13 +57,16 @@ void Editor::OnImGuiRender() {
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
 
     ImGui::Begin("Settings");
-    auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedObject);
-    ImGui::ColorEdit3("Square Color", glm::value_ptr(selectedQuad.Color));
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
     ImGui::Text(fps.c_str());
     std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
     ImGui::Text(zoomLevel.c_str());
     ImGui::Checkbox("Show demo window", &showDemoWindow);
+    ImGui::Separator();
+
+    auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedObject);
+    ImGui::Text("%s", activeScene->Reg().get<TagComponent>(selectedObject).Tag.c_str());
+    ImGui::ColorEdit3("Square Color", glm::value_ptr(selectedQuad.Color));
     ImGui::End();
 }
 
