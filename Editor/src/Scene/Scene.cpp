@@ -1,3 +1,5 @@
+#include<iostream>
+
 #include "Scene.h"
 
 #include <glm/glm.hpp>
@@ -23,8 +25,27 @@ entt::entity Scene::CreateEntity(const std::string& name) {
 }
 
 void Scene::OnUpdate(Timestep ts) {
-	auto view = Registry.view<TransformComponent, QuadRendererComponent>();
-    for (auto [entity, transform, quad] : view.each()) {
-		Renderer::DrawFlatQuad(transform, quad.Color);
-    }
+	Camera* mainCamera = nullptr;
+	glm::mat4* cameraTransform = nullptr;
+
+	{
+		auto view = Registry.view<TransformComponent, CameraComponent>();
+		for (auto [entity, transform, camera] : view.each()) {
+			if (camera.Primary) {
+				mainCamera = &camera.Camera;
+				cameraTransform = &transform.Transform;
+				break;
+			}
+		}
+	}
+	if (mainCamera) {
+		Renderer::BeginScene(mainCamera->GetProjection(), *cameraTransform);
+
+		auto view = Registry.view<TransformComponent, QuadRendererComponent>();
+		for (auto [entity, transform, quad] : view.each()) {
+			Renderer::DrawFlatQuad(transform, quad.Color);
+		}
+
+		Renderer::EndScene();
+	}
 }

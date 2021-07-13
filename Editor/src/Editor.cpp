@@ -24,8 +24,14 @@ void Editor::OnInit() {
 
     activeScene = std::make_shared<Scene>();
     auto square1 = activeScene->CreateEntity("Square1");
-    selectedObject = square1;
+    selectedEntity = square1;
     activeScene->Reg().emplace<QuadRendererComponent>(square1, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+    
+    mainCameraEntity = activeScene->CreateEntity("Camera1");
+    activeScene->Reg().emplace<CameraComponent>(mainCameraEntity, glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+    secondCameraEntity = activeScene->CreateEntity("Clip-Space Camera");
+    activeScene->Reg().emplace<CameraComponent>(secondCameraEntity, glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+    activeScene->Reg().get<CameraComponent>(secondCameraEntity).Primary = false;
 
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
     //auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
@@ -84,9 +90,9 @@ void Editor::OnUpdate(Timestep ts) {
 
     // Square Control
     if (GetIsViewportPaneFocused()) {
-        glm::mat4& selectedTransform = activeScene->Reg().get<TransformComponent>(selectedObject);
+        glm::mat4& selectedTransform = activeScene->Reg().get<TransformComponent>(selectedEntity);
         glm::mat4 deltaTransform = glm::mat4(1.0f);
-        float deltaDistance = objectMoveSpeed * ts;
+        float deltaDistance = entityMoveSpeed * ts;
         if (Input::IsKeyHeld(GLFW_KEY_J))
             deltaTransform = glm::translate(glm::mat4(1.0f), { -deltaDistance, 0.0f, 0.0f });
         else if (Input::IsKeyHeld(GLFW_KEY_L))
@@ -99,7 +105,6 @@ void Editor::OnUpdate(Timestep ts) {
         selectedTransform *= deltaTransform;
     }
 
-    Renderer::BeginScene(cameraController.GetCamera());
     activeScene->OnUpdate(ts);
     // Non-Scene example rendering commands. Will be removed or moved into a Scene
     {
@@ -113,8 +118,6 @@ void Editor::OnUpdate(Timestep ts) {
         //textureWithAlpha->Bind(diffuseTextureSlot);
         //Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
     }
-
-    Renderer::EndScene();
 }
 
 void Editor::OnShutdown() {

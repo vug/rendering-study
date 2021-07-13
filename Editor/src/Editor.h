@@ -31,7 +31,10 @@ private:
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
-	entt::entity selectedObject;
-	float objectMoveSpeed = 5.0f;
+	entt::entity mainCameraEntity;
+	entt::entity secondCameraEntity;
+
+	entt::entity selectedEntity;
+	float entityMoveSpeed = 5.0f;
 	bool showDemoWindow = false;
 };
