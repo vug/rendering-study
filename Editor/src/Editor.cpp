@@ -60,6 +60,7 @@ void Editor::OnInit() {
 }
 
 void Editor::OnImGuiRender() {
+    static bool useCamera1 = true;
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
 
     ImGui::Begin("Settings");
@@ -70,8 +71,18 @@ void Editor::OnImGuiRender() {
     ImGui::Checkbox("Show demo window", &showDemoWindow);
     ImGui::Separator();
 
-    auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedObject);
-    ImGui::Text("%s", activeScene->Reg().get<TagComponent>(selectedObject).Tag.c_str());
+    ImGui::Text("Camera Options");
+    ImGui::DragFloat3("Camera Transform",
+        glm::value_ptr(activeScene->Reg().get<TransformComponent>(useCamera1 ? mainCameraEntity : secondCameraEntity).Transform[3]));
+
+    if (ImGui::Checkbox("Switch Camera", &useCamera1)) {
+        activeScene->Reg().get<CameraComponent>(mainCameraEntity).Primary = useCamera1;
+        activeScene->Reg().get<CameraComponent>(secondCameraEntity).Primary = !useCamera1;
+    }
+    ImGui::Separator();
+
+    auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedEntity);
+    ImGui::Text("%s", activeScene->Reg().get<TagComponent>(selectedEntity).Tag.c_str());
     ImGui::ColorEdit3("Square Color", glm::value_ptr(selectedQuad.Color));
     ImGui::End();
 }
