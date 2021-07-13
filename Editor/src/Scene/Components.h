@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "../Renderer/Camera.h"
+
 struct TagComponent {
 	std::string Tag;
 
@@ -31,4 +33,14 @@ struct QuadRendererComponent {
 	QuadRendererComponent(const QuadRendererComponent&) = default;
 	QuadRendererComponent(const glm::vec4& color) :
 		Color(color) {}
+};
+
+struct CameraComponent {
+	Camera Camera;
+	bool Primary = true; // TODO: think about moving to Scene
+
+	CameraComponent() = default;
+	CameraComponent(const CameraComponent&) = default;
+	CameraComponent(const glm::mat4& projection) :
+		Camera(projection) {}
 };

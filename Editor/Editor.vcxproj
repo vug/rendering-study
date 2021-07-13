@@ -117,6 +117,7 @@
     <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\OrthographicCameraController.h" />
     <ClInclude Include="src\Renderer\Buffer.h" />
+    <ClInclude Include="src\Renderer\Camera.h" />
     <ClInclude Include="src\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Renderer\RenderCommand.h" />
