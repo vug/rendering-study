@@ -57,11 +57,15 @@ void Editor::OnInit() {
     uint32_t triangleIndices[3] = { 0, 1, 2 };
     const auto triangleIB = std::make_shared<IndexBuffer>(triangleIndices, (uint32_t)(sizeof(triangleIndices) / sizeof(uint32_t)));
     triangleVA->SetIndexBuffer(triangleIB);
+
+    sceneHierarchyPanel.SetContext(activeScene);
 }
 
 void Editor::OnImGuiRender() {
     static bool useCamera1 = true;
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
+
+    sceneHierarchyPanel.OnImguiRender();
 
     ImGui::Begin("Settings");
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);

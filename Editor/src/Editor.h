@@ -5,6 +5,7 @@
 #include "Application.h"
 
 #include "Scene/Scene.h"
+#include "Scene/SceneHierarchyPanel.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
@@ -37,4 +38,6 @@ private:
 	entt::entity selectedEntity;
 	float entityMoveSpeed = 5.0f;
 	bool showDemoWindow = false;
+	
+	SceneHierarchyPanel sceneHierarchyPanel;
 };

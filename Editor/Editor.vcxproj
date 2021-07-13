@@ -99,6 +99,7 @@
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\Scene\SceneHierarchyPanel.cpp" />
     <ClCompile Include="vendor\glad\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="src\Scene\Components.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Scene\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Timestep.h" />
     <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\glad\glad.h" />
