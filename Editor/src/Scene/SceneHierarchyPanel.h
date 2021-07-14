@@ -16,6 +16,7 @@ public:
 private:
 	void DrawEntityNode(entt::entity entity);
 	void DrawComponents(entt::entity entity);
+	static bool AddComponentSettingsButton();
 private:
 	std::shared_ptr<Scene> context;
 	entt::entity selectionContext = entt::null;

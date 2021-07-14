@@ -160,6 +160,25 @@ static void DrawVec3Control(const std::string& label, glm::vec3& values, float r
 	ImGui::PopID();
 }
 
+bool SceneHierarchyPanel::AddComponentSettingsButton() {
+	ImGui::SameLine(ImGui::GetWindowWidth() - 35.0f);
+	if (ImGui::Button("...", ImVec2{ 30, 20 }))
+	{
+		ImGui::OpenPopup("ComponentSettings");
+	}
+	//ImGui::PopStyleVar();
+
+	bool removeComponent = false;
+	if (ImGui::BeginPopup("ComponentSettings"))
+	{
+		if (ImGui::MenuItem("Remove component"))
+			removeComponent = true;
+
+		ImGui::EndPopup();
+	}
+	return removeComponent;
+}
+
 void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	entt::basic_handle handle{ context->Registry, entity };
 
@@ -174,8 +193,10 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 		}
 	}
 
+	const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
 	if (handle.all_of<TransformComponent>()) {
-		if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
+		if (ImGui::TreeNodeEx("Transform", treeNodeFlags)) {
 			auto& transform = handle.get<TransformComponent>();
 			DrawVec3Control("Translation", transform.Translation);
 			glm::vec3 rotation = glm::degrees(transform.Rotation);
@@ -187,7 +208,10 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	}
 
 	if (handle.all_of<CameraComponent>()) {
-		if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
+		bool isOpen = ImGui::TreeNodeEx("Camera", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+
+		if (isOpen) {
 			auto& cameraComponent = handle.get<CameraComponent>();
 			auto& camera = handle.get<CameraComponent>().Camera;
 
@@ -249,13 +273,22 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 
 			ImGui::TreePop();
 		}
+
+		if (shouldRemove)
+			context->Reg().remove<CameraComponent>(entity);
 	}
 
 	if (handle.all_of<QuadRendererComponent>()) {
-		if (ImGui::TreeNodeEx("Quad Renderer", ImGuiTreeNodeFlags_DefaultOpen)) {
+		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+		bool isOpen = ImGui::TreeNodeEx("Quad Renderer", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+
+		if (isOpen) {
 			glm::vec4& color = handle.get<QuadRendererComponent>().Color;
 			ImGui::ColorEdit4("Color", glm::value_ptr(color));
 			ImGui::TreePop();
 		}
+		if (shouldRemove)
+			context->Reg().remove<QuadRendererComponent>(entity);
 	}
 }
