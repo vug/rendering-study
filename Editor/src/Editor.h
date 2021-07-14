@@ -35,7 +35,6 @@ private:
 	entt::entity mainCameraEntity;
 	entt::entity secondCameraEntity;
 
-	entt::entity selectedEntity;
 	float entityMoveSpeed = 5.0f;
 	bool showDemoWindow = false;
 	

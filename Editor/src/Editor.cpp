@@ -29,7 +29,6 @@ void Editor::OnInit() {
     activeScene->Reg().emplace<QuadRendererComponent>(redSquare, glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
     glm::mat4& redTrans = activeScene->Reg().get<TransformComponent>(redSquare);
     redTrans = glm::translate(redTrans, glm::vec3{ -0.5f, 0.5f, -0.5f });
-    selectedEntity = square1;
     
     mainCameraEntity = activeScene->CreateEntity("Camera A");
     activeScene->Reg().emplace<CameraComponent>(mainCameraEntity);
@@ -76,36 +75,12 @@ void Editor::OnImGuiRender() {
 
     sceneHierarchyPanel.OnImguiRender();
 
-    ImGui::Begin("Settings");
+    ImGui::Begin("Stats");
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
     ImGui::Text(fps.c_str());
     std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
     ImGui::Text(zoomLevel.c_str());
     ImGui::Checkbox("Show demo window", &showDemoWindow);
-    ImGui::Separator();
-
-    ImGui::Text("Camera Options");
-    ImGui::DragFloat3("Camera Transform",
-        glm::value_ptr(activeScene->Reg().get<TransformComponent>(useCamera1 ? mainCameraEntity : secondCameraEntity).Transform[3]));
-
-    if (ImGui::Checkbox("Switch Camera", &useCamera1)) {
-        activeScene->Reg().get<CameraComponent>(mainCameraEntity).Primary = useCamera1;
-        activeScene->Reg().get<CameraComponent>(secondCameraEntity).Primary = !useCamera1;
-    }
-
-    {
-        auto& camera2 = activeScene->Reg().get<CameraComponent>(secondCameraEntity).Camera;
-        float orthoSize = camera2.GetOrthographicSize();
-        if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize)) {
-            camera2.SetOrthographicSize(orthoSize);
-        }
-
-    }
-    ImGui::Separator();
-
-    auto& selectedQuad = activeScene->Reg().get<QuadRendererComponent>(selectedEntity);
-    ImGui::Text("%s", activeScene->Reg().get<TagComponent>(selectedEntity).Tag.c_str());
-    ImGui::ColorEdit3("Square Color", glm::value_ptr(selectedQuad.Color));
     ImGui::End();
 }
 
@@ -122,9 +97,9 @@ void Editor::OnUpdate(Timestep ts) {
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     RenderCommand::Clear();
 
-    // Square Control
+    // I J K L controls to manipulate a Transform matrix. Not in use.
     if (GetIsViewportPaneFocused()) {
-        glm::mat4& selectedTransform = activeScene->Reg().get<TransformComponent>(selectedEntity);
+        //glm::mat4& selectedTransform = activeScene->Reg().get<TransformComponent>(selectedEntity);
         glm::mat4 deltaTransform = glm::mat4(1.0f);
         float deltaDistance = entityMoveSpeed * ts;
         if (Input::IsKeyHeld(GLFW_KEY_J))
@@ -136,7 +111,7 @@ void Editor::OnUpdate(Timestep ts) {
         else if (Input::IsKeyHeld(GLFW_KEY_K)) 
             deltaTransform = glm::translate(glm::mat4(1.0f), { 0.0f, -deltaDistance, 0.0f, });
 
-        selectedTransform *= deltaTransform;
+        //selectedTransform *= deltaTransform;
     }
 
     activeScene->OnUpdate(ts);
