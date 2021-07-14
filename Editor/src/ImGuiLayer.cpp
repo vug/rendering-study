@@ -1,6 +1,7 @@
 #include "GLFW/glfw3.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "imgui/ImGuizmo.h"
 
 #include "ImGuiLayer.h"
 
@@ -28,6 +29,7 @@ void ImGuiLayer::Begin() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 void ImGuiLayer::End() {
