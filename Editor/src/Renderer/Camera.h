@@ -10,8 +10,6 @@ public:
 	virtual ~Camera() = default;
 
 	const glm::mat4& GetProjection() const { return Projection; }
-
-	// SetPerspective, MakeOrthographic etc.
 protected:
 	glm::mat4 Projection = glm::mat4(1.0f);
 };
