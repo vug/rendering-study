@@ -95,21 +95,22 @@ void Editor::OnUpdate(Timestep ts) {
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     RenderCommand::Clear();
 
-    // I J K L controls to manipulate a Transform matrix. Not in use.
+    // I J K L controls to manipulate Selected Entity's transform.
     if (GetIsViewportPaneFocused()) {
-        //glm::mat4& selectedTransform = activeScene->Reg().get<TransformComponent>(selectedEntity);
-        glm::mat4 deltaTransform = glm::mat4(1.0f);
-        float deltaDistance = entityMoveSpeed * ts;
-        if (Input::IsKeyHeld(GLFW_KEY_J))
-            deltaTransform = glm::translate(glm::mat4(1.0f), { -deltaDistance, 0.0f, 0.0f });
-        else if (Input::IsKeyHeld(GLFW_KEY_L))
-            deltaTransform = glm::translate(glm::mat4(1.0f), { +deltaDistance, 0.0f, 0.0f });
-        if (Input::IsKeyHeld(GLFW_KEY_I))
-            deltaTransform = glm::translate(glm::mat4(1.0f), { 0.0f, +deltaDistance, 0.0f, });
-        else if (Input::IsKeyHeld(GLFW_KEY_K)) 
-            deltaTransform = glm::translate(glm::mat4(1.0f), { 0.0f, -deltaDistance, 0.0f, });
-
-        //selectedTransform *= deltaTransform;
+        entt::entity selectedEntity = sceneHierarchyPanel.GetSelectionContext();
+        if (selectedEntity != entt::null) {
+            glm::vec3& selectedTranslation = activeScene->Reg().get<TransformComponent>(selectedEntity).Translation;
+            glm::vec3 delta;
+            float deltaDistance = entityMoveSpeed * ts;
+            if (Input::IsKeyHeld(GLFW_KEY_J))
+                selectedTranslation.x -= deltaDistance;
+            else if (Input::IsKeyHeld(GLFW_KEY_L))
+                selectedTranslation.x += deltaDistance;
+            if (Input::IsKeyHeld(GLFW_KEY_I))
+                selectedTranslation.y += deltaDistance;
+            else if (Input::IsKeyHeld(GLFW_KEY_K)) 
+                selectedTranslation.y -= deltaDistance;
+        }
     }
 
     activeScene->OnUpdate(ts);
