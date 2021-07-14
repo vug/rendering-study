@@ -27,14 +27,12 @@ void Editor::OnInit() {
     activeScene->Reg().emplace<QuadRendererComponent>(square1, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
     auto redSquare = activeScene->CreateEntity("Red Square");
     activeScene->Reg().emplace<QuadRendererComponent>(redSquare, glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
-    glm::mat4& redTrans = activeScene->Reg().get<TransformComponent>(redSquare);
-    redTrans = glm::translate(redTrans, glm::vec3{ -0.5f, 0.5f, -0.5f });
+    activeScene->Reg().get<TransformComponent>(redSquare).Translation = glm::vec3{ -0.5f, 0.5f, -0.5f };
     
     mainCameraEntity = activeScene->CreateEntity("Camera A");
     activeScene->Reg().emplace<CameraComponent>(mainCameraEntity);
     entt::basic_handle camHandle{ activeScene->Reg(), mainCameraEntity };
-    glm::mat4& camTrans = camHandle.get<TransformComponent>();
-    camTrans = glm::translate(camTrans, glm::vec3{ 0.0f, 0.0f, 5.0f });
+    camHandle.get<TransformComponent>().Translation = glm::vec3{ 0.0f, 0.0f, 5.0f };
     camHandle.get<CameraComponent>().Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
 
     secondCameraEntity = activeScene->CreateEntity("Camera B");
