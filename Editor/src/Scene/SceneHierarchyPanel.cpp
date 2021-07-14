@@ -71,7 +71,10 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 
 	if (handle.all_of<CameraComponent>()) {
 		if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
+			auto& cameraComponent = handle.get<CameraComponent>();
 			auto& camera = handle.get<CameraComponent>().Camera;
+
+			ImGui::Checkbox("Primary", &cameraComponent.Primary);
 			
 			const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
 			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
@@ -93,7 +96,20 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 			}
 
 			if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
+				float verticalFOV = glm::degrees(camera.GetPerspectiveVerticalFOV());
+				if (ImGui::DragFloat("Vertical FOV", &verticalFOV)) {
+					camera.SetPerspectiveVerticalFOV(glm::radians(verticalFOV));
+				}
 
+				float near = camera.GetPerspectiveNearClip();
+				if (ImGui::DragFloat("Near", &near)) {
+					camera.SetPerspectiveNearClip(near);
+				}
+
+				float far = camera.GetPerspectiveFarClip();
+				if (ImGui::DragFloat("Far", &far)) {
+					camera.SetPerspectiveFarClip(far);
+				}
 			}
 			else if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
 				float size = camera.GetOrthographicSize();
@@ -110,6 +126,8 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 				if (ImGui::DragFloat("Far", &far)) {
 					camera.SetOrthographicFarClip(far);
 				}
+
+				ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.FixedAspectRatio);
 			}
 
 			ImGui::TreePop();
