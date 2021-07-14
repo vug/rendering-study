@@ -74,6 +74,6 @@ void Renderer::DrawFlatQuad(const glm::vec3& position, float rotation, const glm
 
 void Renderer::DrawFlatQuad(const glm::mat4& transform, const glm::vec4& color) {
 	rendererData.flatShader->Bind();
-	rendererData.flatShader->UploadUniformFloat3("u_Color", color);
+	rendererData.flatShader->UploadUniformFloat4("u_Color", color);
 	Renderer::Submit(rendererData.flatShader, rendererData.quadVertexArray, transform);
 }
