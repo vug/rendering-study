@@ -109,8 +109,14 @@ void Editor::OnImGuiViewportRender() {
             TransformComponent& tc = selectedHandle.get<TransformComponent>();
             glm::mat4 transform = tc.GetTransform();
 
+            // Snapping
+            bool shouldSnap = Input::IsKeyHeld(GLFW_KEY_LEFT_CONTROL);
+            // 45 degrees for rotation, 0.5m for translate and scale
+            float snapValue = gizmoType == ImGuizmo::OPERATION::ROTATE ? 45.0f : 0.5f;
+            float snapValues[3] = { snapValue, snapValue, snapValue };
+
             ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-                gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform));
+                gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, shouldSnap ? snapValues : nullptr);
 
             if (ImGuizmo::IsUsing()) {
                 glm::vec3 translation, rotation, scale;
