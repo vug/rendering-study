@@ -20,6 +20,7 @@ Editor::Editor() : Application("Ugur's Editor"), cameraController(1280.0f / 720.
 
 void Editor::OnInit() {
     RegisterScrollListener(&cameraController);
+    RegisterKeyListener(this);
     //RegisterWindowListener(&cameraController);
 
     activeScene = std::make_shared<Scene>();
@@ -130,4 +131,8 @@ void Editor::OnUpdate(Timestep ts) {
 
 void Editor::OnShutdown() {
 
+}
+
+void Editor::OnKeyPress(int key, int action, int mods) {
+    }
 }

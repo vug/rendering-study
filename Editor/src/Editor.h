@@ -13,7 +13,7 @@
 #include "OrthographicCameraController.h"
 #include "Renderer/Texture.h"
 
-class Editor : public Application {
+class Editor : public Application, public KeyListener {
 public:
 	Editor();
 private:
@@ -22,6 +22,7 @@ private:
 	void OnImGuiRender() override;
 	void OnShutdown() override;
 	void OnViewportResize(float width, float height) override;
+	virtual void OnKeyPress(int key, int action, int mods) override;
 private:
 	std::shared_ptr<Scene> activeScene;
 	ShaderLibrary shaderLibrary;

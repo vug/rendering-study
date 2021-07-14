@@ -13,9 +13,13 @@
 
 Application* Application::instance = nullptr;
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void Application::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    auto app = (Application*)glfwGetWindowUserPointer(window);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    for (auto listener : app->keyListeners) {
+        listener->OnKeyPress(key, action, mods);
+    }
 }
 
 Application::Application(std::string name) 
@@ -26,7 +30,7 @@ Application::Application(std::string name)
     window = glfwCreateWindow(1280, 720, name.c_str(), NULL, NULL);
     assert(window); // GLFW window creation failed
     glfwSetWindowUserPointer(window, this);
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, Application::keyCallback);
     glfwSetScrollCallback(window, Application::scrollCallback);
     glfwSetWindowSizeCallback(window, Application::windowSizeCallback);
     glfwMakeContextCurrent(window);
@@ -50,6 +54,10 @@ void Application::windowSizeCallback(GLFWwindow* window, int width, int height) 
     for (auto listener : app->windowListeners) {
         listener->OnWindowResize(width, height);
     }
+}
+
+void Application::RegisterKeyListener(KeyListener* listener) {
+    keyListeners.push_back(listener);
 }
 
 void Application::RegisterScrollListener(ScrollListener* listener) {
