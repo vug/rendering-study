@@ -133,4 +133,12 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 			ImGui::TreePop();
 		}
 	}
+
+	if (handle.all_of<QuadRendererComponent>()) {
+		if (ImGui::TreeNodeEx("Quad Renderer", ImGuiTreeNodeFlags_DefaultOpen)) {
+			glm::vec4& color = handle.get<QuadRendererComponent>().Color;
+			ImGui::ColorEdit4("Color", glm::value_ptr(color));
+			ImGui::TreePop();
+		}
+	}
 }
