@@ -37,6 +37,21 @@ void SceneHierarchyPanel::OnImguiRender() {
 	ImGui::Begin("Properties");
 	if (selectionContext != entt::null) {
 		DrawComponents(selectionContext);
+
+		if (ImGui::Button("Add Component"))
+			ImGui::OpenPopup("AddComponent");
+		
+		if (ImGui::BeginPopup("AddComponent")) {
+			if (ImGui::MenuItem("Camera")) {
+				context->Reg().emplace<CameraComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Quad Renderer")) {
+				context->Reg().emplace<QuadRendererComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
 	}
 	ImGui::End();
 }
