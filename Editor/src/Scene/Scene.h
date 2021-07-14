@@ -19,6 +19,8 @@ public:
 
 	void OnUpdate(Timestep ts);
 	void OnViewportResize(uint32_t width, uint32_t height);
+
+	entt::entity GetPrimaryCameraEntity();
 private:
 	void OnCameraCreated(entt::registry& registry, entt::entity entity);
 private:

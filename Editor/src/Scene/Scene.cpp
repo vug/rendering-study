@@ -71,3 +71,13 @@ void Scene::OnViewportResize(uint32_t width, uint32_t height) {
 		}
 	}
 }
+
+entt::entity Scene::GetPrimaryCameraEntity() {
+	auto view = Registry.view<CameraComponent>();
+	for (auto [entity, camera] : view.each()) {
+		if (camera.Primary) {
+			return entity;
+		}
+	}
+	return entt::null;
+}
