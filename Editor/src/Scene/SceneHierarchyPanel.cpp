@@ -1,7 +1,9 @@
 #include "SceneHierarchyPanel.h"
 
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #include "Components.h"
 
@@ -47,6 +49,78 @@ void SceneHierarchyPanel::DrawEntityNode(entt::entity entity) {
 	}
 }
 
+static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
+	bool fancy = true;
+	if (!fancy) {
+		ImGui::PushID(label.c_str());
+		ImGui::Text(label.c_str()); ImGui::SameLine();
+		float& x = values[0];
+		ImGui::DragFloat("X", &(values.x), 0.1f, 0.0f, 0.0f, "%.3f"); ImGui::SameLine();
+		float& y = values[1];
+		ImGui::DragFloat("Y", &y); ImGui::SameLine();
+		ImGui::DragFloat("Z", &values.z);
+		ImGui::PopID();
+		return;
+	
+	}
+
+	ImGui::PushID(label.c_str());
+
+	ImGui::Columns(2);
+	ImGui::SetColumnWidth(0, columnWidth);
+	ImGui::Text(label.c_str());
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+
+	float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+	ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+
+	// https://coolors.co/ff595e-ffca3a-8ac926-1982c4-6a4c93
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 1.0f, 0.34901961f, 0.36862745f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 1.000000f, 0.521569f, 0.537255f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 1.000000f, 0.200000f, 0.227451f, 1.0f });
+
+	if (ImGui::Button("X", buttonSize))
+		values.x = resetValue;
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+	ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.541176f, 0.788235f, 0.149020f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.631373f, 0.858824f, 0.262745f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.462745f, 0.670588f, 0.129412f, 1.0f });
+	if (ImGui::Button("Y", buttonSize))
+		values.y = resetValue;
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+	ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.098039f, 0.509804f, 0.768627f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.149020f, 0.607843f, 0.890196f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.082353f, 0.423529f, 0.635294f, 1.0f });
+	if (ImGui::Button("Z", buttonSize))
+		values.z = resetValue;
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+	ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::PopItemWidth();
+
+	ImGui::PopStyleVar();
+
+	ImGui::Columns(1);
+
+	ImGui::PopID();
+}
+
 void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	entt::basic_handle handle{ context->Registry, entity };
 
@@ -64,7 +138,11 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	if (handle.all_of<TransformComponent>()) {
 		if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
 			auto& transform = handle.get<TransformComponent>();
-			ImGui::DragFloat3("Position", glm::value_ptr(transform.Translation), 0.25f);
+			DrawVec3Control("Translation", transform.Translation);
+			glm::vec3 rotation = glm::degrees(transform.Rotation);
+			DrawVec3Control("Rotation", rotation);
+			transform.Rotation = glm::radians(rotation);
+			DrawVec3Control("Scale", transform.Scale, 1.0f);
 			ImGui::TreePop();
 		}
 	}
