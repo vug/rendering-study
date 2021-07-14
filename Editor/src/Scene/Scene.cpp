@@ -24,6 +24,10 @@ entt::entity Scene::CreateEntity(const std::string& name) {
 	return entity;
 }
 
+void Scene::DestroyEntity(entt::entity entity) {
+	Registry.destroy(entity);
+}
+
 void Scene::OnUpdate(Timestep ts) {
 	Camera* mainCamera = nullptr;
 	glm::mat4 cameraTransform;

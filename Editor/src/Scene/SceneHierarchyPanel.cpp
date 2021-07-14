@@ -24,6 +24,14 @@ void SceneHierarchyPanel::OnImguiRender() {
 	if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
 		selectionContext = entt::null;
 	}
+
+	// Right-click on a blank space
+	if (ImGui::BeginPopupContextWindow("testing", ImGuiMouseButton_Right, false)) {
+		if (ImGui::MenuItem("Create Empty Entity")) {
+			context->CreateEntity("Unnamed Entity");
+		}
+		ImGui::EndPopup();
+	}
 	ImGui::End();
 
 	ImGui::Begin("Properties");
@@ -41,11 +49,27 @@ void SceneHierarchyPanel::DrawEntityNode(entt::entity entity) {
 		| ImGuiTreeNodeFlags_OpenOnArrow;
 	const char* label = tc.Tag.c_str();
 	bool opened = ImGui::TreeNodeEx(label, flags);
-	if (ImGui::IsItemClicked()) {
+	if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
 		selectionContext = entity;
 	}
+
+	bool isEntityDeleted = false;
+	if (ImGui::BeginPopupContextItem()) {
+		if (ImGui::MenuItem("Delete Entity")) {
+			isEntityDeleted = true;
+			if (selectionContext == entity) {
+				selectionContext = entt::null;
+			}
+		}
+		ImGui::EndPopup();
+	}
+
 	if (opened) {
 		ImGui::TreePop();
+	}
+
+	if (isEntityDeleted) {
+		context->DestroyEntity(entity);
 	}
 }
 
