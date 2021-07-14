@@ -4,6 +4,9 @@
 
 #include "Application.h"
 
+#include "imgui/imgui.h"
+#include "imgui/ImGuizmo.h"
+
 #include "Scene/Scene.h"
 #include "Scene/SceneHierarchyPanel.h"
 #include "Renderer/Shader.h"
@@ -20,6 +23,7 @@ private:
 	void OnInit() override;
 	void OnUpdate(Timestep ts) override;
 	void OnImGuiRender() override;
+	void OnImGuiViewportRender() override;
 	void OnShutdown() override;
 	void OnViewportResize(float width, float height) override;
 	virtual void OnKeyPress(int key, int action, int mods) override;
@@ -40,4 +44,7 @@ private:
 	bool showDemoWindow = false;
 	
 	SceneHierarchyPanel sceneHierarchyPanel;
+
+	ImGuizmo::OPERATION gizmoType = ImGuizmo::OPERATION::TRANSLATE;	
+	bool shouldShowGizmo = false;
 };

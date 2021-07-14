@@ -36,6 +36,7 @@ private:
 	// Rendering commands and user interaction will be written into this method
 	virtual void OnUpdate(Timestep ts) = 0;
 	virtual void OnImGuiRender() = 0;
+	virtual void OnImGuiViewportRender() = 0;
 	virtual void OnShutdown() = 0;
 
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

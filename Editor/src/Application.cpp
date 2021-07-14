@@ -167,6 +167,8 @@ int Application::Run() {
         }
         uint32_t textureID = viewportFramebuffer->GetColorAttachmentRendererID();
         ImGui::Image((void*)textureID, ImVec2{ viewportSize.x, viewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+
+        OnImGuiViewportRender();
         ImGui::End();
         ImGui::PopStyleVar();
 

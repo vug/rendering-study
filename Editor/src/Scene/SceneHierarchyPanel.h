@@ -10,7 +10,7 @@ public:
 	SceneHierarchyPanel(const std::shared_ptr<Scene> scene);
 
 	void SetContext(const std::shared_ptr<Scene> scene);
-	entt::entity GetSelectionContext() { return selectionContext; }
+	entt::entity GetSelectedEntity() { return selectionContext; }
 
 	void OnImguiRender();
 private:

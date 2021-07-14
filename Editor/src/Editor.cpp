@@ -3,12 +3,14 @@
 
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
+#include "imgui/ImGuizmo.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Editor.h"
 
 #include "Input.h"
+#include "Math.h"
 #include "Scene/Components.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
@@ -83,6 +85,47 @@ void Editor::OnImGuiRender() {
     ImGui::End();
 }
 
+void Editor::OnImGuiViewportRender() {
+    // Gizmos
+    entt::basic_handle selectedHandle{ activeScene->Reg(), sceneHierarchyPanel.GetSelectedEntity() };
+    if (selectedHandle.valid() && shouldShowGizmo) {
+        ImGui::Text("Selected Entity: %s", selectedHandle.get<TagComponent>().Tag.c_str());
+
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        float windowWidth = (float)ImGui::GetWindowWidth();
+        float windowHeight = (float)ImGui::GetWindowHeight();
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+        // Camera
+        auto cameraEntity = activeScene->GetPrimaryCameraEntity();
+        entt::basic_handle cameraHandle{ activeScene->Reg(), cameraEntity };
+        if (cameraHandle.valid()) {
+            const auto& cameraComponent = cameraHandle.get<CameraComponent>();
+            const glm::mat4& cameraProjection = cameraComponent.Camera.GetProjection();
+            glm::mat4 cameraView = glm::inverse(cameraHandle.get<TransformComponent>().GetTransform());
+
+            // Entity transform
+            TransformComponent& tc = selectedHandle.get<TransformComponent>();
+            glm::mat4 transform = tc.GetTransform();
+
+            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+                gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform));
+
+            if (ImGuizmo::IsUsing()) {
+                glm::vec3 translation, rotation, scale;
+                Math::DecomposeTransform(transform, translation, rotation, scale);
+
+                tc.Translation = translation;
+                // To prevent gimble-lock
+                glm::vec3 deltaRotation = rotation - tc.Rotation;
+                tc.Rotation += deltaRotation;
+                tc.Scale = scale;
+            }
+        }
+    }
+}
+
 void Editor::OnViewportResize(float width, float height) {
     cameraController.OnViewportResized(width, height);
     activeScene->OnViewportResize((uint32_t)width, (uint32_t)height);
@@ -98,10 +141,9 @@ void Editor::OnUpdate(Timestep ts) {
 
     // I J K L controls to manipulate Selected Entity's transform.
     if (GetIsViewportPaneFocused()) {
-        entt::entity selectedEntity = sceneHierarchyPanel.GetSelectionContext();
+        entt::entity selectedEntity = sceneHierarchyPanel.GetSelectedEntity();
         if (selectedEntity != entt::null) {
             glm::vec3& selectedTranslation = activeScene->Reg().get<TransformComponent>(selectedEntity).Translation;
-            glm::vec3 delta;
             float deltaDistance = entityMoveSpeed * ts;
             if (Input::IsKeyHeld(GLFW_KEY_J))
                 selectedTranslation.x -= deltaDistance;
@@ -134,5 +176,24 @@ void Editor::OnShutdown() {
 }
 
 void Editor::OnKeyPress(int key, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        switch (key) {
+        case GLFW_KEY_1:
+            shouldShowGizmo = true;
+            gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            break;
+        case GLFW_KEY_2:
+            shouldShowGizmo = true;
+            gizmoType = ImGuizmo::OPERATION::ROTATE;
+            break;
+        case GLFW_KEY_3:
+            shouldShowGizmo = true;
+            gizmoType = ImGuizmo::OPERATION::SCALE;
+            break;
+        case GLFW_KEY_4:
+            shouldShowGizmo = false;
+            break;
+        }
+
     }
 }
