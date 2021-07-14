@@ -7,8 +7,13 @@
 #include "Components.h"
 #include "../Renderer/Renderer.h"
 
-Scene::Scene() {
+void Scene::OnCameraCreated(entt::registry& registry, entt::entity entity) {
+	CameraComponent& cc = registry.get<CameraComponent>(entity);
+	cc.Camera.SetViewportSize(viewportWidth, viewportHeight);
+}
 
+Scene::Scene() {
+	Registry.on_construct<CameraComponent>().connect<&Scene::OnCameraCreated>(this);
 }
 
 Scene::~Scene() {
@@ -55,6 +60,10 @@ void Scene::OnUpdate(Timestep ts) {
 }
 
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {
+	viewportWidth = width;
+	viewportHeight = height;
+
+	// Resize Our non-fixed aspect ratio cameras
 	auto view = Registry.view<CameraComponent>();
 	for (auto [entity, camera] : view.each()) {
 		if (!camera.FixedAspectRatio) {

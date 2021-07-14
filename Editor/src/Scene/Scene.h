@@ -4,6 +4,7 @@
 
 #include "entt/entt.hpp"
 
+#include "Components.h"
 #include "../Timestep.h"
 
 class Scene {
@@ -19,7 +20,11 @@ public:
 	void OnUpdate(Timestep ts);
 	void OnViewportResize(uint32_t width, uint32_t height);
 private:
+	void OnCameraCreated(entt::registry& registry, entt::entity entity);
+private:
 	entt::registry Registry;
+	// hack to prevent division by zero before first computation
+	uint32_t viewportWidth = 1, viewportHeight = 1;
 	
 	friend class SceneHierarchyPanel;
 };
