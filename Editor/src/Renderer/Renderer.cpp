@@ -8,7 +8,6 @@
 struct RendererData {
 	std::shared_ptr<VertexArray> quadVertexArray;
 	std::shared_ptr<Shader> flatShader;
-	glm::vec4 QuadVertexPositions[4];
 	glm::mat4 viewProj;
 };
 static RendererData rendererData;
@@ -52,13 +51,13 @@ void Renderer::EndScene() {
 
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform) {
+void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, GLenum primitiveType, bool isWireFrame) {
 	shader->Bind();
 	shader->UploadUniformMat4("u_ViewProjection", rendererData.viewProj);
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
 
 	vertexArray->Bind();
-	RenderCommand::DrawIndexed(vertexArray);
+	RenderCommand::DrawIndexed(vertexArray, 0, primitiveType, isWireFrame);
 }
 
 // High-Level Command Library
