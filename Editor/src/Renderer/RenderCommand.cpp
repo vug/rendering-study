@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 void RenderCommand::Init() {
@@ -29,13 +28,18 @@ void RenderCommand::Clear() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount) {
+void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount, GLenum primitiveType, bool isWireFrame) {
 	uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
-	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+	if (isWireFrame) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	glDrawElements(primitiveType, count, GL_UNSIGNED_INT, nullptr);
+	if (isWireFrame) {
+		glPolygonMode(GL_FRONT, GL_FILL);
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-{
+void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
 	glViewport(x, y, width, height);
 }
