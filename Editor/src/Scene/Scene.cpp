@@ -59,10 +59,9 @@ void Scene::OnUpdate(Timestep ts) {
 		}
 
 		{
-			auto view = Registry.view<TransformComponent, LineComponent>();
-			for (auto [entity, transform, vertices] : view.each()) {
-				
-				Renderer::DrawLines(vertices.GetVertexArray(), transform.GetTransform(), { 1.0f, 1.0f, 0.0f, 1.0f }, vertices.IsLooped);
+			auto view = Registry.view<TransformComponent, LineComponent, LineRendererComponent>();
+			for (auto [entity, transform, line, lineRenderer] : view.each()) {
+				Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
 			}
 		}
 

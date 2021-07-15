@@ -27,14 +27,17 @@ void Editor::OnInit() {
 
     activeScene = std::make_shared<Scene>();
     auto square1 = activeScene->CreateEntity("Square1");
+
     activeScene->Reg().emplace<QuadRendererComponent>(square1, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
     auto redSquare = activeScene->CreateEntity("Red Square");
+
     activeScene->Reg().emplace<QuadRendererComponent>(redSquare, glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
     activeScene->Reg().get<TransformComponent>(redSquare).Translation = glm::vec3{ -0.5f, 0.5f, -0.5f };
     entt::basic_handle line1{ activeScene->Reg(), activeScene->CreateEntity("Line1") };
     LineComponent& vc = line1.emplace<LineComponent>(
         std::vector<glm::vec3>{ {-0.5f, -0.5f, 0.0f}, { 0.4f, -0.4f, 0.0f }, { 0.3f, 0.3f, 0.0f }, { -0.2f, 0.2f, 0.0f } }
     );
+    line1.emplace<LineRendererComponent>(glm::vec4{ 1.0f, 1.0f, 0.0f, 1.0f });
     line1.get<TransformComponent>().Translation = { 0.0f, 0.0f, 1.0f };
     
     

@@ -57,6 +57,13 @@ void SceneHierarchyPanel::OnImguiRender() {
 				context->Reg().emplace<LineComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("LineRenderer")) {
+				if(context->Reg().all_of<LineComponent>(selectionContext))
+					context->Reg().emplace<LineRendererComponent>(selectionContext);
+				else
+					std::cout << "Entity needs to have a LineComponent before adding a LineRendererComponent" << std::endl;
+				ImGui::CloseCurrentPopup();
+			}
 			ImGui::EndPopup();
 		}
 	}
@@ -302,26 +309,40 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	if (handle.all_of<LineComponent>()) {
 		bool isOpen = ImGui::TreeNodeEx("Line", treeNodeFlags);
 		bool shouldRemove = AddComponentSettingsButton();
-		LineComponent& vc = handle.get<LineComponent>();
-
-		std::vector<glm::vec3>& vertices = vc.Vertices;
+		auto& lc = handle.get<LineComponent>();
+		
+		std::vector<glm::vec3>& vertices = lc.Vertices;
 		int numVertices = (int)vertices.size();
 
 		if (isOpen) {
 			int ix = 0;
-			ImGui::Checkbox("Looped", &vc.IsLooped);
 			for (glm::vec3& v : vertices) {
 				if (ImGui::InputFloat3(std::to_string(ix).c_str(), glm::value_ptr(v), "%.3f", treeNodeFlags)) {
-					vc.ComputeVertexArray();
+					lc.ComputeVertexArray();
 				}
 				ix++;
 			}
 			if (ImGui::InputInt("Count", &numVertices, 1, 10, treeNodeFlags)) {
 				if (numVertices >= 2 && numVertices < 100) {
 					vertices.resize(numVertices);
-					vc.ComputeVertexArray();
+					lc.ComputeVertexArray();
 				}
 			}
+			ImGui::TreePop();
+		}
+		if (shouldRemove)
+			context->Reg().remove<LineComponent>(entity);
+	}
+
+	if (handle.all_of<LineRendererComponent>()) {
+		bool isOpen = ImGui::TreeNodeEx("Line", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+		auto& lrc = handle.get<LineRendererComponent>();
+
+		if (isOpen) {
+			glm::vec4& color = lrc.Color;
+			ImGui::ColorEdit4("Color", glm::value_ptr(color));
+			ImGui::Checkbox("Looped", &lrc.IsLooped);
 			ImGui::TreePop();
 		}
 		if (shouldRemove)

@@ -83,6 +83,17 @@ public:
 	std::shared_ptr<VertexArray>& GetVertexArray() { return vertexArray; }
 public:
 	std::vector<glm::vec3> Vertices = { {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} };
-	bool IsLooped = false;
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
+
+struct LineRendererComponent {
+	glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+	bool IsLooped = false;
+
+	LineRendererComponent() = default;
+	LineRendererComponent(const LineRendererComponent&) = default;
+	LineRendererComponent(const glm::vec4& color) :
+		Color(color) {}
+};
+
+
