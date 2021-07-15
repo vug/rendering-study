@@ -65,6 +65,12 @@ void Scene::OnUpdate(Timestep ts) {
 			}
 		}
 
+		auto view3 = Registry.view<TransformComponent, LineGeneratorComponent, LineRendererComponent>();
+		for (auto [entity, transform, line, lineRenderer] : view3.each()) {
+			Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
+		}
+
+
 		Renderer::EndScene();
 	}
 }

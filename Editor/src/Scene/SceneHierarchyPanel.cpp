@@ -57,11 +57,15 @@ void SceneHierarchyPanel::OnImguiRender() {
 				context->Reg().emplace<LineComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("Line Generator")) {
+				context->Reg().emplace<LineGeneratorComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
 			if (ImGui::MenuItem("LineRenderer")) {
-				if(context->Reg().all_of<LineComponent>(selectionContext))
+				if(context->Reg().all_of<LineComponent>(selectionContext) || context->Reg().all_of<LineGeneratorComponent>(selectionContext))
 					context->Reg().emplace<LineRendererComponent>(selectionContext);
 				else
-					std::cout << "Entity needs to have a LineComponent before adding a LineRendererComponent" << std::endl;
+					std::cout << "Entity needs to have a LineComponent or LineGenerator before adding a LineRendererComponent" << std::endl;
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -332,6 +336,60 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 		}
 		if (shouldRemove)
 			context->Reg().remove<LineComponent>(entity);
+	}
+
+	if (handle.all_of<LineGeneratorComponent>()) {
+		bool isOpen = ImGui::TreeNodeEx("Line", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+		auto& lgc = handle.get<LineGeneratorComponent>();
+
+		if (isOpen) {
+			const char* shapeTypeStrings[] = { "Rectangle", "Ellipse", "Ngon", "Connector"};
+			const char* currentTypeString = shapeTypeStrings[(int)lgc.type];
+			if (ImGui::BeginCombo("Shape Type", currentTypeString)) {
+				for (int i = 0; i < 4; i++) {
+					bool isSelected = currentTypeString == shapeTypeStrings[i];
+					if (ImGui::Selectable(shapeTypeStrings[i], isSelected)) {
+						currentTypeString = shapeTypeStrings[i];
+						lgc.type = (LineGeneratorComponent::Type)i;
+						lgc.CalculateVertices();
+					}
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+						
+				}
+				ImGui::EndCombo();
+			}
+
+			bool hasChanged = false;
+			switch (lgc.type) {
+			case LineGeneratorComponent::Type::Rectangle:
+				hasChanged |= ImGui::DragFloat("Width", &lgc.rectangle.width);
+				hasChanged |= ImGui::DragFloat("Height", &lgc.rectangle.height);
+				break;
+			case LineGeneratorComponent::Type::Ellipse:
+				hasChanged |= ImGui::DragFloat("Radius 1", &lgc.ellipse.r1);
+				hasChanged |= ImGui::DragFloat("Radius 2", &lgc.ellipse.r2);
+				hasChanged |= ImGui::InputInt("# Samples", &lgc.ellipse.numSamples);
+				break;
+			case LineGeneratorComponent::Type::Ngon:
+				hasChanged |= ImGui::InputInt("# Sides", &lgc.ngon.numSides);
+				hasChanged |= ImGui::DragFloat("Radius", &lgc.ngon.radius);
+				break;
+			case LineGeneratorComponent::Type::Connector:
+				hasChanged |= ImGui::DragFloat3("Point 1", glm::value_ptr(lgc.connector.p1));
+				hasChanged |= ImGui::DragFloat3("Point 2", glm::value_ptr(lgc.connector.p2));
+				hasChanged |= ImGui::DragFloat("Steepness", &lgc.connector.steepness, 1.0f, 5.0f, 50.f);
+				hasChanged |= ImGui::InputInt("# Samples", &lgc.connector.numSamples);
+				break;
+			}
+			if (hasChanged) {
+				lgc.CalculateVertices();
+			}
+			ImGui::TreePop();
+		}
+		if (shouldRemove)
+			context->Reg().remove<LineGeneratorComponent>(entity);
 	}
 
 	if (handle.all_of<LineRendererComponent>()) {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -94,6 +96,89 @@ struct LineRendererComponent {
 	LineRendererComponent(const LineRendererComponent&) = default;
 	LineRendererComponent(const glm::vec4& color) :
 		Color(color) {}
+};
+
+struct LineGeneratorComponent {
+	enum class Type { Rectangle = 0, Ellipse, Ngon, Connector };
+	struct Rectangle {
+		float width = 2.0f;
+		float height = 1.0f;
+	};
+	struct Ellipse {
+		float r1 = 2.0f;
+		float r2 = 1.0f;
+		int numSamples = 16;
+	};
+	struct Ngon {
+		int numSides = 6;
+		float radius = 1.0f;
+	};
+	struct Connector {
+		glm::vec3 p1 = { -1.5f, -0.5f, 0.0f };
+		glm::vec3 p2 = {  1.5f,  0.5f, 0.0f };
+		float steepness = 1.0f;
+		int numSamples = 32;
+	};
+
+	Type type = Type::Rectangle;
+	Rectangle rectangle;
+	Ellipse ellipse;
+	Ngon ngon;
+	Connector connector;
+
+	LineGeneratorComponent() {
+		CalculateVertices();
+	}
+
+	std::shared_ptr<VertexArray>& GetVertexArray() { return vertexArray; }
+
+	void CalculateVertices() {
+		Vertices.clear();
+		switch (type) {
+		case Type::Rectangle: {
+			Vertices.push_back({ -rectangle.width * 0.5f, -rectangle.height * 0.5f, 0.0f });
+			Vertices.push_back({ rectangle.width * 0.5f, -rectangle.height * 0.5f, 0.0f });
+			Vertices.push_back({ rectangle.width * 0.5f,  rectangle.height * 0.5f, 0.0f });
+			Vertices.push_back({ -rectangle.width * 0.5f,  rectangle.height * 0.5f, 0.0f });
+		}
+		break;
+		case Type::Ellipse: {
+			for (int i = 0; i < ellipse.numSamples; i++) {
+				float t = i * 2.0f * (float)M_PI / ellipse.numSamples;
+				Vertices.push_back({ ellipse.r1 * cos(t), ellipse.r2 * sin(t), 0.0f });
+			}
+		}
+		break;
+		case Type::Ngon: {
+			float angle = 2.0f * (float)M_PI / ngon.numSides;
+			for (int i = 0; i < ngon.numSides; i++) {
+				Vertices.push_back({ cos(angle * i) * ngon.radius, sin(angle * i) * ngon.radius, 0.0f });
+			}
+		}
+		break;
+		case Type::Connector: {
+			float diffX = (connector.p2.x - connector.p1.x);
+			float diffY = (connector.p2.y - connector.p1.y);
+			for (int i = 0; i < connector.numSamples; i++) {
+				float u = (float)i / connector.numSamples;
+				float w = (u - 0.5) * connector.steepness;
+				float v = tanh(w) * 0.5 + 0.5;
+
+				float x = connector.p1.x + u * diffX;
+				float y = connector.p1.y + v * diffY;
+				glm::vec3 p{ x, y, 0.0f };
+				Vertices.push_back(p);
+			}
+		}
+		break;
+		}
+		auto lc = LineComponent(Vertices);
+		lc.ComputeVertexArray();
+		vertexArray = lc.GetVertexArray();
+	}
+private:
+	std::vector<glm::vec3> Vertices;
+	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 
 
