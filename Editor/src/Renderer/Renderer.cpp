@@ -7,7 +7,6 @@
 // Hard-coded data for Renderer to provide ready-made draw commands such as DrawFlatQuad
 struct RendererData {
 	std::shared_ptr<VertexArray> quadVertexArray;
-	std::shared_ptr<VertexBuffer> quadVertexBuffer;
 	std::shared_ptr<Shader> flatShader;
 	glm::vec4 QuadVertexPositions[4];
 	glm::mat4 viewProj;
@@ -25,12 +24,12 @@ void Renderer::Init() {
 		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 	};
 
-	rendererData.quadVertexBuffer = std::make_shared<VertexBuffer>(squareVertices, (uint32_t)sizeof(squareVertices));
-	rendererData.quadVertexBuffer->SetLayout({
+	const auto quadVertexBuffer = std::make_shared<VertexBuffer>(squareVertices, (uint32_t)sizeof(squareVertices));
+	quadVertexBuffer->SetLayout({
 		{ ShaderDataType::Float3, "a_Position" },
 		{ ShaderDataType::Float2, "a_TexCoord" },
 	});
-	rendererData.quadVertexArray->AddVertexBuffer(rendererData.quadVertexBuffer);
+	rendererData.quadVertexArray->AddVertexBuffer(quadVertexBuffer);
 	uint32_t squareIndices[3 * 2] = {
 		0, 1, 2,
 		2, 3, 0
