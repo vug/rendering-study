@@ -1,12 +1,15 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
 #include "SceneCamera.h"
+#include "../Renderer/VertexArray.h"
 
 struct TagComponent {
 	std::string Tag;
@@ -52,4 +55,34 @@ struct CameraComponent {
 
 	CameraComponent() = default;
 	CameraComponent(const CameraComponent&) = default;
+};
+
+class LineComponent {
+public:
+	LineComponent() { ComputeVertexArray(); }
+	LineComponent(const LineComponent&) = default;
+	LineComponent(const std::vector<glm::vec3>& vertices) 
+		: Vertices(vertices) { ComputeVertexArray(); }
+
+	void ComputeVertexArray() {
+		vertexArray.reset(new VertexArray());
+		float* flat_array = static_cast<float*>(glm::value_ptr(Vertices.front()));
+		const auto vertexBuffer = std::make_shared<VertexBuffer>(flat_array, (uint32_t)(sizeof(float)*3*Vertices.size()));
+		vertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+
+		});
+		vertexArray->AddVertexBuffer(vertexBuffer);
+		std::vector<uint32_t> indices(Vertices.size());
+		for (uint32_t ix = 0; ix < indices.size(); ix++) {
+			indices[ix] = ix;
+		}
+		const auto squareIB = std::make_shared<IndexBuffer>(indices.data(), (uint32_t)(indices.size()));
+		vertexArray->SetIndexBuffer(squareIB);
+	}
+	std::shared_ptr<VertexArray>& GetVertexArray() { return vertexArray; }
+public:
+	std::vector<glm::vec3> Vertices = { {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} };
+	bool IsLooped = false;
+	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
