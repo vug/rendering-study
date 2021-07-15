@@ -184,19 +184,19 @@ void Editor::OnShutdown() {
 void Editor::OnKeyPress(int key, int action, int mods) {
     if (action == GLFW_PRESS) {
         switch (key) {
-        case GLFW_KEY_1:
+        case GLFW_KEY_Z:
             shouldShowGizmo = true;
             gizmoType = ImGuizmo::OPERATION::TRANSLATE;
             break;
-        case GLFW_KEY_2:
+        case GLFW_KEY_X:
             shouldShowGizmo = true;
             gizmoType = ImGuizmo::OPERATION::ROTATE;
             break;
-        case GLFW_KEY_3:
+        case GLFW_KEY_C:
             shouldShowGizmo = true;
             gizmoType = ImGuizmo::OPERATION::SCALE;
             break;
-        case GLFW_KEY_4:
+        case GLFW_KEY_V:
             shouldShowGizmo = false;
             break;
         }
