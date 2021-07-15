@@ -50,9 +50,20 @@ void Scene::OnUpdate(Timestep ts) {
 	if (mainCamera) {
 		Renderer::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
-		auto view = Registry.view<TransformComponent, QuadRendererComponent>();
-		for (auto [entity, transform, quad] : view.each()) {
-			Renderer::DrawFlatQuad(transform.GetTransform(), quad.Color);
+		{
+			auto view = Registry.view<TransformComponent, QuadRendererComponent>();
+			for (auto [entity, transform, quad] : view.each()) {
+				Renderer::DrawFlatQuad(transform.GetTransform(), quad.Color);
+			}
+
+		}
+
+		{
+			auto view = Registry.view<TransformComponent, LineComponent>();
+			for (auto [entity, transform, vertices] : view.each()) {
+				
+				Renderer::DrawLines(vertices.GetVertexArray(), transform.GetTransform(), { 1.0f, 1.0f, 0.0f, 1.0f }, vertices.IsLooped);
+			}
 		}
 
 		Renderer::EndScene();
