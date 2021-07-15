@@ -1,5 +1,8 @@
 #include "SceneHierarchyPanel.h"
 
+#include <iostream>
+#include <string>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -48,6 +51,10 @@ void SceneHierarchyPanel::OnImguiRender() {
 			}
 			if (ImGui::MenuItem("Quad Renderer")) {
 				context->Reg().emplace<QuadRendererComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Line")) {
+				context->Reg().emplace<LineComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -290,5 +297,34 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 		}
 		if (shouldRemove)
 			context->Reg().remove<QuadRendererComponent>(entity);
+	}
+
+	if (handle.all_of<LineComponent>()) {
+		bool isOpen = ImGui::TreeNodeEx("Line", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+		LineComponent& vc = handle.get<LineComponent>();
+
+		std::vector<glm::vec3>& vertices = vc.Vertices;
+		int numVertices = (int)vertices.size();
+
+		if (isOpen) {
+			int ix = 0;
+			ImGui::Checkbox("Looped", &vc.IsLooped);
+			for (glm::vec3& v : vertices) {
+				if (ImGui::InputFloat3(std::to_string(ix).c_str(), glm::value_ptr(v), "%.3f", treeNodeFlags)) {
+					vc.ComputeVertexArray();
+				}
+				ix++;
+			}
+			if (ImGui::InputInt("Count", &numVertices, 1, 10, treeNodeFlags)) {
+				if (numVertices >= 2 && numVertices < 100) {
+					vertices.resize(numVertices);
+					vc.ComputeVertexArray();
+				}
+			}
+			ImGui::TreePop();
+		}
+		if (shouldRemove)
+			context->Reg().remove<LineComponent>(entity);
 	}
 }
