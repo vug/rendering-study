@@ -58,23 +58,23 @@ void Editor::OnInit() {
     //textureCheckerboard.reset(new Texture2D("assets/textures/Checkerboard.png"));
     //textureWithAlpha.reset(new Texture2D("assets/textures/ChernoLogo.png"));
        
-    triangleVA.reset(new VertexArray());  
-    float triangleVertices[3 * 7] = {
-        -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
-         0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-         0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
-    };
-    const auto triangleVB = std::make_shared<VertexBuffer>(triangleVertices, (uint32_t)sizeof(triangleVertices));
-    BufferLayout layout = {
-        { ShaderDataType::Float3, "a_Position" },
-        { ShaderDataType::Float4, "a_Color" },
-    };
-    triangleVB->SetLayout(layout);
-    triangleVA->AddVertexBuffer(triangleVB);
+    //triangleVA.reset(new VertexArray());  
+    //float triangleVertices[3 * 7] = {
+    //    -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
+    //     0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+    //     0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
+    //};
+    //const auto triangleVB = std::make_shared<VertexBuffer>(triangleVertices, (uint32_t)sizeof(triangleVertices));
+    //BufferLayout layout = {
+    //    { ShaderDataType::Float3, "a_Position" },
+    //    { ShaderDataType::Float4, "a_Color" },
+    //};
+    //triangleVB->SetLayout(layout);
+    //triangleVA->AddVertexBuffer(triangleVB);
 
-    uint32_t triangleIndices[3] = { 0, 1, 2 };
-    const auto triangleIB = std::make_shared<IndexBuffer>(triangleIndices, (uint32_t)(sizeof(triangleIndices) / sizeof(uint32_t)));
-    triangleVA->SetIndexBuffer(triangleIB);
+    //uint32_t triangleIndices[3] = { 0, 1, 2 };
+    //const auto triangleIB = std::make_shared<IndexBuffer>(triangleIndices, (uint32_t)(sizeof(triangleIndices) / sizeof(uint32_t)));
+    //triangleVA->SetIndexBuffer(triangleIB);
 
     sceneHierarchyPanel.SetContext(activeScene);
 }
@@ -174,8 +174,8 @@ void Editor::OnUpdate(Timestep ts) {
     activeScene->OnUpdate(ts);
     // Non-Scene example rendering commands. Will be removed or moved into a Scene
     {
-        auto triangleShader = shaderLibrary.Get("VertexPosColor");
-        Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+        //auto triangleShader = shaderLibrary.Get("VertexPosColor");
+        //Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
 
         //auto textureShader = shaderLibrary.Get("Texture");
         //textureCheckerboard->Bind(diffuseTextureSlot);
