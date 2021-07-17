@@ -56,7 +56,7 @@ namespace YAML {
 	};
 
 	Emitter& operator<<(Emitter& out, const glm::vec3& v) {
-		out << Flow;
+		out << Flow; // keeps items in a single line
 		out << BeginSeq << v.x << v.y << v.z << EndSeq;
 		return out;
 	}
@@ -201,7 +201,7 @@ static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity>
 void SceneSerializer::Serialize(const std::filesystem::path& filepath) {
 	YAML::Emitter out;
 	out << YAML::BeginMap; // Scene
-	out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+	out << YAML::Key << "Scene" << YAML::Value << "Untitled Scene";
 	out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq; // Entities
 
 	scene->Reg().each([&](entt::entity entity) {
@@ -221,5 +221,108 @@ void SceneSerializer::Serialize(const std::filesystem::path& filepath) {
 }
 
 bool SceneSerializer::Deserialize(const std::filesystem::path& filepath) {
-	return false;
+	YAML::Node data = YAML::LoadFile(filepath.string());
+	if (!data["Scene"])
+		return false;
+
+	std::string sceneName = data["Scene"].as<std::string>();
+
+	auto entities = data["Entities"];
+	if (!entities)
+		return false;
+
+	for (auto entity : entities) {
+		uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+
+		std::string tag;
+		auto tagComponent = entity["TagComponent"];
+		if (tagComponent) {
+			tag = tagComponent["Tag"].as<std::string>();
+			//std::cout << "deserializing entity with id " << uuid << ", tag = " << tag << std::endl;
+		}
+
+		entt::entity deserializedEntity = scene->CreateEntity(tag);
+		entt::basic_handle deserializedHandle = entt::basic_handle{ scene->Registry, deserializedEntity };
+
+		auto transformComponent = entity["TransformComponent"];
+		if (transformComponent) {
+			auto& tc = deserializedHandle.get<TransformComponent>(); // assume present
+			tc.Translation = transformComponent["Translation"].as<glm::vec3>();
+			tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+			tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+		}
+
+		auto cameraComponent = entity["CameraComponent"];
+		if (cameraComponent) {
+			auto& cc = deserializedHandle.emplace<CameraComponent>();
+
+			auto cameraProps = cameraComponent["Camera"];
+			cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+
+			cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+			cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+			cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+			cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+			cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+			cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+
+			cc.Primary = cameraComponent["Primary"].as<bool>();
+			cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
+		}
+
+		auto quadRendererComponent = entity["QuadRendererComponent"];
+		if (quadRendererComponent) {
+			auto& qrc = deserializedHandle.emplace<QuadRendererComponent>();
+			qrc.Color = quadRendererComponent["Color"].as<glm::vec4>();
+		}
+
+		auto lineComponent = entity["LineComponent"];
+		if (lineComponent) {
+			auto& lc = deserializedHandle.emplace<LineComponent>();
+			std::vector<glm::vec3> vertices;
+			for (auto vertex : lineComponent["Vertices"]) {
+				vertices.push_back(vertex.as<glm::vec3>());
+			}
+			lc.Vertices = vertices;
+			lc.ComputeVertexArray();
+		}
+
+		auto lineRendererComponent = entity["LineRendererComponent"];
+		if (lineRendererComponent) {
+			auto& lrc = deserializedHandle.emplace<LineRendererComponent>();
+			lrc.Color = lineRendererComponent["Color"].as<glm::vec4>();
+			lrc.IsLooped = lineRendererComponent["IsLooped"].as<bool>();
+		}
+
+		auto lineGeneratorComponent = entity["LineGeneratorComponent"];
+		if (lineGeneratorComponent) {
+			auto& lgc = deserializedHandle.emplace<LineGeneratorComponent>();
+
+			lgc.type = (LineGeneratorComponent::Type)lineGeneratorComponent["Type"].as<int>();
+
+			auto rectangle = lineGeneratorComponent["Rectangle"];
+			lgc.rectangle.width = rectangle["width"].as<float>();
+			lgc.rectangle.height = rectangle["height"].as<float>();
+
+			auto ellipse = lineGeneratorComponent["Ellipse"];
+			lgc.ellipse.r1 = ellipse["r1"].as<float>();
+			lgc.ellipse.r2 = ellipse["r2"].as<float>();
+			lgc.ellipse.numSamples = ellipse["numSamples"].as<int>();
+
+			auto ngon = lineGeneratorComponent["Ngon"];
+			lgc.ngon.numSides = ngon["numSides"].as<int>();
+			lgc.ngon.radius = ngon["radius"].as<float>();
+
+			auto connector = lineGeneratorComponent["Connector"];
+			lgc.connector.p1 = connector["p1"].as<glm::vec3>();
+			lgc.connector.p2 = connector["p2"].as<glm::vec3>();
+			lgc.connector.steepness = connector["steepness"].as<float>();
+			lgc.connector.numSamples = connector["numSamples"].as<int>();
+
+			lgc.CalculateVertices();
+		}
+	}
+	
+	return true;
 }

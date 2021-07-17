@@ -28,23 +28,6 @@ void Editor::OnInit() {
 
     activeScene = std::make_shared<Scene>();
 
-    auto redSquare = activeScene->CreateEntity("Red Square");
-    activeScene->Reg().emplace<QuadRendererComponent>(redSquare, glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
-    activeScene->Reg().get<TransformComponent>(redSquare).Translation = glm::vec3{ -0.5f, 0.5f, -0.5f };
-    entt::basic_handle line1{ activeScene->Reg(), activeScene->CreateEntity("Line1") };
-    LineComponent& vc = line1.emplace<LineComponent>(
-        std::vector<glm::vec3>{ {-0.5f, -0.5f, 0.0f}, { 0.4f, -0.4f, 0.0f }, { 0.3f, 0.3f, 0.0f }, { -0.2f, 0.2f, 0.0f } }
-    );
-    line1.emplace<LineRendererComponent>(glm::vec4{ 1.0f, 1.0f, 0.0f, 1.0f });
-    line1.get<TransformComponent>().Translation = { 0.0f, 0.0f, 1.0f };
-    
-    entt::basic_handle camHandle{ activeScene->Reg(), activeScene->CreateEntity("Camera A") };
-    camHandle.emplace<CameraComponent>().Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
-    camHandle.get<TransformComponent>().Translation = glm::vec3{ 0.0f, 0.0f, 5.0f };
-
-    entt::basic_handle secondCamHandle{ activeScene->Reg(), activeScene->CreateEntity("Camera B") };
-    secondCamHandle.emplace<CameraComponent>().Primary = false;
-
     shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
     //auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
     //textureShader->Bind();
