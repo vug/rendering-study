@@ -161,8 +161,8 @@ struct LineGeneratorComponent {
 			float diffY = (connector.p2.y - connector.p1.y);
 			for (int i = 0; i < connector.numSamples; i++) {
 				float u = (float)i / connector.numSamples;
-				float w = (u - 0.5) * connector.steepness;
-				float v = tanh(w) * 0.5 + 0.5;
+				float w = (u - 0.5f) * connector.steepness;
+				float v = tanh(w) * 0.5f + 0.5f;
 
 				float x = connector.p1.x + u * diffX;
 				float y = connector.p1.y + v * diffY;
