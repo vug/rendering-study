@@ -12,6 +12,7 @@
 #include "Input.h"
 #include "Math.h"
 #include "Scene/Components.h"
+#include "Scene/SceneSerializer.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
@@ -73,8 +74,27 @@ void Editor::OnInit() {
 }
 
 void Editor::OnImGuiRender() {
-    static bool useCamera1 = true;
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Exit")) {
+                Application::Close();
+            }
+            if (ImGui::MenuItem("Serialize")) {
+                SceneSerializer serializer(activeScene);
+                serializer.Serialize("assets/scenes/Example.scene");
+            }
+            if (ImGui::MenuItem("Deserialize")) {
+                SceneSerializer serializer(activeScene);
+                serializer.Deserialize("assets/scenes/Example.scene");
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
 
     sceneHierarchyPanel.OnImguiRender();
 
