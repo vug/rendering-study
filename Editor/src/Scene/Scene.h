@@ -29,4 +29,5 @@ private:
 	uint32_t viewportWidth = 1, viewportHeight = 1;
 	
 	friend class SceneHierarchyPanel;
+	friend class SceneSerializer;
 };
