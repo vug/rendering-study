@@ -4,6 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
 #include "imgui/ImGuizmo.h"
+#include "imgui/ImGuiFileBrowser.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -63,20 +64,38 @@ void Editor::OnImGuiRender() {
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Exit")) {
-                Application::Close();
+            if (ImGui::MenuItem("New", "Ctrl+N")) {
+                NewScene();
             }
-            if (ImGui::MenuItem("Serialize")) {
-                SceneSerializer serializer(activeScene);
-                serializer.Serialize("assets/scenes/Example.scene");
+            if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+                shouldRenderOpenFileBrowser = true;
             }
-            if (ImGui::MenuItem("Deserialize")) {
-                SceneSerializer serializer(activeScene);
-                serializer.Deserialize("assets/scenes/Example.scene");
+            if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+                shouldRenderSaveFileBrowser = true;
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Quit", "Ctrl+Q")) {
+                //Application::Close();
             }
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
+
+        if (shouldRenderOpenFileBrowser)
+            ImGui::OpenPopup("Open File");
+        if (shouldRenderSaveFileBrowser)
+            ImGui::OpenPopup("Save File");
+
+
+        if (file_dialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".scene")) {
+            OpenScene(file_dialog.selected_path);
+        }
+        if (file_dialog.showFileDialog("Save File", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, ImVec2(700, 310), ".scene")) {
+            std::cout << "save?" << std::endl;
+            SaveSceneAs(file_dialog.selected_path);
+        }
+        shouldRenderOpenFileBrowser = false;
+        shouldRenderSaveFileBrowser = false;
     }
 
     sceneHierarchyPanel.OnImguiRender();
@@ -189,6 +208,7 @@ void Editor::OnShutdown() {
 void Editor::OnKeyPress(int key, int action, int mods) {
     if (action == GLFW_PRESS) {
         switch (key) {
+        // Transform Gizmos
         case GLFW_KEY_Z:
             shouldShowGizmo = true;
             gizmoType = ImGuizmo::OPERATION::TRANSLATE;
@@ -204,7 +224,36 @@ void Editor::OnKeyPress(int key, int action, int mods) {
         case GLFW_KEY_V:
             shouldShowGizmo = false;
             break;
-        }
+        // File Dialogs
+        case GLFW_KEY_N:
+            if (mods & GLFW_MOD_CONTROL)
+                NewScene();
+            break;
+        case GLFW_KEY_O:
+            if (mods & GLFW_MOD_CONTROL)
+                shouldRenderOpenFileBrowser = true;
+            break;
+        case GLFW_KEY_S:
+            if (mods & (GLFW_MOD_SHIFT | GLFW_MOD_CONTROL))
+                shouldRenderOpenFileBrowser = true;
+            break;
 
+        }
     }
+}
+
+void Editor::NewScene() {
+    activeScene = std::make_shared<Scene>();
+    //activeScene->OnViewportResize();
+    sceneHierarchyPanel.SetContext(activeScene);
+}
+
+void Editor::OpenScene(const std::filesystem::path& path) {
+    SceneSerializer serializer(activeScene);
+    serializer.Deserialize(path);
+}
+
+void Editor::SaveSceneAs(const std::filesystem::path& path) {
+    SceneSerializer serializer(activeScene);
+    serializer.Serialize(path);
 }

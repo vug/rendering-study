@@ -14,7 +14,7 @@ Application* Application::instance = nullptr;
 
 void Application::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto app = (Application*)glfwGetWindowUserPointer(window);
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL))
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     for (auto listener : app->keyListeners) {
         listener->OnKeyPress(key, action, mods);

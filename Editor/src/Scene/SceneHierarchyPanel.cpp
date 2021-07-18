@@ -16,6 +16,7 @@ SceneHierarchyPanel::SceneHierarchyPanel(const std::shared_ptr<Scene> scene) {
 
 void SceneHierarchyPanel::SetContext(const std::shared_ptr<Scene> scene) {
 	context = scene;
+	selectionContext = entt::null;
 }
 
 void SceneHierarchyPanel::OnImguiRender() {

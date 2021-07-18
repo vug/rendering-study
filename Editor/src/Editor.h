@@ -1,11 +1,13 @@
 #pragma once
 
+#include <filesystem>
 #include<memory>
 
 #include "Application.h"
 
 #include "imgui/imgui.h"
 #include "imgui/ImGuizmo.h"
+#include "imgui/ImGuiFileBrowser.h"
 
 #include "Scene/Scene.h"
 #include "Scene/SceneHierarchyPanel.h"
@@ -27,6 +29,10 @@ private:
 	void OnShutdown() override;
 	void OnViewportResize(float width, float height) override;
 	virtual void OnKeyPress(int key, int action, int mods) override;
+
+	void NewScene();
+	void OpenScene(const std::filesystem::path& fp);
+	void SaveSceneAs(const std::filesystem::path& path);
 private:
 	std::shared_ptr<Scene> activeScene;
 	ShaderLibrary shaderLibrary;
@@ -47,4 +53,8 @@ private:
 
 	ImGuizmo::OPERATION gizmoType = ImGuizmo::OPERATION::TRANSLATE;	
 	bool shouldShowGizmo = false;
+
+	imgui_addons::ImGuiFileBrowser file_dialog;
+	bool shouldRenderOpenFileBrowser = false;
+	bool shouldRenderSaveFileBrowser = false;
 };
