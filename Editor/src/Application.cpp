@@ -12,15 +12,6 @@
 
 Application* Application::instance = nullptr;
 
-void Application::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    auto app = (Application*)glfwGetWindowUserPointer(window);
-    if (key == GLFW_KEY_Q && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL))
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    for (auto listener : app->keyListeners) {
-        listener->OnKeyPress(key, action, mods);
-    }
-}
-
 Application::Application(std::string name) 
     : name(name) {
     instance = this;
@@ -34,6 +25,13 @@ Application::Application(std::string name)
     glfwSetWindowSizeCallback(window, Application::windowSizeCallback);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // VSync enabled. (0 for disabling)
+}
+
+void Application::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    auto app = (Application*)glfwGetWindowUserPointer(window);
+    for (auto listener : app->keyListeners) {
+        listener->OnKeyPress(key, action, mods);
+    }
 }
 
 void Application::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {

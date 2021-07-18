@@ -75,7 +75,7 @@ void Editor::OnImGuiRender() {
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Quit", "Ctrl+Q")) {
-                //Application::Close();
+                Application::Close();
             }
             ImGui::EndMenu();
         }
@@ -237,7 +237,9 @@ void Editor::OnKeyPress(int key, int action, int mods) {
             if (mods & (GLFW_MOD_SHIFT | GLFW_MOD_CONTROL))
                 shouldRenderOpenFileBrowser = true;
             break;
-
+        case GLFW_KEY_Q:
+            if (mods & GLFW_MOD_CONTROL)
+                Application::Close();
         }
     }
 }
