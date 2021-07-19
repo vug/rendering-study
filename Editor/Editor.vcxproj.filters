@@ -228,5 +228,7 @@
     <None Include="assets\shaders\Texture.glsl" />
     <None Include="assets\shaders\FlatColor.glsl" />
     <None Include="assets\shaders\VertexPosColor.glsl" />
+    <None Include="assets\scenes\Example.scene" />
+    <None Include="assets\scenes\OtherScene.scene" />
   </ItemGroup>
 </Project>
