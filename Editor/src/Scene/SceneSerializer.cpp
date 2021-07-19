@@ -162,6 +162,81 @@ namespace ComponentSerializer {
 			out << YAML::EndMap; // Component
 		}
 	}
+
+	static void deserialize(YAML::Node node, TransformComponent& comp) {
+		comp.Translation = node["Translation"].as<glm::vec3>();
+		comp.Rotation = node["Rotation"].as<glm::vec3>();
+		comp.Scale = node["Scale"].as<glm::vec3>();
+	}
+
+	static void deserialize(YAML::Node node, CameraComponent& comp) {
+		YAML::Node cameraProps = node["Camera"];
+		comp.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+
+		comp.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+		comp.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+		comp.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+		comp.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+		comp.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+		comp.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+
+		comp.Primary = node["Primary"].as<bool>();
+		comp.FixedAspectRatio = node["FixedAspectRatio"].as<bool>();
+	}
+
+	static void deserialize(YAML::Node node, QuadRendererComponent& comp) {
+		comp.Color = node["Color"].as<glm::vec4>();
+	}
+
+	static void deserialize(YAML::Node node, LineComponent& comp) {
+		std::vector<glm::vec3> vertices;
+		for (auto vertex : node["Vertices"]) {
+			vertices.push_back(vertex.as<glm::vec3>());
+		}
+		comp.Vertices = vertices;
+		comp.ComputeVertexArray();
+	}
+
+	static void deserialize(YAML::Node node, LineGeneratorComponent& comp) {
+		comp.type = (LineGeneratorComponent::Type)node["Type"].as<int>();
+
+		auto rectangle = node["Rectangle"];
+		comp.rectangle.width = rectangle["width"].as<float>();
+		comp.rectangle.height = rectangle["height"].as<float>();
+
+		auto ellipse = node["Ellipse"];
+		comp.ellipse.r1 = ellipse["r1"].as<float>();
+		comp.ellipse.r2 = ellipse["r2"].as<float>();
+		comp.ellipse.numSamples = ellipse["numSamples"].as<int>();
+
+		auto ngon = node["Ngon"];
+		comp.ngon.numSides = ngon["numSides"].as<int>();
+		comp.ngon.radius = ngon["radius"].as<float>();
+
+		auto connector = node["Connector"];
+		comp.connector.p1 = connector["p1"].as<glm::vec3>();
+		comp.connector.p2 = connector["p2"].as<glm::vec3>();
+		comp.connector.steepness = connector["steepness"].as<float>();
+		comp.connector.numSamples = connector["numSamples"].as<int>();
+
+		comp.CalculateVertices();
+	}
+
+	static void deserialize(YAML::Node node, LineRendererComponent& comp) {
+		comp.Color = node["Color"].as<glm::vec4>();
+		comp.IsLooped = node["IsLooped"].as<bool>();
+	}
+
+	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
+	static void deserializeIfExists(YAML::Node nodeEntity, entt::basic_handle<entt::entity> handle) {
+		YAML::Node nodeComp = nodeEntity[TComp::GetName()];
+		if (!nodeComp) return;
+		TComp& comp = std::is_same_v<TComp, TransformComponent> ? 
+			handle.get<TComp>() : // assume TransformComponent exists on the entity
+			handle.emplace<TComp>();
+		deserialize(nodeComp, comp);
+	}
 }
 
 static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity> handle) {
@@ -183,93 +258,21 @@ entt::entity SceneSerializer::DeserializeEntity(YAML::Node node) {
 	uint64_t uuid = node["Entity"].as<uint64_t>(); // TODO
 
 	std::string tag;
-	auto tagComponent = node["TagComponent"];
+	auto tagComponent = node[TagComponent::GetName()];
 	if (tagComponent) {
 		tag = tagComponent["Tag"].as<std::string>();
-		//std::cout << "deserializing entity with id " << uuid << ", tag = " << tag << std::endl;
 	}
 
 	entt::entity deserializedEntity = scene->CreateEntity(tag);
 	entt::basic_handle deserializedHandle = entt::basic_handle{ scene->Registry, deserializedEntity };
 
-	auto transformNode = node[TransformComponent::GetName()];
-	if (transformNode) {
-		auto& tc = deserializedHandle.get<TransformComponent>(); // assume present
-		tc.Translation = transformNode["Translation"].as<glm::vec3>();
-		tc.Rotation = transformNode["Rotation"].as<glm::vec3>();
-		tc.Scale = transformNode["Scale"].as<glm::vec3>();
-	}
+	ComponentSerializer::deserializeIfExists<TransformComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<QuadRendererComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<CameraComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<LineComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<LineRendererComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<LineGeneratorComponent>(node, deserializedHandle);
 
-	auto cameraNode = node[CameraComponent::GetName()];
-	if (cameraNode) {
-		auto& cc = deserializedHandle.emplace<CameraComponent>();
-
-		auto cameraProps = cameraNode["Camera"];
-		cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
-
-		cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
-		cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
-		cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
-
-		cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
-		cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
-		cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
-
-		cc.Primary = cameraNode["Primary"].as<bool>();
-		cc.FixedAspectRatio = cameraNode["FixedAspectRatio"].as<bool>();
-	}
-
-	auto quadRendererNode = node[QuadRendererComponent::GetName()];
-	if (quadRendererNode) {
-		auto& qrc = deserializedHandle.emplace<QuadRendererComponent>();
-		qrc.Color = quadRendererNode["Color"].as<glm::vec4>();
-	}
-
-	auto lineNode = node["LineComponent"];
-	if (lineNode) {
-		auto& lc = deserializedHandle.emplace<LineComponent>();
-		std::vector<glm::vec3> vertices;
-		for (auto vertex : lineNode["Vertices"]) {
-			vertices.push_back(vertex.as<glm::vec3>());
-		}
-		lc.Vertices = vertices;
-		lc.ComputeVertexArray();
-	}
-
-	auto lineRendererNode = node[LineRendererComponent::GetName()];
-	if (lineRendererNode) {
-		auto& lrc = deserializedHandle.emplace<LineRendererComponent>();
-		lrc.Color = lineRendererNode["Color"].as<glm::vec4>();
-		lrc.IsLooped = lineRendererNode["IsLooped"].as<bool>();
-	}
-
-	auto lineGeneratorNode = node[LineGeneratorComponent::GetName()];
-	if (lineGeneratorNode) {
-		auto& lgc = deserializedHandle.emplace<LineGeneratorComponent>();
-
-		lgc.type = (LineGeneratorComponent::Type)lineGeneratorNode["Type"].as<int>();
-
-		auto rectangle = lineGeneratorNode["Rectangle"];
-		lgc.rectangle.width = rectangle["width"].as<float>();
-		lgc.rectangle.height = rectangle["height"].as<float>();
-
-		auto ellipse = lineGeneratorNode["Ellipse"];
-		lgc.ellipse.r1 = ellipse["r1"].as<float>();
-		lgc.ellipse.r2 = ellipse["r2"].as<float>();
-		lgc.ellipse.numSamples = ellipse["numSamples"].as<int>();
-
-		auto ngon = lineGeneratorNode["Ngon"];
-		lgc.ngon.numSides = ngon["numSides"].as<int>();
-		lgc.ngon.radius = ngon["radius"].as<float>();
-
-		auto connector = lineGeneratorNode["Connector"];
-		lgc.connector.p1 = connector["p1"].as<glm::vec3>();
-		lgc.connector.p2 = connector["p2"].as<glm::vec3>();
-		lgc.connector.steepness = connector["steepness"].as<float>();
-		lgc.connector.numSamples = connector["numSamples"].as<int>();
-
-		lgc.CalculateVertices();
-	}
 	return deserializedEntity;
 }
 
