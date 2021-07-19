@@ -179,6 +179,100 @@ static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity>
 	out << YAML::EndMap; // Entity
 }
 
+entt::entity SceneSerializer::DeserializeEntity(YAML::Node node) {
+	uint64_t uuid = node["Entity"].as<uint64_t>(); // TODO
+
+	std::string tag;
+	auto tagComponent = node["TagComponent"];
+	if (tagComponent) {
+		tag = tagComponent["Tag"].as<std::string>();
+		//std::cout << "deserializing entity with id " << uuid << ", tag = " << tag << std::endl;
+	}
+
+	entt::entity deserializedEntity = scene->CreateEntity(tag);
+	entt::basic_handle deserializedHandle = entt::basic_handle{ scene->Registry, deserializedEntity };
+
+	auto transformNode = node[TransformComponent::GetName()];
+	if (transformNode) {
+		auto& tc = deserializedHandle.get<TransformComponent>(); // assume present
+		tc.Translation = transformNode["Translation"].as<glm::vec3>();
+		tc.Rotation = transformNode["Rotation"].as<glm::vec3>();
+		tc.Scale = transformNode["Scale"].as<glm::vec3>();
+	}
+
+	auto cameraNode = node[CameraComponent::GetName()];
+	if (cameraNode) {
+		auto& cc = deserializedHandle.emplace<CameraComponent>();
+
+		auto cameraProps = cameraNode["Camera"];
+		cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+
+		cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+		cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+		cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+		cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+		cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+		cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+
+		cc.Primary = cameraNode["Primary"].as<bool>();
+		cc.FixedAspectRatio = cameraNode["FixedAspectRatio"].as<bool>();
+	}
+
+	auto quadRendererNode = node[QuadRendererComponent::GetName()];
+	if (quadRendererNode) {
+		auto& qrc = deserializedHandle.emplace<QuadRendererComponent>();
+		qrc.Color = quadRendererNode["Color"].as<glm::vec4>();
+	}
+
+	auto lineNode = node["LineComponent"];
+	if (lineNode) {
+		auto& lc = deserializedHandle.emplace<LineComponent>();
+		std::vector<glm::vec3> vertices;
+		for (auto vertex : lineNode["Vertices"]) {
+			vertices.push_back(vertex.as<glm::vec3>());
+		}
+		lc.Vertices = vertices;
+		lc.ComputeVertexArray();
+	}
+
+	auto lineRendererNode = node[LineRendererComponent::GetName()];
+	if (lineRendererNode) {
+		auto& lrc = deserializedHandle.emplace<LineRendererComponent>();
+		lrc.Color = lineRendererNode["Color"].as<glm::vec4>();
+		lrc.IsLooped = lineRendererNode["IsLooped"].as<bool>();
+	}
+
+	auto lineGeneratorNode = node[LineGeneratorComponent::GetName()];
+	if (lineGeneratorNode) {
+		auto& lgc = deserializedHandle.emplace<LineGeneratorComponent>();
+
+		lgc.type = (LineGeneratorComponent::Type)lineGeneratorNode["Type"].as<int>();
+
+		auto rectangle = lineGeneratorNode["Rectangle"];
+		lgc.rectangle.width = rectangle["width"].as<float>();
+		lgc.rectangle.height = rectangle["height"].as<float>();
+
+		auto ellipse = lineGeneratorNode["Ellipse"];
+		lgc.ellipse.r1 = ellipse["r1"].as<float>();
+		lgc.ellipse.r2 = ellipse["r2"].as<float>();
+		lgc.ellipse.numSamples = ellipse["numSamples"].as<int>();
+
+		auto ngon = lineGeneratorNode["Ngon"];
+		lgc.ngon.numSides = ngon["numSides"].as<int>();
+		lgc.ngon.radius = ngon["radius"].as<float>();
+
+		auto connector = lineGeneratorNode["Connector"];
+		lgc.connector.p1 = connector["p1"].as<glm::vec3>();
+		lgc.connector.p2 = connector["p2"].as<glm::vec3>();
+		lgc.connector.steepness = connector["steepness"].as<float>();
+		lgc.connector.numSamples = connector["numSamples"].as<int>();
+
+		lgc.CalculateVertices();
+	}
+	return deserializedEntity;
+}
+
 void SceneSerializer::Serialize(const std::filesystem::path& filepath) {
 	YAML::Emitter out;
 	out << YAML::BeginMap; // Scene
@@ -213,96 +307,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& filepath) {
 		return false;
 
 	for (auto entity : entities) {
-		uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
-
-		std::string tag;
-		auto tagComponent = entity["TagComponent"];
-		if (tagComponent) {
-			tag = tagComponent["Tag"].as<std::string>();
-			//std::cout << "deserializing entity with id " << uuid << ", tag = " << tag << std::endl;
-		}
-
-		entt::entity deserializedEntity = scene->CreateEntity(tag);
-		entt::basic_handle deserializedHandle = entt::basic_handle{ scene->Registry, deserializedEntity };
-
-		auto transformComponent = entity["TransformComponent"];
-		if (transformComponent) {
-			auto& tc = deserializedHandle.get<TransformComponent>(); // assume present
-			tc.Translation = transformComponent["Translation"].as<glm::vec3>();
-			tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
-			tc.Scale = transformComponent["Scale"].as<glm::vec3>();
-		}
-
-		auto cameraComponent = entity["CameraComponent"];
-		if (cameraComponent) {
-			auto& cc = deserializedHandle.emplace<CameraComponent>();
-
-			auto cameraProps = cameraComponent["Camera"];
-			cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
-
-			cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
-			cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
-			cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
-
-			cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
-			cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
-			cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
-
-			cc.Primary = cameraComponent["Primary"].as<bool>();
-			cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
-		}
-
-		auto quadRendererComponent = entity["QuadRendererComponent"];
-		if (quadRendererComponent) {
-			auto& qrc = deserializedHandle.emplace<QuadRendererComponent>();
-			qrc.Color = quadRendererComponent["Color"].as<glm::vec4>();
-		}
-
-		auto lineComponent = entity["LineComponent"];
-		if (lineComponent) {
-			auto& lc = deserializedHandle.emplace<LineComponent>();
-			std::vector<glm::vec3> vertices;
-			for (auto vertex : lineComponent["Vertices"]) {
-				vertices.push_back(vertex.as<glm::vec3>());
-			}
-			lc.Vertices = vertices;
-			lc.ComputeVertexArray();
-		}
-
-		auto lineRendererComponent = entity["LineRendererComponent"];
-		if (lineRendererComponent) {
-			auto& lrc = deserializedHandle.emplace<LineRendererComponent>();
-			lrc.Color = lineRendererComponent["Color"].as<glm::vec4>();
-			lrc.IsLooped = lineRendererComponent["IsLooped"].as<bool>();
-		}
-
-		auto lineGeneratorComponent = entity["LineGeneratorComponent"];
-		if (lineGeneratorComponent) {
-			auto& lgc = deserializedHandle.emplace<LineGeneratorComponent>();
-
-			lgc.type = (LineGeneratorComponent::Type)lineGeneratorComponent["Type"].as<int>();
-
-			auto rectangle = lineGeneratorComponent["Rectangle"];
-			lgc.rectangle.width = rectangle["width"].as<float>();
-			lgc.rectangle.height = rectangle["height"].as<float>();
-
-			auto ellipse = lineGeneratorComponent["Ellipse"];
-			lgc.ellipse.r1 = ellipse["r1"].as<float>();
-			lgc.ellipse.r2 = ellipse["r2"].as<float>();
-			lgc.ellipse.numSamples = ellipse["numSamples"].as<int>();
-
-			auto ngon = lineGeneratorComponent["Ngon"];
-			lgc.ngon.numSides = ngon["numSides"].as<int>();
-			lgc.ngon.radius = ngon["radius"].as<float>();
-
-			auto connector = lineGeneratorComponent["Connector"];
-			lgc.connector.p1 = connector["p1"].as<glm::vec3>();
-			lgc.connector.p2 = connector["p2"].as<glm::vec3>();
-			lgc.connector.steepness = connector["steepness"].as<float>();
-			lgc.connector.numSamples = connector["numSamples"].as<int>();
-
-			lgc.CalculateVertices();
-		}
+		DeserializeEntity(entity);
 	}
 	
 	return true;
