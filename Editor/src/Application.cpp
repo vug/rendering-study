@@ -72,7 +72,10 @@ int Application::Run() {
 
     int w, h;
     glfwGetWindowSize(GetWindow(), &w, &h);
-    FramebufferSpecification fbSpec = { (uint32_t)w, (uint32_t)h };
+    FramebufferSpecification fbSpec;
+    fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+    fbSpec.Width = (uint32_t)w;
+    fbSpec.Height = (uint32_t)h;
     viewportFramebuffer = std::make_shared<Framebuffer>(fbSpec);
 
     OnInit();
