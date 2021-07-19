@@ -9,6 +9,7 @@ enum class FramebufferTextureFormat
 	None = 0,
 
 	// Color
+	RED_INTEGER,
 	RGBA8,
 	// RBGA16F will come here
 
@@ -62,6 +63,7 @@ public:
 	void Unbind();
 
 	void Resize(uint32_t width, uint32_t height);
+	int ReadPixel(uint32_t attachmentIndex, int x, int y);
 private:
 	uint32_t rendererID = 0;
 	FramebufferSpecification specification;

@@ -73,7 +73,7 @@ int Application::Run() {
     int w, h;
     glfwGetWindowSize(GetWindow(), &w, &h);
     FramebufferSpecification fbSpec;
-    fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+    fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
     fbSpec.Width = (uint32_t)w;
     fbSpec.Height = (uint32_t)h;
     viewportFramebuffer = std::make_shared<Framebuffer>(fbSpec);
@@ -145,6 +145,9 @@ int Application::Run() {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
+
+        auto viewportOffset = ImGui::GetCursorPos(); // includes tab bar
+
         isViewportPaneFocused = ImGui::IsWindowFocused();
         isViewportPaneHovered = ImGui::IsWindowHovered();
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -155,6 +158,15 @@ int Application::Run() {
         }
         uint32_t textureID = viewportFramebuffer->GetColorAttachmentRendererID();
         ImGui::Image((void*)textureID, ImVec2{ viewportSize.x, viewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+
+        auto windowSize = ImGui::GetWindowSize();
+        ImVec2 minBound = ImGui::GetWindowPos();
+        minBound.x += viewportOffset.x;
+        minBound.y += viewportOffset.y;
+
+        ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+        viewportBounds[0] = { minBound.x, minBound.y };
+        viewportBounds[1] = { maxBound.x, maxBound.y };
 
         OnImGuiViewportRender();
         ImGui::End();

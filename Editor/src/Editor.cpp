@@ -187,6 +187,21 @@ void Editor::OnUpdate(Timestep ts) {
     }
 
     activeScene->OnUpdate(ts);
+
+    auto [mx, my] = ImGui::GetMousePos();
+    mx -= viewportBounds[0].x;
+    my -= viewportBounds[0].y;
+    glm::vec2 viewportSize = viewportBounds[1] - viewportBounds[0];
+    my = viewportSize.y - my;
+
+    int mouseX = (int)mx;
+    int mouseY = (int)my;
+
+    if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
+        int pixelData = viewportFramebuffer->ReadPixel(1, mouseX, mouseY);
+        std::cout << "Min Bounds " << mouseX << ", " << mouseY << ": " << pixelData << std::endl;
+    }
+
     // Non-Scene example rendering commands. Will be removed or moved into a Scene
     {
         //auto triangleShader = shaderLibrary.Get("VertexPosColor");

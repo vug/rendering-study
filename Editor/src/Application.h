@@ -28,6 +28,8 @@ protected:
 	GLFWwindow* window = nullptr;
 	std::string name = "Application";
 	float framesPerSecond = -1.0f;
+	glm::vec2 viewportBounds[2];
+	std::shared_ptr<Framebuffer> viewportFramebuffer;
 private:
 	// To prepare rendering entities
 	virtual void OnInit() = 0;
@@ -48,7 +50,6 @@ private:
 	std::vector<KeyListener*> keyListeners;
 	std::vector<ScrollListener*> scrollListeners;
 	std::vector<WindowListener*> windowListeners;
-	std::shared_ptr<Framebuffer> viewportFramebuffer;
 	glm::vec2 viewportSize = { 0.0f, 0.0f };
 	bool isViewportPaneFocused = false;
 	bool isViewportPaneHovered = false;
