@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <type_traits>
 
 #include <yaml-cpp/yaml.h>
 
@@ -73,38 +74,20 @@ SceneSerializer::SceneSerializer(const std::shared_ptr<Scene>& scene)
 	: scene(scene) {
 }
 
-static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity> handle) {
-	out << YAML::BeginMap; // Entity
-	out << YAML::Key << "Entity" << YAML::Value << "12837192831273";
-	
-	if (handle.all_of<TagComponent>()) {
-		out << YAML::Key << "TagComponent";
-		out << YAML::BeginMap; // Component
+namespace ComponentSerializer {
 
-		TagComponent& tc = handle.get<TagComponent>();
-		out << YAML::Key << "Tag" << YAML::Value << tc.Tag;
-
-		out << YAML::EndMap; // Component
+	static void serialize(YAML::Emitter& out, TagComponent& comp) {
+		out << YAML::Key << "Tag" << YAML::Value << comp.Tag;
 	}
 
-	if (handle.all_of<TransformComponent>()) {
-		out << YAML::Key << "TransformComponent";
-		out << YAML::BeginMap; // Component
-
-		TransformComponent& tc = handle.get<TransformComponent>();
-		out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
-		out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
-		out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
-
-		out << YAML::EndMap; // Component
+	static void serialize(YAML::Emitter& out, TransformComponent& comp) {
+		out << YAML::Key << "Translation" << YAML::Value << comp.Translation;
+		out << YAML::Key << "Rotation" << YAML::Value << comp.Rotation;
+		out << YAML::Key << "Scale" << YAML::Value << comp.Scale;
 	}
 
-	if (handle.all_of<CameraComponent>()) {
-		out << YAML::Key << "CameraComponent";
-		out << YAML::BeginMap; // Component
-
-		CameraComponent& cc = handle.get<CameraComponent>();
-		auto& camera = cc.Camera;
+	static void serialize(YAML::Emitter& out, CameraComponent& comp) {
+		auto& camera = comp.Camera;
 		out << YAML::Key << "Camera" << YAML::Value;
 		out << YAML::BeginMap; // Camera
 		out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
@@ -116,84 +99,82 @@ static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity>
 		out << YAML::Key << "OrthographicFar" << YAML::Value << camera.GetOrthographicFarClip();
 		out << YAML::EndMap; // Camera
 
-		out << YAML::Key << "Primary" << YAML::Value << cc.Primary;
-		out << YAML::Key << "FixedAspectRatio" << YAML::Value << cc.FixedAspectRatio;
-
-		out << YAML::EndMap; // Component
+		out << YAML::Key << "Primary" << YAML::Value << comp.Primary;
+		out << YAML::Key << "FixedAspectRatio" << YAML::Value << comp.FixedAspectRatio;
 	}
 
-	if (handle.all_of<QuadRendererComponent>()) {
-		out << YAML::Key << "QuadRendererComponent";
-		out << YAML::BeginMap; // Component
-
-		QuadRendererComponent& qrc = handle.get<QuadRendererComponent>();
-		out << YAML::Key << "Color" << YAML::Value << qrc.Color;
-
-		out << YAML::EndMap; // Component
+	static void serialize(YAML::Emitter& out, QuadRendererComponent& comp) {
+		out << YAML::Key << "Color" << YAML::Value << comp.Color;
 	}
 
-	if (handle.all_of<LineComponent>()) {
-		out << YAML::Key << "LineComponent";
-		out << YAML::BeginMap; // Component
-
-		LineComponent& lc = handle.get<LineComponent>();
+	static void serialize(YAML::Emitter& out, LineComponent& comp) {
 		out << YAML::Key << "Vertices" << YAML::Value;
 		out << YAML::BeginSeq; // Vertices
-		for (auto& v : lc.Vertices) {
+		for (auto& v : comp.Vertices) {
 			out << v;
 		}
 		out << YAML::EndSeq;
-
-		out << YAML::EndMap; // Component
 	}
 
-	if (handle.all_of<LineRendererComponent>()) {
-		out << YAML::Key << "LineRendererComponent";
-		out << YAML::BeginMap; // Component
-
-		LineRendererComponent& lrc = handle.get<LineRendererComponent>();
-		out << YAML::Key << "Color" << YAML::Value << lrc.Color;
-		out << YAML::Key << "IsLooped" << YAML::Value << lrc.IsLooped;
-
-		out << YAML::EndMap; // Component
+	static void serialize(YAML::Emitter& out, LineRendererComponent& comp) {
+		out << YAML::Key << "Color" << YAML::Value << comp.Color;
+		out << YAML::Key << "IsLooped" << YAML::Value << comp.IsLooped;
 	}
 
-	if (handle.all_of<LineGeneratorComponent>()) {
-		out << YAML::Key << "LineGeneratorComponent";
-		out << YAML::BeginMap; // Component
-
-		LineGeneratorComponent& lgc = handle.get<LineGeneratorComponent>();
-		out << YAML::Key << "Type" << YAML::Value << (int)lgc.type;
+	static void serialize(YAML::Emitter& out, LineGeneratorComponent& comp) {
+		out << YAML::Key << "Type" << YAML::Value << (int)comp.type;
 
 		out << YAML::Key << "Rectangle" << YAML::Value;
 		out << YAML::BeginMap; // Rectangle
-		out << YAML::Key << "width" << YAML::Value << lgc.rectangle.width;
-		out << YAML::Key << "height" << YAML::Value << lgc.rectangle.height;
+		out << YAML::Key << "width" << YAML::Value << comp.rectangle.width;
+		out << YAML::Key << "height" << YAML::Value << comp.rectangle.height;
 		out << YAML::EndMap; // Rectangle
 
 		out << YAML::Key << "Ellipse" << YAML::Value;
 		out << YAML::BeginMap; // Ellipse
-		out << YAML::Key << "r1" << YAML::Value << lgc.ellipse.r1;
-		out << YAML::Key << "r2" << YAML::Value << lgc.ellipse.r2;
-		out << YAML::Key << "numSamples" << YAML::Value << lgc.ellipse.numSamples;
+		out << YAML::Key << "r1" << YAML::Value << comp.ellipse.r1;
+		out << YAML::Key << "r2" << YAML::Value << comp.ellipse.r2;
+		out << YAML::Key << "numSamples" << YAML::Value << comp.ellipse.numSamples;
 		out << YAML::EndMap; // Ellipse
 
 		out << YAML::Key << "Ngon" << YAML::Value;
 		out << YAML::BeginMap; // Ngon
-		out << YAML::Key << "numSides" << YAML::Value << lgc.ngon.numSides;
-		out << YAML::Key << "radius" << YAML::Value << lgc.ngon.radius;
+		out << YAML::Key << "numSides" << YAML::Value << comp.ngon.numSides;
+		out << YAML::Key << "radius" << YAML::Value << comp.ngon.radius;
 		out << YAML::EndMap; // Ngon
 
 		out << YAML::Key << "Connector" << YAML::Value;
 		out << YAML::BeginMap; // Connector
-		out << YAML::Key << "p1" << YAML::Value << lgc.connector.p1;
-		out << YAML::Key << "p2" << YAML::Value << lgc.connector.p2;
-		out << YAML::Key << "steepness" << YAML::Value << lgc.connector.steepness;
-		out << YAML::Key << "numSamples" << YAML::Value << lgc.connector.numSamples;
+		out << YAML::Key << "p1" << YAML::Value << comp.connector.p1;
+		out << YAML::Key << "p2" << YAML::Value << comp.connector.p2;
+		out << YAML::Key << "steepness" << YAML::Value << comp.connector.steepness;
+		out << YAML::Key << "numSamples" << YAML::Value << comp.connector.numSamples;
 		out << YAML::EndMap; // Connector
-
-		out << YAML::EndMap; // Component
 	}
+
+	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
+	static void serializeIfExists(YAML::Emitter& out, entt::basic_handle<entt::entity> handle) {
+		if (handle.all_of<TComp>()) {
+			auto& comp = handle.get<TComp>();
+			out << YAML::Key << TComp::GetName();
+			out << YAML::BeginMap; // Component
+			serialize(out, comp);
+			out << YAML::EndMap; // Component
+		}
+	}
+}
+
+static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity> handle) {
+	out << YAML::BeginMap; // Entity
+	out << YAML::Key << "Entity" << YAML::Value << "12837192831273";
+	
+	ComponentSerializer::serializeIfExists<TagComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<TransformComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<CameraComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<QuadRendererComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<LineComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<LineRendererComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<LineGeneratorComponent>(out, handle);
 
 	out << YAML::EndMap; // Entity
 }

@@ -13,7 +13,14 @@
 #include "SceneCamera.h"
 #include "../Renderer/VertexArray.h"
 
-struct TagComponent {
+class Component {
+public:
+	static const inline char* GetName() = delete;
+};
+
+struct TagComponent : public Component {
+	static const inline char* GetName() { return "TagComponent"; }
+
 	std::string Tag;
 
 	TagComponent() = default;
@@ -23,7 +30,9 @@ struct TagComponent {
 
 };
 
-struct TransformComponent {
+struct TransformComponent : public Component {
+	static const inline char* GetName() { return "TransformComponent"; }
+
 	glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
@@ -41,7 +50,9 @@ struct TransformComponent {
 	}
 };
 
-struct QuadRendererComponent {
+struct QuadRendererComponent : public Component {
+	static const inline char* GetName() { return "QuadRendererComponent"; }
+
 	glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 	QuadRendererComponent() = default;
@@ -50,7 +61,9 @@ struct QuadRendererComponent {
 		Color(color) {}
 };
 
-struct CameraComponent {
+struct CameraComponent : public Component {
+	static const inline char* GetName() { return "CameraComponent"; }
+
 	SceneCamera Camera;
 	bool Primary = true; // TODO: think about moving to Scene
 	bool FixedAspectRatio = false;
@@ -59,8 +72,10 @@ struct CameraComponent {
 	CameraComponent(const CameraComponent&) = default;
 };
 
-class LineComponent {
+class LineComponent : public Component {
 public:
+	static const inline char* GetName() { return "LineComponent"; }
+
 	LineComponent() { ComputeVertexArray(); }
 	LineComponent(const LineComponent&) = default;
 	LineComponent(const std::vector<glm::vec3>& vertices) 
@@ -88,7 +103,9 @@ public:
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 
-struct LineRendererComponent {
+struct LineRendererComponent : public Component {
+	static const inline char* GetName() { return "LineRendererComponent"; }
+
 	glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 	bool IsLooped = false;
 
@@ -98,7 +115,9 @@ struct LineRendererComponent {
 		Color(color) {}
 };
 
-struct LineGeneratorComponent {
+struct LineGeneratorComponent : public Component {
+	static const inline char* GetName() { return "LineGeneratorComponent"; }
+
 	enum class Type { Rectangle = 0, Ellipse, Ngon, Connector };
 	struct Rectangle {
 		float width = 2.0f;
