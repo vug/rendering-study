@@ -64,6 +64,8 @@ public:
 
 	void Resize(uint32_t width, uint32_t height);
 	int ReadPixel(uint32_t attachmentIndex, int x, int y);
+
+	void ClearAttachment(uint32_t attachmentIndex, int value);
 private:
 	uint32_t rendererID = 0;
 	FramebufferSpecification specification;

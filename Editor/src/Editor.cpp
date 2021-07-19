@@ -169,6 +169,9 @@ void Editor::OnUpdate(Timestep ts) {
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     RenderCommand::Clear();
 
+    constexpr int entityIdAttachmentIndex = 1;
+    viewportFramebuffer->ClearAttachment(entityIdAttachmentIndex, -1);
+
     // I J K L controls to manipulate Selected Entity's transform.
     if (GetIsViewportPaneFocused()) {
         entt::entity selectedEntity = sceneHierarchyPanel.GetSelectedEntity();

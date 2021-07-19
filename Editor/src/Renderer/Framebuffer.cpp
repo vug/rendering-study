@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-namespace {
+namespace { // Texture Utils
 	static GLenum TextureTarget(bool multisampled) {
 		return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 	}
@@ -60,6 +60,15 @@ namespace {
 		case FramebufferTextureFormat::DEPTH24STENCIL8: return true;
 		}
 		return false;
+	}
+
+	static GLenum FramebufferTextureFormatToGL(FramebufferTextureFormat format) {
+		switch (format) {
+		case FramebufferTextureFormat::RGBA8: return GL_RGBA8;
+		case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+		}
+		assert(false); // unknown format
+		return 0;
 	}
 }
 
@@ -155,5 +164,13 @@ int Framebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) {
 	int pixelData;
 	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 	return pixelData;
+}
+
+void Framebuffer::ClearAttachment(uint32_t attachmentIndex, int value) {
+	assert(attachmentIndex < colorAttachmentRendererIDs.size());
+
+	auto& spec = colorAttachmentSpecs[attachmentIndex];
+	glClearTexImage(colorAttachmentRendererIDs[attachmentIndex], 0, 
+		FramebufferTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
 }
 
