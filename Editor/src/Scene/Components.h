@@ -103,7 +103,7 @@ public:
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 
-class MeshComponent {
+class MeshComponent : public Component{
 public:
 	static const inline char* GetName() { return "MeshComponent"; }
 

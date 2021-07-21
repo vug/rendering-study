@@ -152,6 +152,26 @@ namespace ComponentSerializer {
 		out << YAML::EndMap; // Connector
 	}
 
+	static void serialize(YAML::Emitter& out, MeshComponent& comp) {
+		out << YAML::Key << "Vertices" << YAML::Value;
+		out << YAML::BeginSeq; // Vertices
+		for (auto& v : comp.Vertices) {
+			out << v;
+		}
+		out << YAML::EndSeq; // Vertices
+
+		out << YAML::Key << "Indices" << YAML::Value;
+		out << YAML::BeginSeq; // Indices
+		for (auto& ix : comp.Indices) {
+			out << ix;
+		}
+		out << YAML::EndSeq; // Indices
+	}
+
+	static void serialize(YAML::Emitter& out, MeshRendererComponent& comp) {
+		out << YAML::Key << "Color" << YAML::Value << comp.Color;
+	}
+
 	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
 	static void serializeIfExists(YAML::Emitter& out, entt::basic_handle<entt::entity> handle) {
 		if (handle.all_of<TComp>()) {
@@ -228,6 +248,24 @@ namespace ComponentSerializer {
 		comp.IsLooped = node["IsLooped"].as<bool>();
 	}
 
+	static void deserialize(YAML::Node node, MeshComponent& comp) {
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::uint32_t> indices;
+		for (auto vertex : node["Vertices"]) {
+			vertices.push_back(vertex.as<glm::vec3>());
+		}
+		for (auto index : node["Indices"]) {
+			indices.push_back(index.as<uint32_t>());
+		}
+		comp.Vertices = vertices;
+		comp.Indices = indices;
+		comp.ComputeVertexArray();
+	}
+
+	static void deserialize(YAML::Node node, MeshRendererComponent& comp) {
+		comp.Color = node["Color"].as<glm::vec4>();
+	}
+
 	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
 	static void deserializeIfExists(YAML::Node nodeEntity, entt::basic_handle<entt::entity> handle) {
 		YAML::Node nodeComp = nodeEntity[TComp::GetName()];
@@ -250,6 +288,8 @@ static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity>
 	ComponentSerializer::serializeIfExists<LineComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<LineRendererComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<LineGeneratorComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<MeshComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<MeshRendererComponent>(out, handle);
 
 	out << YAML::EndMap; // Entity
 }
@@ -272,6 +312,8 @@ entt::entity SceneSerializer::DeserializeEntity(YAML::Node node) {
 	ComponentSerializer::deserializeIfExists<LineComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<LineRendererComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<LineGeneratorComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<MeshComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<MeshRendererComponent>(node, deserializedHandle);
 
 	return deserializedEntity;
 }
