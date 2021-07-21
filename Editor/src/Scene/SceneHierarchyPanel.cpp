@@ -62,11 +62,22 @@ void SceneHierarchyPanel::OnImguiRender() {
 				context->Reg().emplace<LineGeneratorComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
-			if (ImGui::MenuItem("LineRenderer")) {
+			if (ImGui::MenuItem("Line Renderer")) {
 				if(context->Reg().all_of<LineComponent>(selectionContext) || context->Reg().all_of<LineGeneratorComponent>(selectionContext))
 					context->Reg().emplace<LineRendererComponent>(selectionContext);
 				else
 					std::cout << "Entity needs to have a LineComponent or LineGenerator before adding a LineRendererComponent" << std::endl;
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Mesh Renderer")) {
+				if (context->Reg().all_of<MeshComponent>(selectionContext))
+					context->Reg().emplace<MeshRendererComponent>(selectionContext);
+				else
+					std::cout << "Entity needs to have a MeshComponent before adding a MeshRendererComponent" << std::endl;
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Mesh")) {
+				context->Reg().emplace<MeshComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -405,6 +416,62 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 			ImGui::TreePop();
 		}
 		if (shouldRemove)
-			context->Reg().remove<LineComponent>(entity);
+			context->Reg().remove<LineRendererComponent>(entity);
+	}
+
+	if (handle.all_of<MeshComponent>()) {
+		bool isOpen = ImGui::TreeNodeEx("Mesh", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+		auto& mc = handle.get<MeshComponent>();
+
+		if (isOpen) {
+			std::vector<glm::vec3>& vertices = mc.Vertices;
+			int numVertices = (int)vertices.size();
+			std::vector<uint32_t>& indices = mc.Indices;
+			int numIndices = (int)indices.size();
+			int i = 0;
+			for (glm::vec3& v : vertices) {
+				if (ImGui::InputFloat3(("v" + std::to_string(i)).c_str(), glm::value_ptr(v), "%.3f", treeNodeFlags)) {
+					mc.ComputeVertexArray();
+				}
+				i++;
+			}
+			if (ImGui::InputInt("# Vertices", &numVertices, 1, 10, treeNodeFlags)) {
+				if (numVertices >= 3 && numVertices < 100) {
+					vertices.resize(numVertices);
+					mc.ComputeVertexArray();
+				}
+			}
+			ImGui::Separator();
+			for (int k = 0; k < indices.size(); k++) {
+				if (ImGui::InputScalar(("i" + std::to_string(k)).c_str(), ImGuiDataType_U32, &indices[k], (void*)1, (void*)10, "%d", treeNodeFlags)) {
+					mc.ComputeVertexArray();
+				}
+			}
+			if (ImGui::InputInt("# Indices", &numIndices, 1, 10, treeNodeFlags)) {
+				if (numIndices >= 3 && numIndices < 100) {
+					indices.resize(numIndices);
+					mc.ComputeVertexArray();
+				}
+			}
+			ImGui::TreePop();
+		}
+
+		if (shouldRemove)
+			context->Reg().remove<MeshComponent>(entity);
+	}
+
+	if (handle.all_of<MeshRendererComponent>()) {
+		bool isOpen = ImGui::TreeNodeEx("Mesh Renderer", treeNodeFlags);
+		bool shouldRemove = AddComponentSettingsButton();
+		auto& mrc = handle.get<MeshRendererComponent>();
+
+		if (isOpen) {
+			glm::vec4& color = mrc.Color;
+			ImGui::ColorEdit4("Color", glm::value_ptr(color));
+			ImGui::TreePop();
+		}
+		if (shouldRemove)
+			context->Reg().remove<MeshRendererComponent>(entity);
 	}
 }
