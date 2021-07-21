@@ -70,6 +70,10 @@ void Scene::OnUpdate(Timestep ts) {
 			Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
 		}
 
+		auto view4 = Registry.view<TransformComponent, MeshComponent, MeshRendererComponent>();
+		for (auto [entity, transform, mesh, meshRenderer] : view4.each()) {
+			Renderer::DrawMesh(mesh.vertexArray, transform.GetTransform(), meshRenderer.Color);
+		}
 
 		Renderer::EndScene();
 	}
