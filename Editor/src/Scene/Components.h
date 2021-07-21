@@ -103,6 +103,34 @@ public:
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 
+class MeshComponent {
+public:
+	static const inline char* GetName() { return "MeshComponent"; }
+
+	MeshComponent() { ComputeVertexArray(); }
+	MeshComponent(const MeshComponent&) = default;
+	MeshComponent(const std::vector<glm::vec3>& vertices, const std::vector<uint32_t> indices)
+		: Vertices(vertices), Indices(indices) {
+		ComputeVertexArray();
+	}
+
+	void ComputeVertexArray() {
+		vertexArray.reset(new VertexArray());
+		float* flat_array = static_cast<float*>(glm::value_ptr(Vertices.front()));
+		const auto vertexBuffer = std::make_shared<VertexBuffer>(flat_array, (uint32_t)(sizeof(float) * 3 * Vertices.size()));
+		vertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+		});
+		vertexArray->AddVertexBuffer(vertexBuffer);
+		const auto squareIB = std::make_shared<IndexBuffer>(Indices.data(), (uint32_t)(Indices.size()));
+		vertexArray->SetIndexBuffer(squareIB);
+	}
+public:
+	std::vector<glm::vec3> Vertices = { {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f} };
+	std::vector<uint32_t> Indices = { 0, 1, 2 };
+	std::shared_ptr<VertexArray> vertexArray = nullptr;
+};
+
 struct LineRendererComponent : public Component {
 	static const inline char* GetName() { return "LineRendererComponent"; }
 
@@ -112,6 +140,17 @@ struct LineRendererComponent : public Component {
 	LineRendererComponent() = default;
 	LineRendererComponent(const LineRendererComponent&) = default;
 	LineRendererComponent(const glm::vec4& color) :
+		Color(color) {}
+};
+
+struct MeshRendererComponent : public Component {
+	static const inline char* GetName() { return "MeshRendererComponent"; }
+
+	glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+	MeshRendererComponent() = default;
+	MeshRendererComponent(const MeshRendererComponent&) = default;
+	MeshRendererComponent(const glm::vec4& color) :
 		Color(color) {}
 };
 
