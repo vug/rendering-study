@@ -76,6 +76,12 @@ void Renderer::DrawFlatQuad(const glm::mat4& transform, const glm::vec4& color) 
 	Renderer::Submit(rendererData.flatShader, rendererData.quadVertexArray, transform);
 }
 
+void Renderer::DrawMesh(std::shared_ptr<VertexArray> vertexArray, const glm::mat4& transform, const glm::vec4& color) {
+	rendererData.flatShader->Bind();
+	rendererData.flatShader->UploadUniformFloat4("u_Color", color);
+	Renderer::Submit(rendererData.flatShader, vertexArray, transform);
+}
+
 void Renderer::DrawLines(std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, const glm::vec4& color, bool loop) {
 	rendererData.flatShader->Bind();
 	rendererData.flatShader->UploadUniformFloat4("u_Color", color);
