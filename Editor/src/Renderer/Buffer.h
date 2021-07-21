@@ -102,6 +102,8 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
+	void Update(float* vertices, uint32_t size);
+
 	void SetLayout(const BufferLayout& layout) { Layout = layout; }
 	const BufferLayout& GetLayout() const { return Layout; }
 private:
@@ -116,6 +118,8 @@ public:
 
 	void Bind() const;
 	void Unbind() const;
+
+	void Update(uint32_t* indices, uint32_t count);
 
 	uint32_t GetCount() const { return count; };
 private:

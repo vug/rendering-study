@@ -427,7 +427,7 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 		if (isOpen) {
 			std::vector<glm::vec3>& vertices = mc.Vertices;
 			int numVertices = (int)vertices.size();
-			std::vector<uint32_t>& indices = mc.Indices;
+			std::vector<glm::uvec3>& indices = mc.Indices;
 			int numIndices = (int)indices.size();
 			int i = 0;
 			for (glm::vec3& v : vertices) {
@@ -444,12 +444,13 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 			}
 			ImGui::Separator();
 			for (int k = 0; k < indices.size(); k++) {
-				if (ImGui::InputScalar(("i" + std::to_string(k)).c_str(), ImGuiDataType_U32, &indices[k], (void*)1, (void*)10, "%d", treeNodeFlags)) {
+				glm::uvec3& triplet = indices[k];
+				if (ImGui::InputScalarN(("i" + std::to_string(k)).c_str(), ImGuiDataType_U32, glm::value_ptr(triplet), 3, (void*)1, (void*)10, "%d", treeNodeFlags)) {
 					mc.ComputeVertexArray();
 				}
 			}
-			if (ImGui::InputInt("# Indices", &numIndices, 1, 10, treeNodeFlags)) {
-				if (numIndices >= 3 && numIndices < 100) {
+			if (ImGui::InputInt("# Triangles", &numIndices, 1, 10, treeNodeFlags)) {
+				if (numIndices >= 1 && numIndices < 100) {
 					indices.resize(numIndices);
 					mc.ComputeVertexArray();
 				}

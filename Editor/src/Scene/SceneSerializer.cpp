@@ -31,6 +31,26 @@ namespace YAML {
 	};
 
 	template<>
+	struct convert<glm::uvec3> {
+		static Node encode(const glm::uvec3& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::uvec3& rhs) {
+			if (!node.IsSequence() || node.size() != 3)
+				return false;
+			rhs.x = node[0].as<uint32_t>();
+			rhs.y = node[1].as<uint32_t>();
+			rhs.z = node[2].as<uint32_t>();
+			return true;
+		}
+	};
+
+	template<>
 	struct convert<glm::vec4>
 	{
 		static Node encode(const glm::vec4& rhs)
@@ -162,8 +182,8 @@ namespace ComponentSerializer {
 
 		out << YAML::Key << "Indices" << YAML::Value;
 		out << YAML::BeginSeq; // Indices
-		for (auto& ix : comp.Indices) {
-			out << ix;
+		for (auto& triplet : comp.Indices) {
+			out << triplet;
 		}
 		out << YAML::EndSeq; // Indices
 	}
@@ -249,13 +269,13 @@ namespace ComponentSerializer {
 	}
 
 	static void deserialize(YAML::Node node, MeshComponent& comp) {
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::uint32_t> indices;
+		std::vector<glm::vec3> vertices = {};
+		std::vector<glm::uvec3> indices = {};
 		for (auto vertex : node["Vertices"]) {
 			vertices.push_back(vertex.as<glm::vec3>());
 		}
 		for (auto index : node["Indices"]) {
-			indices.push_back(index.as<uint32_t>());
+			indices.push_back(index.as<glm::uvec3>());
 		}
 		comp.Vertices = vertices;
 		comp.Indices = indices;

@@ -107,27 +107,32 @@ class MeshComponent : public Component{
 public:
 	static const inline char* GetName() { return "MeshComponent"; }
 
-	MeshComponent() { ComputeVertexArray(); }
-	MeshComponent(const MeshComponent&) = default;
-	MeshComponent(const std::vector<glm::vec3>& vertices, const std::vector<uint32_t> indices)
-		: Vertices(vertices), Indices(indices) {
-		ComputeVertexArray();
-	}
-
-	void ComputeVertexArray() {
-		vertexArray.reset(new VertexArray());
-		float* flat_array = static_cast<float*>(glm::value_ptr(Vertices.front()));
-		const auto vertexBuffer = std::make_shared<VertexBuffer>(flat_array, (uint32_t)(sizeof(float) * 3 * Vertices.size()));
+	MeshComponent() {
+		float* flat_vertex_array = static_cast<float*>(glm::value_ptr(Vertices.front()));
+		const auto vertexBuffer = std::make_shared<VertexBuffer>(flat_vertex_array, (uint32_t)(sizeof(float) * 3 * Vertices.size()));
 		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 		});
+
+		uint32_t* flat_index_array = static_cast<uint32_t*>(glm::value_ptr(Indices.front()));
+		const auto squareIB = std::make_shared<IndexBuffer>(flat_index_array, (uint32_t)(3 * Indices.size()));
+
+		vertexArray = std::make_shared<VertexArray>();
 		vertexArray->AddVertexBuffer(vertexBuffer);
-		const auto squareIB = std::make_shared<IndexBuffer>(Indices.data(), (uint32_t)(Indices.size()));
 		vertexArray->SetIndexBuffer(squareIB);
 	}
+	MeshComponent(const MeshComponent&) = default;
+
+	void ComputeVertexArray() {
+		float* flat_vertex_array = static_cast<float*>(glm::value_ptr(Vertices.front()));
+		vertexArray->GetVertexBuffers()[0]->Update(flat_vertex_array, (uint32_t)(sizeof(float) * 3 * Vertices.size()));
+
+		uint32_t* flat_index_array = static_cast<uint32_t*>(glm::value_ptr(Indices.front()));
+		vertexArray->GetIndexBuffer()->Update(flat_index_array, (uint32_t)(3 * Indices.size()));
+	}
 public:
-	std::vector<glm::vec3> Vertices = { {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f} };
-	std::vector<uint32_t> Indices = { 0, 1, 2 };
+	std::vector<glm::vec3> Vertices = { {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 0.0f, 5.0f, 0.0f} };
+	std::vector<glm::uvec3> Indices = { {0, 1, 2} };
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 

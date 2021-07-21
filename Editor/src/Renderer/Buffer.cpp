@@ -8,8 +8,7 @@
 
 VertexBuffer::VertexBuffer(float* vertices, uint32_t size) {
     glCreateBuffers(1, &rendererID);
-    glBindBuffer(GL_ARRAY_BUFFER, rendererID);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    Update(vertices, size);
 }
 
 VertexBuffer::~VertexBuffer() {
@@ -24,6 +23,11 @@ void VertexBuffer::Unbind() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void VertexBuffer::Update(float* vertices, uint32_t size) {
+    glBindBuffer(GL_ARRAY_BUFFER, rendererID);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+}
+
 /**
  * Index Buffer
  */
@@ -31,10 +35,7 @@ void VertexBuffer::Unbind() const {
 IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
     : count(count) {
     glCreateBuffers(1, &rendererID);
-    // GL_ELEMENT_ARRAY_BUFFER is not valid without an actively bound VAO
-    // Binding with GL_ARRAY_BUFFER allows the data to be loaded regardless of VAO state. 
-    glBindBuffer(GL_ARRAY_BUFFER, rendererID);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+    Update(indices, count);
 }
 
 IndexBuffer::~IndexBuffer() {
@@ -47,4 +48,12 @@ void IndexBuffer::Bind() const {
 
 void IndexBuffer::Unbind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void IndexBuffer::Update(uint32_t* indices, uint32_t count) {
+    // GL_ELEMENT_ARRAY_BUFFER is not valid without an actively bound VAO
+    // Binding with GL_ARRAY_BUFFER allows the data to be loaded regardless of VAO state. 
+    glBindBuffer(GL_ARRAY_BUFFER, rendererID);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+    this->count = count;
 }
