@@ -13,6 +13,8 @@ static GLenum ShaderTypeFromString(const std::string& type) {
 		return GL_VERTEX_SHADER;
 	if (type == "fragment" || type == "pixel") 
 		return GL_FRAGMENT_SHADER;
+	if (type == "geometry")
+		return GL_GEOMETRY_SHADER;
 
 	assert(false); // Unknown shader type
 	return 0;
@@ -80,8 +82,8 @@ std::unordered_map<GLenum, std::string> Shader::PreProcess(const std::string& so
 
 void Shader::Compile(std::unordered_map<GLenum, std::string>& shaderSources) {
 	GLuint program = glCreateProgram();
-	assert(shaderSources.size() <= 2); // We only support a vertex and a fragment shader for now.
-	std::array<GLenum, 2> glShaderIDs;
+	assert(shaderSources.size() <= 3); // We only support a geometry, a vertex and a fragment shader for now.
+	std::array<GLenum, 3> glShaderIDs;
 	int glShaderIdIndex = 0;
 	for (auto& kv : shaderSources) {
 		GLenum type = kv.first;

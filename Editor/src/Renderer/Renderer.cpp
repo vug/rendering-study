@@ -8,6 +8,7 @@
 struct RendererData {
 	std::shared_ptr<VertexArray> quadVertexArray;
 	std::shared_ptr<Shader> solidColorShader;
+	std::shared_ptr<Shader> flatShader;
 	glm::mat4 viewProj;
 };
 static RendererData rendererData;
@@ -37,6 +38,7 @@ void Renderer::Init() {
 	rendererData.quadVertexArray->SetIndexBuffer(squareIB);
 
 	rendererData.solidColorShader = std::make_shared<Shader>("assets/shaders/SolidColor.glsl");
+	rendererData.flatShader = std::make_shared<Shader>("assets/shaders/FlatShader.glsl");
 }
 
 void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform) {
@@ -77,9 +79,9 @@ void Renderer::DrawSolidQuad(const glm::mat4& transform, const glm::vec4& color)
 }
 
 void Renderer::DrawMesh(std::shared_ptr<VertexArray> vertexArray, const glm::mat4& transform, const glm::vec4& color) {
-	rendererData.solidColorShader->Bind();
-	rendererData.solidColorShader->UploadUniformFloat4("u_Color", color);
-	Renderer::Submit(rendererData.solidColorShader, vertexArray, transform);
+	rendererData.flatShader->Bind();
+	rendererData.flatShader->UploadUniformFloat4("u_Color", color);
+	Renderer::Submit(rendererData.flatShader, vertexArray, transform);
 }
 
 void Renderer::DrawLines(std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, const glm::vec4& color, bool loop) {
