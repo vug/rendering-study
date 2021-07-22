@@ -24,7 +24,8 @@ layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
 in vec4 v_WorldPosition[];
-out float g_FlatShade;
+out vec3 g_WorldPosition;
+out vec3 g_Normal;
 
 void main()
 {
@@ -33,14 +34,11 @@ void main()
     vec3 p1 = v_WorldPosition[1].xyz;
     vec3 p2 = v_WorldPosition[2].xyz;
     vec3 normal = normalize(cross(p1 - p0, p2 - p0));
-    vec3 center = (p0 + p1 + p2) / 3.0;
-    vec3 lightPos = vec3(2.0, 4.0, 0.0);
-    vec3 lightDir = normalize(lightPos - center);
-    float flatShade = dot(lightDir, normal);
 
     for (n = 0; n < gl_in.length(); n++) {
         gl_Position = gl_in[n].gl_Position;
-        g_FlatShade = flatShade;
+        g_WorldPosition = v_WorldPosition[n].xyz;
+        g_Normal = normal;
         EmitVertex();
     }
     EndPrimitive();
@@ -53,11 +51,16 @@ void main()
 layout(location = 0) out vec4 color;
 layout(location = 1) out int color2; // -1 no entity
 
-in float g_FlatShade;
+in vec3 g_WorldPosition;
+in vec3 g_Normal;
 
 uniform vec4 u_Color;
 
 void main() {
-    color = vec4(u_Color.rgb * g_FlatShade, u_Color.a);
+    vec3 lightPos = vec3(2.0, 4.0, 0.0);
+    vec3 lightDir = normalize(lightPos - g_WorldPosition);
+    float flatShade = dot(lightDir, g_Normal);
+
+    color = vec4(u_Color.rgb * flatShade, u_Color.a);
     color2 = 50; // placeholder random entity ID :-)
 }
