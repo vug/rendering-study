@@ -7,15 +7,12 @@
 // Hard-coded data for Renderer to provide ready-made draw commands such as DrawFlatQuad
 struct RendererData {
 	std::shared_ptr<VertexArray> quadVertexArray;
-	std::shared_ptr<Shader> solidColorShader;
-	std::shared_ptr<Shader> flatShader;
 	glm::mat4 viewProj;
 };
 static RendererData rendererData;
 
 void Renderer::Init() {
 	RenderCommand::Init();
-
 	rendererData.quadVertexArray.reset(new VertexArray());
 	float squareVertices[(3 + 2) * 4] = {
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -36,9 +33,6 @@ void Renderer::Init() {
 	};
 	const auto squareIB = std::make_shared<IndexBuffer>(squareIndices, (uint32_t)(sizeof(squareIndices) / sizeof(uint32_t)));
 	rendererData.quadVertexArray->SetIndexBuffer(squareIB);
-
-	rendererData.solidColorShader = std::make_shared<Shader>("assets/shaders/SolidColor.glsl");
-	rendererData.flatShader = std::make_shared<Shader>("assets/shaders/FlatShader.glsl");
 }
 
 void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform) {
@@ -73,19 +67,22 @@ void Renderer::DrawSolidQuad(const glm::vec3& position, float rotation, const gl
 }
 
 void Renderer::DrawSolidQuad(const glm::mat4& transform, const glm::vec4& color) {
-	rendererData.solidColorShader->Bind();
-	rendererData.solidColorShader->UploadUniformFloat4("u_Color", color);
-	Renderer::Submit(rendererData.solidColorShader, rendererData.quadVertexArray, transform);
+	std::shared_ptr<Shader> shader = ShaderLibrary::Instance().Get("SolidColor");
+	shader->Bind();
+	shader->UploadUniformFloat4("u_Color", color);
+	Renderer::Submit(shader, rendererData.quadVertexArray, transform);
 }
 
 void Renderer::DrawMesh(std::shared_ptr<VertexArray> vertexArray, const glm::mat4& transform, const glm::vec4& color) {
-	rendererData.flatShader->Bind();
-	rendererData.flatShader->UploadUniformFloat4("u_Color", color);
-	Renderer::Submit(rendererData.flatShader, vertexArray, transform);
+	std::shared_ptr<Shader> shader = ShaderLibrary::Instance().Get("FlatShader");
+	shader->Bind();
+	shader->UploadUniformFloat4("u_Color", color);
+	Renderer::Submit(shader, vertexArray, transform);
 }
 
 void Renderer::DrawLines(std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, const glm::vec4& color, bool loop) {
-	rendererData.solidColorShader->Bind();
-	rendererData.solidColorShader->UploadUniformFloat4("u_Color", color);
-	Renderer::Submit(rendererData.solidColorShader, vertexArray, transform, loop ? GL_LINE_LOOP : GL_LINE_STRIP);
+	std::shared_ptr<Shader> shader = ShaderLibrary::Instance().Get("SolidColor");
+	shader->Bind();
+	shader->UploadUniformFloat4("u_Color", color);
+	Renderer::Submit(shader, vertexArray, transform, loop ? GL_LINE_LOOP : GL_LINE_STRIP);
 }

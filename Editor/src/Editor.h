@@ -35,7 +35,6 @@ private:
 	void SaveSceneAs(const std::filesystem::path& path);
 private:
 	std::shared_ptr<Scene> activeScene;
-	ShaderLibrary shaderLibrary;
 	OrthographicCameraController cameraController;
 
 	std::shared_ptr<VertexArray> triangleVA;

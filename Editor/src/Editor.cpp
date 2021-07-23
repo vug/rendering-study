@@ -29,7 +29,10 @@ void Editor::OnInit() {
 
     activeScene = std::make_shared<Scene>();
 
-    shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
+    ShaderLibrary::Instance().Load("assets/shaders/VertexPosColor.glsl");
+    ShaderLibrary::Instance().Load("assets/shaders/SolidColor.glsl");
+    ShaderLibrary::Instance().Load("assets/shaders/FlatShader.glsl");
+
     //auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
     //textureShader->Bind();
     //textureShader->UploadUniformInt("u_Texture", diffuseTextureSlot);

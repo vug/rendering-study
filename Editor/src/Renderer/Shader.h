@@ -45,6 +45,11 @@ public:
 
 	std::shared_ptr<Shader> Get(const std::string& name);
 	bool Exists(const std::string& name) const;
+
+	static ShaderLibrary& Instance() { static ShaderLibrary instance; return instance; }
+	ShaderLibrary(ShaderLibrary const&) = delete;
+	ShaderLibrary& operator=(ShaderLibrary const&) = delete;
 private:
+	ShaderLibrary() = default;
 	std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
 };
