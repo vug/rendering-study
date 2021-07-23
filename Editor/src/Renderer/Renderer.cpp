@@ -47,13 +47,13 @@ void Renderer::EndScene() {
 
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, GLenum primitiveType) {
+void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, GLenum primitiveType, uint32_t indexOffset, uint32_t indexCount) {
 	shader->Bind();
 	shader->UploadUniformMat4("u_ViewProjection", rendererData.viewProj);
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
 
 	vertexArray->Bind();
-	RenderCommand::DrawIndexed(vertexArray, 0, primitiveType, 0);
+	RenderCommand::DrawIndexed(vertexArray, indexCount, primitiveType, indexOffset);
 }
 
 // High-Level Command Library
@@ -77,6 +77,12 @@ void Renderer::DrawMesh(MeshComponent& mesh, MeshRendererComponent& meshRenderer
 	shader->Bind();
 	shader->UploadUniformFloat4("u_Color", meshRenderer.Color);
 	Renderer::Submit(shader, mesh.vertexArray, transform.GetTransform());
+}
+
+void Renderer::DrawMeshTriangle(const MeshComponent& mesh, const MeshRendererComponent& meshRenderer, const std::shared_ptr<Shader>& shader, const TransformComponent& transform, uint32_t triangleNo) {
+	shader->Bind();
+	shader->UploadUniformFloat4("u_Color", meshRenderer.Color);
+	Renderer::Submit(shader, mesh.vertexArray, transform.GetTransform(), GL_TRIANGLES, triangleNo * 3, 3);
 }
 
 void Renderer::DrawLines(std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, const glm::vec4& color, bool loop) {
