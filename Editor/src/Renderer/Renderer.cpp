@@ -53,7 +53,7 @@ void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_pt
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
 
 	vertexArray->Bind();
-	RenderCommand::DrawIndexed(vertexArray, 0, primitiveType);
+	RenderCommand::DrawIndexed(vertexArray, 0, primitiveType, 0);
 }
 
 // High-Level Command Library
