@@ -57,9 +57,23 @@ in vec3 g_Normal;
 uniform vec4 u_Color;
 
 void main() {
-    vec3 lightPos = vec3(2.0, 4.0, 0.0);
-    vec3 lightDir = normalize(lightPos - g_WorldPosition);
-    float flatShade = dot(lightDir, g_Normal);
+    vec3 lightPos, lightDir;
+    float flatShade = 0.0;
+
+    // Light 1
+    lightPos = vec3(2.0, 4.0, 4.0);
+    lightDir = normalize(lightPos - g_WorldPosition);
+    flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
+
+    // Light 2
+    lightPos = vec3(-3.0, -0.5, 2.0);
+    lightDir = normalize(lightPos - g_WorldPosition);
+    flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
+
+    // Light 3
+    lightPos = vec3(0.0, 0.0, -3.0);
+    lightDir = normalize(lightPos - g_WorldPosition);
+    flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
 
     color = vec4(u_Color.rgb * flatShade, u_Color.a);
     color2 = 50; // placeholder random entity ID :-)
