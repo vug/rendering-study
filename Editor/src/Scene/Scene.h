@@ -21,6 +21,9 @@ public:
 	void OnViewportResize(uint32_t width, uint32_t height);
 
 	entt::entity GetPrimaryCameraEntity();
+	bool renderWireframe = false;
+	bool renderOnlyFront = false;
+	bool renderFlatShading = true;
 private:
 	void OnCameraCreated(entt::registry& registry, entt::entity entity);
 private:

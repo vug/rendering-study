@@ -4,13 +4,31 @@
 
 #include <GLFW/glfw3.h>
 
-void RenderCommand::Init() {
+void RenderCommand::Init(bool isWireframe, bool onlyFrontFaces) {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+	//glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+
+	if (isWireframe) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glEnable(GL_LINE_SMOOTH); // anti-aliasing
+		glLineWidth(2.0f);
+		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	if (onlyFrontFaces) {
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+	}
+	else {
+		glDisable(GL_CULL_FACE);
+	}
 }
 
 void RenderCommand::PrintInfo() {
@@ -30,13 +48,7 @@ void RenderCommand::Clear() {
 
 void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount, GLenum primitiveType, bool isWireFrame) {
 	uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
-	if (isWireFrame) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
 	glDrawElements(primitiveType, count, GL_UNSIGNED_INT, nullptr);
-	if (isWireFrame) {
-		glPolygonMode(GL_FRONT, GL_FILL);
-	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

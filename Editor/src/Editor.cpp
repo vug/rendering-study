@@ -109,6 +109,16 @@ void Editor::OnImGuiRender() {
     std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
     ImGui::Text(zoomLevel.c_str());
     ImGui::Checkbox("Show demo window", &showDemoWindow);
+
+    ImGui::Separator();
+    ImGui::Checkbox("Wireframe", &activeScene->renderWireframe);
+    ImGui::Checkbox("Only Front Faces", &activeScene->renderOnlyFront);
+
+    ImGui::Separator();
+    if (ImGui::Button("Solid Color", ImVec2{ 100.0, 25.0 }))
+        activeScene->renderFlatShading = false;
+    if (ImGui::Button("Flat Shading", ImVec2{ 100.0, 25.0 }))
+        activeScene->renderFlatShading = true;
     ImGui::End();
 }
 

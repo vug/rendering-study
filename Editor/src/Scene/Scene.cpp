@@ -47,36 +47,37 @@ void Scene::OnUpdate(Timestep ts) {
 			}
 		}
 	}
-	if (mainCamera) {
-		Renderer::BeginScene(mainCamera->GetProjection(), cameraTransform);
+	if (!mainCamera) return;
+	RenderCommand::Init(renderWireframe, renderOnlyFront);
 
-		{
-			auto view = Registry.view<TransformComponent, QuadRendererComponent>();
-			for (auto [entity, transform, quad] : view.each()) {
-				Renderer::DrawSolidQuad(transform.GetTransform(), quad.Color);
-			}
+	Renderer::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
-		}
-
-		{
-			auto view = Registry.view<TransformComponent, LineComponent, LineRendererComponent>();
-			for (auto [entity, transform, line, lineRenderer] : view.each()) {
-				Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
-			}
-		}
-
-		auto view3 = Registry.view<TransformComponent, LineGeneratorComponent, LineRendererComponent>();
-		for (auto [entity, transform, line, lineRenderer] : view3.each()) {
-			Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
-		}
-
-		auto view4 = Registry.view<TransformComponent, MeshComponent, MeshRendererComponent>();
-		for (auto [entity, transform, mesh, meshRenderer] : view4.each()) {
-			Renderer::DrawMesh(mesh.vertexArray, transform.GetTransform(), meshRenderer.Color);
-		}
-
-		Renderer::EndScene();
+	auto view1 = Registry.view<TransformComponent, QuadRendererComponent>();
+	for (auto [entity, transform, quad] : view1.each()) {
+		Renderer::DrawSolidQuad(transform.GetTransform(), quad.Color);
 	}
+
+	auto view2 = Registry.view<TransformComponent, LineComponent, LineRendererComponent>();
+	for (auto [entity, transform, line, lineRenderer] : view2.each()) {
+		Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
+	}
+
+	auto view3 = Registry.view<TransformComponent, LineGeneratorComponent, LineRendererComponent>();
+	for (auto [entity, transform, line, lineRenderer] : view3.each()) {
+		Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);
+	}
+
+	auto view4 = Registry.view<TransformComponent, MeshComponent, MeshRendererComponent>();
+	for (auto [entity, transform, mesh, meshRenderer] : view4.each()) {
+		std::shared_ptr<Shader> shader = renderFlatShading ?
+			ShaderLibrary::Instance().Get("FlatShader") :
+			ShaderLibrary::Instance().Get("SolidColor");
+		shader->Bind();
+		shader->UploadUniformFloat4("u_Color", meshRenderer.Color);
+		Renderer::Submit(shader, mesh.vertexArray, transform.GetTransform());
+	}
+
+	Renderer::EndScene();
 }
 
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {
