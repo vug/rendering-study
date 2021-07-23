@@ -73,11 +73,10 @@ void Renderer::DrawSolidQuad(const glm::mat4& transform, const glm::vec4& color)
 	Renderer::Submit(shader, rendererData.quadVertexArray, transform);
 }
 
-void Renderer::DrawMesh(std::shared_ptr<VertexArray> vertexArray, const glm::mat4& transform, const glm::vec4& color) {
-	std::shared_ptr<Shader> shader = ShaderLibrary::Instance().Get("FlatShader");
+void Renderer::DrawMesh(MeshComponent& mesh, MeshRendererComponent& meshRenderer, std::shared_ptr<Shader> shader, TransformComponent& transform) {
 	shader->Bind();
-	shader->UploadUniformFloat4("u_Color", color);
-	Renderer::Submit(shader, vertexArray, transform);
+	shader->UploadUniformFloat4("u_Color", meshRenderer.Color);
+	Renderer::Submit(shader, mesh.vertexArray, transform.GetTransform());
 }
 
 void Renderer::DrawLines(std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, const glm::vec4& color, bool loop) {

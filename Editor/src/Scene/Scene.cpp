@@ -72,9 +72,7 @@ void Scene::OnUpdate(Timestep ts) {
 		std::shared_ptr<Shader> shader = renderFlatShading ?
 			ShaderLibrary::Instance().Get("FlatShader") :
 			ShaderLibrary::Instance().Get("SolidColor");
-		shader->Bind();
-		shader->UploadUniformFloat4("u_Color", meshRenderer.Color);
-		Renderer::Submit(shader, mesh.vertexArray, transform.GetTransform());
+		Renderer::DrawMesh(mesh, meshRenderer, shader, transform);
 	}
 
 	Renderer::EndScene();
