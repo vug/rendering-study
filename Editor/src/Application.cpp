@@ -157,7 +157,7 @@ int Application::Run() {
             OnViewportResize(viewportPanelSize.x, viewportPanelSize.y);
         }
         uint32_t textureID = viewportFramebuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void*)textureID, ImVec2{ viewportSize.x, viewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+        ImGui::Image((void*)(uintptr_t)textureID, ImVec2{ viewportSize.x, viewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
         auto windowSize = ImGui::GetWindowSize();
         ImVec2 minBound = ImGui::GetWindowPos();

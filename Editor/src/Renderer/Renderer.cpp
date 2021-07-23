@@ -47,13 +47,13 @@ void Renderer::EndScene() {
 
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, GLenum primitiveType, bool isWireFrame) {
+void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform, GLenum primitiveType) {
 	shader->Bind();
 	shader->UploadUniformMat4("u_ViewProjection", rendererData.viewProj);
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
 
 	vertexArray->Bind();
-	RenderCommand::DrawIndexed(vertexArray, 0, primitiveType, isWireFrame);
+	RenderCommand::DrawIndexed(vertexArray, 0, primitiveType);
 }
 
 // High-Level Command Library
