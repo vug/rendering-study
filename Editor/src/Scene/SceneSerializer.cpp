@@ -190,6 +190,7 @@ namespace ComponentSerializer {
 
 	static void serialize(YAML::Emitter& out, MeshRendererComponent& comp) {
 		out << YAML::Key << "Color" << YAML::Value << comp.Color;
+		out << YAML::Key << "IsTransparent" << YAML::Value << comp.IsTransparent;
 	}
 
 	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
@@ -284,6 +285,7 @@ namespace ComponentSerializer {
 
 	static void deserialize(YAML::Node node, MeshRendererComponent& comp) {
 		comp.Color = node["Color"].as<glm::vec4>();
+		comp.IsTransparent = node["IsTransparent"].as<bool>();
 	}
 
 	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>

@@ -470,6 +470,7 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 		if (isOpen) {
 			glm::vec4& color = mrc.Color;
 			ImGui::ColorEdit4("Color", glm::value_ptr(color));
+			ImGui::Checkbox("IsTransparent", &mrc.IsTransparent);
 			ImGui::TreePop();
 		}
 		if (shouldRemove)

@@ -5,7 +5,7 @@ Entities:
       Tag: Cube1
     TransformComponent:
       Translation: [0, 0, 0]
-      Rotation: [2.42600775, 3.63726592, 0.247836754]
+      Rotation: [2.25671077, 5.95331812, 0.247836754]
       Scale: [1, 1, 1]
     MeshComponent:
       Vertices:
@@ -31,13 +31,14 @@ Entities:
         - [3, 2, 6]
         - [6, 7, 3]
     MeshRendererComponent:
-      Color: [0.349019617, 1, 0.960784316, 1]
+      Color: [0.349019617, 1, 0.960784316, 0.549019635]
+      IsTransparent: true
   - Entity: 12837192831273
     TagComponent:
       Tag: Cube2
     TransformComponent:
       Translation: [0, -1, -2]
-      Rotation: [0.616101205, 0, 0.284488648]
+      Rotation: [0.616101205, 0.0349065848, 0.284488648]
       Scale: [1, 1, 1]
     MeshComponent:
       Vertices:
@@ -64,6 +65,7 @@ Entities:
         - [6, 7, 3]
     MeshRendererComponent:
       Color: [0.168627456, 0.588235319, 0.113725491, 1]
+      IsTransparent: false
   - Entity: 12837192831273
     TagComponent:
       Tag: Camera

@@ -152,11 +152,12 @@ struct MeshRendererComponent : public Component {
 	static const inline char* GetName() { return "MeshRendererComponent"; }
 
 	glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+	bool IsTransparent = false;
 
 	MeshRendererComponent() = default;
 	MeshRendererComponent(const MeshRendererComponent&) = default;
-	MeshRendererComponent(const glm::vec4& color) :
-		Color(color) {}
+	MeshRendererComponent(const glm::vec4& color, const bool& isTransparent) :
+		Color(color), IsTransparent(isTransparent) {}
 };
 
 struct LineGeneratorComponent : public Component {
