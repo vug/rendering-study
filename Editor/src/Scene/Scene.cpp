@@ -109,7 +109,7 @@ void Scene::OnUpdate(Timestep ts) {
 				glm::uvec3 triangleVertexIndices = mesh.Indices[i];
 				for (int j = 0; j < 3; j++) {
 					auto ix = triangleVertexIndices[j];
-					glm::vec3& v = mesh.Vertices[ix];
+					glm::vec3& v = mesh.Vertices[ix].Position;
 					glm::vec3 worldVertexPos = glm::vec3(transform.GetTransform() * glm::vec4{ v.x, v.y, v.z, 1.0 });
 					minDistOfTriangle = std::min(minDistOfTriangle, glm::length(worldVertexPos - mainCameraTranslation));
 				}

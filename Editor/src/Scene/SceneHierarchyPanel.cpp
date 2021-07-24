@@ -425,13 +425,13 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 		auto& mc = handle.get<MeshComponent>();
 
 		if (isOpen) {
-			std::vector<glm::vec3>& vertices = mc.Vertices;
+			std::vector<MeshComponent::MeshVertex>& vertices = mc.Vertices;
 			int numVertices = (int)vertices.size();
 			std::vector<glm::uvec3>& indices = mc.Indices;
 			int numIndices = (int)indices.size();
 			int i = 0;
-			for (glm::vec3& v : vertices) {
-				if (ImGui::InputFloat3(("v" + std::to_string(i)).c_str(), glm::value_ptr(v), "%.3f", treeNodeFlags)) {
+			for (MeshComponent::MeshVertex& v : vertices) {
+				if (ImGui::InputFloat3(("v" + std::to_string(i)).c_str(), glm::value_ptr(v.Position), "%.3f", treeNodeFlags)) {
 					mc.ComputeVertexArray();
 				}
 				i++;

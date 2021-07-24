@@ -176,7 +176,7 @@ namespace ComponentSerializer {
 		out << YAML::Key << "Vertices" << YAML::Value;
 		out << YAML::BeginSeq; // Vertices
 		for (auto& v : comp.Vertices) {
-			out << v;
+			out << v.Position;
 		}
 		out << YAML::EndSeq; // Vertices
 
@@ -270,10 +270,10 @@ namespace ComponentSerializer {
 	}
 
 	static void deserialize(YAML::Node node, MeshComponent& comp) {
-		std::vector<glm::vec3> vertices = {};
+		std::vector<MeshComponent::MeshVertex> vertices = {};
 		std::vector<glm::uvec3> indices = {};
 		for (auto vertex : node["Vertices"]) {
-			vertices.push_back(vertex.as<glm::vec3>());
+			vertices.push_back(MeshComponent::MeshVertex{ vertex.as<glm::vec3>() });
 		}
 		for (auto index : node["Indices"]) {
 			indices.push_back(index.as<glm::uvec3>());

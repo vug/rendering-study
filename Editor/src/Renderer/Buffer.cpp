@@ -6,6 +6,10 @@
  * Vertex Buffer
  */
 
+VertexBuffer::VertexBuffer() {
+    glCreateBuffers(1, &rendererID);
+}
+
 VertexBuffer::VertexBuffer(float* vertices, uint32_t size) {
     glCreateBuffers(1, &rendererID);
     Update(vertices, size);
@@ -23,7 +27,7 @@ void VertexBuffer::Unbind() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void VertexBuffer::Update(float* vertices, uint32_t size) {
+void VertexBuffer::Update(const void* vertices, uint32_t size) {
     glBindBuffer(GL_ARRAY_BUFFER, rendererID);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }

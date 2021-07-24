@@ -96,13 +96,15 @@ private:
 
 class VertexBuffer {
 public:
+	VertexBuffer();
+	// Create VertexBuffer with only vertex positions
 	VertexBuffer(float* vertices, uint32_t size);
 	~VertexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
 
-	void Update(float* vertices, uint32_t size);
+	void Update(const void* vertices, uint32_t size);
 
 	void SetLayout(const BufferLayout& layout) { Layout = layout; }
 	const BufferLayout& GetLayout() const { return Layout; }
