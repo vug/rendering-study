@@ -43,6 +43,7 @@ void RenderCommand::SetClearColor(const glm::vec4& color) {
 }
 
 void RenderCommand::Clear() {
+	glDepthMask(GL_TRUE); // when not set true depth buffer won't be cleaned
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

@@ -1,4 +1,6 @@
-#include<iostream>
+#include <algorithm>
+#include <iostream>
+#include <map>
 
 #include "Scene.h"
 
@@ -33,9 +35,12 @@ void Scene::DestroyEntity(entt::entity entity) {
 	Registry.destroy(entity);
 }
 
+void foo(const MeshComponent& m) {}
+
 void Scene::OnUpdate(Timestep ts) {
 	Camera* mainCamera = nullptr;
 	glm::mat4 cameraTransform;
+	glm::vec3 mainCameraTranslation;
 
 	{
 		auto view = Registry.view<TransformComponent, CameraComponent>();
@@ -43,6 +48,7 @@ void Scene::OnUpdate(Timestep ts) {
 			if (camera.Primary) {
 				mainCamera = &camera.Camera;
 				cameraTransform = transform.GetTransform();
+				mainCameraTranslation = transform.Translation;
 				break;
 			}
 		}
@@ -68,11 +74,54 @@ void Scene::OnUpdate(Timestep ts) {
 	}
 
 	auto view4 = Registry.view<TransformComponent, MeshComponent, MeshRendererComponent>();
+	class TriangleParams {
+	public:
+		MeshComponent* mesh;
+		MeshRendererComponent* meshRenderer;
+		std::shared_ptr<Shader> shader;
+		TransformComponent* transform;
+		uint32_t triangleNo;
+		float dist = 100000.0f;
+
+		TriangleParams(const TriangleParams&) = default;
+	};
+	std::vector<TriangleParams> triangles;
+	glDepthMask(GL_TRUE);
 	for (auto [entity, transform, mesh, meshRenderer] : view4.each()) {
 		std::shared_ptr<Shader> shader = renderFlatShading ?
 			ShaderLibrary::Instance().Get("FlatShader") :
 			ShaderLibrary::Instance().Get("SolidColor");
-		Renderer::DrawMesh(mesh, meshRenderer, shader, transform);
+		// Render opaque objects one draw call per mesh using regular depth buffer
+		if (!meshRenderer.IsTransparent) {
+			Renderer::DrawMesh(mesh, meshRenderer, shader, transform);
+		}
+
+		// store transparent object triangles in a vector
+		else {
+			int indexCount = mesh.vertexArray->GetIndexBuffer()->GetCount();
+			int numTriangles = indexCount / 3;
+			for (int i = 0; i < numTriangles; i++) {
+				float minDistOfTriangle = 1000000.0f;
+				glm::uvec3 triangleVertexIndices = mesh.Indices[i];
+				for (int j = 0; j < 3; j++) {
+					auto ix = triangleVertexIndices[j];
+					glm::vec3& v = mesh.Vertices[ix];
+					glm::vec3 worldVertexPos = glm::vec3(transform.GetTransform() * glm::vec4{ v.x, v.y, v.z, 1.0 });
+					minDistOfTriangle = std::min(minDistOfTriangle, glm::length(worldVertexPos - mainCameraTranslation));
+				}
+				TriangleParams tp = TriangleParams{ &mesh, &meshRenderer, shader, &transform, (uint32_t)i, minDistOfTriangle };
+				triangles.push_back(tp);
+			}
+		}
+	}
+
+	// sort transparent triangles by distance to camera
+	// draw them without writing to depth buffer
+	glDepthMask(GL_FALSE);
+	std::sort(triangles.rbegin(), triangles.rend(), 
+		[](const TriangleParams& tp1, const TriangleParams& tp2) { return tp1.dist < tp2.dist; });
+	for (TriangleParams& tp : triangles) {
+		Renderer::DrawMeshTriangle(*tp.mesh, *tp.meshRenderer, tp.shader, *tp.transform, tp.triangleNo);
 	}
 
 	Renderer::EndScene();
