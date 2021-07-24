@@ -105,6 +105,16 @@ void Editor::OnImGuiRender() {
 
     ImGui::Begin("Stats");
     std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
+
+    std::string name = "None";
+    if (hoveredEntityID >= 0) {
+        entt::basic_handle<entt::entity> hoveredEntityHandle = { activeScene->Reg(), (entt::entity)hoveredEntityID };
+        if (hoveredEntityHandle.valid())
+            name = hoveredEntityHandle.get<TagComponent>().Tag;
+    }
+    ImGui::Text("Hovered Entity %s", name.c_str());
+
+
     ImGui::Text(fps.c_str());
     std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
     ImGui::Text(zoomLevel.c_str());
@@ -214,8 +224,7 @@ void Editor::OnUpdate(Timestep ts) {
     int mouseY = (int)my;
 
     if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
-        int pixelData = viewportFramebuffer->ReadPixel(1, mouseX, mouseY);
-        std::cout << "Min Bounds " << mouseX << ", " << mouseY << ": " << pixelData << std::endl;
+        hoveredEntityID = viewportFramebuffer->ReadPixel(1, mouseX, mouseY);
     }
 
     // Non-Scene example rendering commands. Will be removed or moved into a Scene

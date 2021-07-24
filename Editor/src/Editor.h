@@ -56,4 +56,6 @@ private:
 	imgui_addons::ImGuiFileBrowser file_dialog;
 	bool shouldRenderOpenFileBrowser = false;
 	bool shouldRenderSaveFileBrowser = false;
+
+	int hoveredEntityID = -4;
 };
