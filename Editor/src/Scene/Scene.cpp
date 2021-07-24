@@ -14,8 +14,14 @@ void Scene::OnCameraCreated(entt::registry& registry, entt::entity entity) {
 	cc.Camera.SetViewportSize(viewportWidth, viewportHeight);
 }
 
+void Scene::OnMeshCreated(entt::registry& registry, entt::entity entity) {
+	MeshComponent& comp = registry.get<MeshComponent>(entity);
+	comp.entityID = (int)entity;
+}
+
 Scene::Scene() {
 	Registry.on_construct<CameraComponent>().connect<&Scene::OnCameraCreated>(this);
+	Registry.on_construct<MeshComponent>().connect<&Scene::OnMeshCreated>(this);
 }
 
 Scene::~Scene() {
@@ -34,8 +40,6 @@ entt::entity Scene::CreateEntity(const std::string& name) {
 void Scene::DestroyEntity(entt::entity entity) {
 	Registry.destroy(entity);
 }
-
-void foo(const MeshComponent& m) {}
 
 void Scene::OnUpdate(Timestep ts) {
 	Camera* mainCamera = nullptr;

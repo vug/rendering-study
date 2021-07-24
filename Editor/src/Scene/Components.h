@@ -131,6 +131,7 @@ public:
 		vertexArray->GetIndexBuffer()->Update(flat_index_array, (uint32_t)(3 * Indices.size()));
 	}
 public:
+	int entityID = -2;
 	std::vector<glm::vec3> Vertices = { {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 0.0f, 5.0f, 0.0f} };
 	std::vector<glm::uvec3> Indices = { {0, 1, 2} };
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
