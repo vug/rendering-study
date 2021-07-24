@@ -109,14 +109,14 @@ public:
 
 	struct MeshVertex {
 		glm::vec3 Position;
-		//int EntityID;
+		int EntityID = -2; // -2 when MeshVertex was not given an entityID
 	};
 
 	MeshComponent() {
 		const auto vertexBuffer = std::make_shared<VertexBuffer>();
 		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
-			//{ ShaderDataType::Int, "a_EntityID" },
+			{ ShaderDataType::Int, "a_EntityID" },
 		});
 		vertexBuffer->Update(Vertices.data(), (uint32_t)(sizeof(MeshVertex) * 3 * Vertices.size()));
 
@@ -130,17 +130,18 @@ public:
 	MeshComponent(const MeshComponent&) = default;
 
 	void ComputeVertexArray() {
+		for (auto& v : Vertices) { v.EntityID = entityID; }
 		vertexArray->GetVertexBuffers()[0]->Update(Vertices.data(), (uint32_t)(sizeof(MeshVertex) * 3 * Vertices.size()));
 
 		uint32_t* flat_index_array = static_cast<uint32_t*>(glm::value_ptr(Indices.front()));
 		vertexArray->GetIndexBuffer()->Update(flat_index_array, (uint32_t)(3 * Indices.size()));
 	}
 public:
-	int entityID = -2;
+	int entityID = -3; // -3 when component was not given an entityID
 	std::vector<MeshVertex> Vertices = { 
-		{{ 0.0f, 0.0f, 0.0f }}, 
-		{{ 1.0f, 0.0f, 0.0f }}, 
-		{{ 0.0f, 1.0f, 0.0f }}
+		{{ 0.0f, 0.0f, 0.0f }, entityID},
+		{{ 1.0f, 0.0f, 0.0f }, entityID},
+		{{ 0.0f, 1.0f, 0.0f }, entityID}
 	};
 	std::vector<glm::uvec3> Indices = { {0, 1, 2} };
 	std::shared_ptr<VertexArray> vertexArray = nullptr;

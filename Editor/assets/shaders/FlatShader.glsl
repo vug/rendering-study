@@ -5,14 +5,17 @@
 #version 460 core
 
 layout(location = 0) in vec3 a_Position;
+layout(location = 1) in int a_EntityID;
 
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Transform;
 
 out vec4 v_WorldPosition;
+out flat int v_EntityID;
 
 void main() {
     v_WorldPosition = u_Transform * vec4(a_Position, 1.0);
+    v_EntityID = a_EntityID;
     gl_Position = u_ViewProjection * v_WorldPosition;
 }
 
@@ -24,8 +27,11 @@ layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
 in vec4 v_WorldPosition[];
+in flat int v_EntityID[];
+
 out vec3 g_WorldPosition;
 out vec3 g_Normal;
+out flat int g_EntityID;
 
 void main()
 {
@@ -39,6 +45,7 @@ void main()
         gl_Position = gl_in[n].gl_Position;
         g_WorldPosition = v_WorldPosition[n].xyz;
         g_Normal = normal;
+        g_EntityID = v_EntityID[n];
         EmitVertex();
     }
     EndPrimitive();
@@ -53,6 +60,7 @@ layout(location = 1) out int color2; // -1 no entity
 
 in vec3 g_WorldPosition;
 in vec3 g_Normal;
+in flat int g_EntityID;
 
 uniform vec4 u_Color;
 
@@ -76,5 +84,5 @@ void main() {
     flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
 
     color = vec4(u_Color.rgb * flatShade, u_Color.a);
-    color2 = 50; // placeholder random entity ID :-)
+    color2 = g_EntityID;
 }

@@ -17,6 +17,7 @@ void Scene::OnCameraCreated(entt::registry& registry, entt::entity entity) {
 void Scene::OnMeshCreated(entt::registry& registry, entt::entity entity) {
 	MeshComponent& comp = registry.get<MeshComponent>(entity);
 	comp.entityID = (int)entity;
+	comp.ComputeVertexArray();
 }
 
 Scene::Scene() {
