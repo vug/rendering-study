@@ -12,6 +12,7 @@
 #include "Editor.h"
 
 #include "Input.h"
+#include "Layers/TriangleExampleLayer.h"
 #include "Math.h"
 #include "Scene/Components.h"
 #include "Scene/SceneSerializer.h"
@@ -22,42 +23,27 @@
 
 Editor::Editor() : Application("Ugur's Editor"), 
     activeScene(std::make_shared<Scene>()), 
-    editorCamera(EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f)) { }
+    editorCamera(EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f)) {
+
+    //AddLayer(new TriangleExampleLayer());
+}
+
+void Editor::AddLayer(Layer* layer) {
+    layers.push_back(layer);
+}
 
 void Editor::OnInit() {
     RegisterScrollListener(&editorCamera);
     RegisterKeyListener(this);
     RegisterMouseButtonListener(this);
 
-    ShaderLibrary::Instance().Load("assets/shaders/VertexPosColor.glsl");
     ShaderLibrary::Instance().Load("assets/shaders/SolidColor.glsl");
     ShaderLibrary::Instance().Load("assets/shaders/FlatShader.glsl");
-
-    //auto textureShader = shaderLibrary.Load("assets/shaders/Texture.glsl");
-    //textureShader->Bind();
-    //textureShader->UploadUniformInt("u_Texture", diffuseTextureSlot);
-    //textureCheckerboard.reset(new Texture2D("assets/textures/Checkerboard.png"));
-    //textureWithAlpha.reset(new Texture2D("assets/textures/ChernoLogo.png"));
        
-    //triangleVA.reset(new VertexArray());  
-    //float triangleVertices[3 * 7] = {
-    //    -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
-    //     0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-    //     0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
-    //};
-    //const auto triangleVB = std::make_shared<VertexBuffer>(triangleVertices, (uint32_t)sizeof(triangleVertices));
-    //BufferLayout layout = {
-    //    { ShaderDataType::Float3, "a_Position" },
-    //    { ShaderDataType::Float4, "a_Color" },
-    //};
-    //triangleVB->SetLayout(layout);
-    //triangleVA->AddVertexBuffer(triangleVB);
-
-    //uint32_t triangleIndices[3] = { 0, 1, 2 };
-    //const auto triangleIB = std::make_shared<IndexBuffer>(triangleIndices, (uint32_t)(sizeof(triangleIndices) / sizeof(uint32_t)));
-    //triangleVA->SetIndexBuffer(triangleIB);
-
     sceneHierarchyPanel.SetContext(activeScene);
+
+    for (auto& layer : layers)
+        layer->OnInit();
 }
 
 void Editor::OnImGuiRender() {
@@ -239,18 +225,8 @@ void Editor::OnUpdate(Timestep ts) {
         hoveredEntityID = viewportFramebuffer->ReadPixel(1, mouseX, mouseY);
     }
 
-    // Non-Scene example rendering commands. Will be removed or moved into a Scene
-    {
-        //auto triangleShader = shaderLibrary.Get("VertexPosColor");
-        //Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
-
-        //auto textureShader = shaderLibrary.Get("Texture");
-        //textureCheckerboard->Bind(diffuseTextureSlot);
-        //Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-
-        //textureWithAlpha->Bind(diffuseTextureSlot);
-        //Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
-    }
+    for (auto& layer : layers)
+        layer->OnUpdate(ts);
 }
 
 void Editor::OnShutdown() {

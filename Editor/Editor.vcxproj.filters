@@ -99,6 +99,9 @@
     <ClCompile Include="src\Renderer\EditorCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Layers\TriangleExampleLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vendor\glad\glad.h">
@@ -209,6 +212,12 @@
     <ClInclude Include="src\Renderer\EditorCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Layers\TriangleExampleLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Layers\Layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\Checkerboard.png">
@@ -222,9 +231,9 @@
     <None Include="assets\shaders\Texture.glsl" />
     <None Include="assets\shaders\SolidColor.glsl" />
     <None Include="assets\shaders\VertexPosColor.glsl" />
-    <None Include="assets\scenes\Example.scene" />
     <None Include="assets\scenes\OtherScene.scene" />
     <None Include="assets\shaders\FlatShader.glsl" />
     <None Include="assets\scenes\Cubes.scene" />
+    <None Include="assets\scenes\Example.scene" />
   </ItemGroup>
 </Project>

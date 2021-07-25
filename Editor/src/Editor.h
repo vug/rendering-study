@@ -9,6 +9,7 @@
 #include "imgui/ImGuizmo.h"
 #include "imgui/ImGuiFileBrowser.h"
 
+#include "Layers/Layer.h"
 #include "Scene/Scene.h"
 #include "Scene/SceneHierarchyPanel.h"
 #include "Renderer/EditorCamera.h"
@@ -20,6 +21,7 @@
 class Editor : public Application, public KeyListener, public MouseButtonListener {
 public:
 	Editor();
+	void AddLayer(Layer* layer);
 private:
 	void OnInit() override;
 	void OnUpdate(Timestep ts) override;
@@ -35,11 +37,6 @@ private:
 	void SaveSceneAs(const std::filesystem::path& path);
 private:
 	std::shared_ptr<Scene> activeScene;
-
-	std::shared_ptr<VertexArray> triangleVA;
-	std::shared_ptr<Texture2D> textureCheckerboard;
-	std::shared_ptr<Texture2D> textureWithAlpha;
-	int diffuseTextureSlot = 0;
 
 	EditorCamera editorCamera;
 	entt::entity mainCameraEntity;
@@ -58,4 +55,6 @@ private:
 	bool shouldRenderSaveFileBrowser = false;
 
 	int hoveredEntityID = -4;
+
+	std::vector<Layer*> layers;
 };
