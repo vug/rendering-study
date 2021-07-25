@@ -28,7 +28,7 @@ void OrthographicCameraController::OnUpdate(Timestep ts) {
     camera.SetRotation(cameraRotation);
 }
 
-void OrthographicCameraController::OnScrollUpdate(float xOffset, float yOffset) {
+void OrthographicCameraController::OnMouseScroll(float xOffset, float yOffset) {
     zoomLevel -= yOffset * 0.25f;
     zoomLevel = std::max(zoomLevel, 0.25f);
     camera.SetProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel);

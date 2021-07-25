@@ -50,7 +50,7 @@ void Application::scrollCallback(GLFWwindow* window, double xoffset, double yoff
         return;
     }
     for (auto listener : app->scrollListeners) {
-        listener->OnScrollUpdate((float)xoffset, (float)yoffset);
+        listener->OnMouseScroll((float)xoffset, (float)yoffset);
     }
 }
 

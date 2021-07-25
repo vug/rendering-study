@@ -10,7 +10,7 @@ public:
 	OrthographicCameraController(float aspectRatio); // AspectRatio * 2 units
 
 	void OnUpdate(Timestep ts);
-	void OnScrollUpdate(float xOffset, float yOffset) override;
+	void OnMouseScroll(float xOffset, float yOffset) override;
 	void OnWindowResize(int width, int height) override;
 	void OnViewportResized(float width, float height);
 

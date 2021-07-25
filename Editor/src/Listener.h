@@ -7,7 +7,7 @@ public:
 
 class ScrollListener {
 public:
-	virtual void OnScrollUpdate(float xOffset, float yOffset) = 0;
+	virtual void OnMouseScroll(float xOffset, float yOffset) = 0;
 };
 
 class MouseButtonListener {
