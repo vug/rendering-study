@@ -42,26 +42,31 @@ void Scene::DestroyEntity(entt::entity entity) {
 	Registry.destroy(entity);
 }
 
-void Scene::OnUpdate(Timestep ts) {
-	Camera* mainCamera = nullptr;
-	glm::mat4 cameraTransform;
-	glm::vec3 mainCameraTranslation;
+void Scene::OnUpdate(Timestep ts, EditorCamera& editorCamera) {
+	RenderCommand::Init(renderWireframe, renderOnlyFront);
 
+	Camera* sceneCamera = nullptr;
+	glm::mat4 cameraTransform;
+	glm::vec3 cameraTranslation;
 	{
 		auto view = Registry.view<TransformComponent, CameraComponent>();
 		for (auto [entity, transform, camera] : view.each()) {
 			if (camera.Primary) {
-				mainCamera = &camera.Camera;
+				sceneCamera = &camera.Camera;
 				cameraTransform = transform.GetTransform();
-				mainCameraTranslation = transform.Translation;
+				cameraTranslation = transform.Translation;
 				break;
 			}
 		}
 	}
-	if (!mainCamera) return;
-	RenderCommand::Init(renderWireframe, renderOnlyFront);
-
-	Renderer::BeginScene(mainCamera->GetProjection(), cameraTransform);
+	if (sceneCamera) {
+		Renderer::BeginScene(sceneCamera->GetProjection(), cameraTransform);
+	}
+	else {
+		Renderer::BeginScene(editorCamera.GetProjection(), editorCamera.GetViewMatrix());
+		cameraTranslation = editorCamera.GetPosition();
+	}
+	
 
 	auto view1 = Registry.view<TransformComponent, QuadRendererComponent>();
 	for (auto [entity, transform, quad] : view1.each()) {
@@ -112,7 +117,7 @@ void Scene::OnUpdate(Timestep ts) {
 					auto ix = triangleVertexIndices[j];
 					glm::vec3& v = mesh.Vertices[ix].Position;
 					glm::vec3 worldVertexPos = glm::vec3(transform.GetTransform() * glm::vec4{ v.x, v.y, v.z, 1.0 });
-					minDistOfTriangle = std::min(minDistOfTriangle, glm::length(worldVertexPos - mainCameraTranslation));
+					minDistOfTriangle = std::min(minDistOfTriangle, glm::length(worldVertexPos - cameraTranslation));
 				}
 				TriangleParams tp = TriangleParams{ &mesh, &meshRenderer, shader, &transform, (uint32_t)i, minDistOfTriangle };
 				triangles.push_back(tp);

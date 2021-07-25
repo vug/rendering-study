@@ -21,10 +21,14 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographicCamera.h"
 
-Editor::Editor() : Application("Ugur's Editor"), cameraController(1280.0f / 720.0f), activeScene(std::make_shared<Scene>()) { }
+Editor::Editor() : Application("Ugur's Editor"), 
+    cameraController(1280.0f / 720.0f), 
+    activeScene(std::make_shared<Scene>()), 
+    editorCamera(EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f)) { }
 
 void Editor::OnInit() {
     RegisterScrollListener(&cameraController);
+    RegisterScrollListener(&editorCamera);
     RegisterKeyListener(this);
     RegisterMouseButtonListener(this);
     //RegisterWindowListener(&cameraController);
@@ -104,7 +108,6 @@ void Editor::OnImGuiRender() {
     sceneHierarchyPanel.OnImguiRender();
 
     ImGui::Begin("Stats");
-    std::string fps = std::string("FPS: ") + std::to_string(framesPerSecond);
 
     std::string name = "None";
     if (hoveredEntityID >= 0) {
@@ -114,8 +117,17 @@ void Editor::OnImGuiRender() {
     }
     ImGui::Text("Hovered Entity: %s", name.c_str());
 
+    ImGui::Separator();
+    ImGui::Text("Editor Camera");
+    glm::vec3 pos = editorCamera.GetPosition();
+    ImGui::Text("Position: %.1f, %.1f, %.1f", pos.x, pos.y, pos.z);
+    glm::vec3 foc = editorCamera.GetFocalPoint();
+    ImGui::Text("Focal Pt: %.1f, %.1f, %.1f", foc.x, foc.y, foc.z);
+    ImGui::Text("Distance: %.1f", editorCamera.GetDistance());
+    ImGui::Text("PitchYaw: %.1f, %1.f", editorCamera.GetPitch(), editorCamera.GetYaw());
 
-    ImGui::Text(fps.c_str());
+    ImGui::Separator();
+    ImGui::Text("FPS: %.1f", framesPerSecond);
     std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
     ImGui::Text(zoomLevel.c_str());
     ImGui::Checkbox("Show demo window", &showDemoWindow);
@@ -133,7 +145,7 @@ void Editor::OnImGuiRender() {
 }
 
 void Editor::OnImGuiViewportRender() {
-    // Gizmos
+    // Transformation Gizmos
     entt::basic_handle selectedHandle{ activeScene->Reg(), sceneHierarchyPanel.GetSelectedEntity() };
     if (selectedHandle.valid() && shouldShowGizmo) {
         ImGui::Text("Selected Entity: %s", selectedHandle.get<TagComponent>().Tag.c_str());
@@ -142,37 +154,44 @@ void Editor::OnImGuiViewportRender() {
         ImGuizmo::SetDrawlist();
         ImGuizmo::SetRect(viewportBounds[0].x, viewportBounds[0].y, viewportBounds[1].x - viewportBounds[0].x, viewportBounds[1].y - viewportBounds[0].y);
 
-        // Camera
-        auto cameraEntity = activeScene->GetPrimaryCameraEntity();
-        entt::basic_handle cameraHandle{ activeScene->Reg(), cameraEntity };
-        if (cameraHandle.valid()) {
-            const auto& cameraComponent = cameraHandle.get<CameraComponent>();
-            const glm::mat4& cameraProjection = cameraComponent.Camera.GetProjection();
-            glm::mat4 cameraView = glm::inverse(cameraHandle.get<TransformComponent>().GetTransform());
+        // 
+        glm::mat4 cameraProjection;
+        glm::mat4 cameraView;
+        // Scene Camera
+        auto sceneCameraEntity = activeScene->GetPrimaryCameraEntity();
+        entt::basic_handle sceneCameraHandle{ activeScene->Reg(), sceneCameraEntity };
+        if (sceneCameraHandle.valid()) {
+            const auto& cameraComponent = sceneCameraHandle.get<CameraComponent>();
+            cameraProjection = cameraComponent.Camera.GetProjection();
+            cameraView = glm::inverse(sceneCameraHandle.get<TransformComponent>().GetTransform());
+        }
+        else { // Editor Camera always exists
+            cameraProjection = editorCamera.GetProjection();
+            cameraView = editorCamera.GetViewMatrix();
+            cameraView = glm::inverse(cameraView);
+        }
 
-            // Entity transform
-            TransformComponent& tc = selectedHandle.get<TransformComponent>();
-            glm::mat4 transform = tc.GetTransform();
+        // Entity transform
+        TransformComponent& tc = selectedHandle.get<TransformComponent>();
+        glm::mat4 transform = tc.GetTransform();
+        // Snapping
+        bool shouldSnap = Input::IsKeyHeld(GLFW_KEY_LEFT_CONTROL);
+        // 45 degrees for rotation, 0.5m for translate and scale
+        float snapValue = gizmoType == ImGuizmo::OPERATION::ROTATE ? 45.0f : 0.5f;
+        float snapValues[3] = { snapValue, snapValue, snapValue };
 
-            // Snapping
-            bool shouldSnap = Input::IsKeyHeld(GLFW_KEY_LEFT_CONTROL);
-            // 45 degrees for rotation, 0.5m for translate and scale
-            float snapValue = gizmoType == ImGuizmo::OPERATION::ROTATE ? 45.0f : 0.5f;
-            float snapValues[3] = { snapValue, snapValue, snapValue };
+        ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+            gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, shouldSnap ? snapValues : nullptr);
 
-            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-                gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, shouldSnap ? snapValues : nullptr);
+        if (ImGuizmo::IsUsing()) {
+            glm::vec3 translation, rotation, scale;
+            Math::DecomposeTransform(transform, translation, rotation, scale);
 
-            if (ImGuizmo::IsUsing()) {
-                glm::vec3 translation, rotation, scale;
-                Math::DecomposeTransform(transform, translation, rotation, scale);
-
-                tc.Translation = translation;
-                // To prevent gimble-lock
-                glm::vec3 deltaRotation = rotation - tc.Rotation;
-                tc.Rotation += deltaRotation;
-                tc.Scale = scale;
-            }
+            tc.Translation = translation;
+            // To prevent gimble-lock
+            glm::vec3 deltaRotation = rotation - tc.Rotation;
+            tc.Rotation += deltaRotation;
+            tc.Scale = scale;
         }
     }
 }
@@ -180,12 +199,15 @@ void Editor::OnImGuiViewportRender() {
 void Editor::OnViewportResize(float width, float height) {
     cameraController.OnViewportResized(width, height);
     activeScene->OnViewportResize((uint32_t)width, (uint32_t)height);
+    editorCamera.SetViewportSize(width, height);
 }
 
 void Editor::OnUpdate(Timestep ts) {
     if (GetIsViewportPaneFocused()) {
         cameraController.OnUpdate(ts);
     }
+
+    editorCamera.OnUpdate(ts);
 
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     RenderCommand::Clear();
@@ -210,7 +232,7 @@ void Editor::OnUpdate(Timestep ts) {
         }
     }
 
-    activeScene->OnUpdate(ts);
+    activeScene->OnUpdate(ts, editorCamera);
 
     auto [mx, my] = ImGui::GetMousePos();
     mx -= viewportBounds[0].x;
@@ -284,7 +306,6 @@ void Editor::OnKeyPress(int key, int action, int mods) {
 
 void Editor::OnMouseButtonClicked(int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !ImGuizmo::IsOver()) {
-        std::cout << "Mouse!" << std::endl;
         sceneHierarchyPanel.SetSelectedEntity((entt::entity)hoveredEntityID);
     }
 }

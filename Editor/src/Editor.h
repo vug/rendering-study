@@ -11,6 +11,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/SceneHierarchyPanel.h"
+#include "Renderer/EditorCamera.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
@@ -43,6 +44,7 @@ private:
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
 
+	EditorCamera editorCamera;
 	entt::entity mainCameraEntity;
 	entt::entity secondCameraEntity;
 

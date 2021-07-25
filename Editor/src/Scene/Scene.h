@@ -6,6 +6,7 @@
 
 #include "Components.h"
 #include "../Timestep.h"
+#include "../Renderer/EditorCamera.h"
 
 class Scene {
 public:
@@ -17,7 +18,7 @@ public:
 
 	entt::registry& Reg() { return Registry; }
 
-	void OnUpdate(Timestep ts);
+	void OnUpdate(Timestep ts, EditorCamera& editorCamera);
 	void OnViewportResize(uint32_t width, uint32_t height);
 
 	entt::entity GetPrimaryCameraEntity();
