@@ -21,6 +21,7 @@ Application::Application(std::string name)
     assert(window); // GLFW window creation failed
     glfwSetWindowUserPointer(window, this);
     glfwSetKeyCallback(window, Application::keyCallback);
+    glfwSetMouseButtonCallback(window, Application::mouseButtonCallback);
     glfwSetScrollCallback(window, Application::scrollCallback);
     glfwSetWindowSizeCallback(window, Application::windowSizeCallback);
     glfwMakeContextCurrent(window);
@@ -31,6 +32,15 @@ void Application::keyCallback(GLFWwindow* window, int key, int scancode, int act
     auto app = (Application*)glfwGetWindowUserPointer(window);
     for (auto listener : app->keyListeners) {
         listener->OnKeyPress(key, action, mods);
+    }
+}
+
+void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    auto app = (Application*)glfwGetWindowUserPointer(window);
+    if (!app->isViewportPaneHovered)
+        return;
+    for (auto listener : app->mouseButtonListeners) {
+        listener->OnMouseButtonClicked(button, action, mods);
     }
 }
 
@@ -55,6 +65,10 @@ void Application::windowSizeCallback(GLFWwindow* window, int width, int height) 
 
 void Application::RegisterKeyListener(KeyListener* listener) {
     keyListeners.push_back(listener);
+}
+
+void Application::RegisterMouseButtonListener(MouseButtonListener* listener) {
+    mouseButtonListeners.push_back(listener);
 }
 
 void Application::RegisterScrollListener(ScrollListener* listener) {

@@ -20,6 +20,7 @@ protected:
 	Application(std::string name);
 	void Close();
 	void RegisterKeyListener(KeyListener* listener);
+	void RegisterMouseButtonListener(MouseButtonListener* listener);
 	void RegisterScrollListener(ScrollListener* listener);
 	void RegisterWindowListener(WindowListener* listener);
 	const bool& GetIsViewportPaneFocused() { return isViewportPaneFocused; }
@@ -42,12 +43,14 @@ private:
 	virtual void OnShutdown() = 0;
 
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	static void windowSizeCallback(GLFWwindow* window, int width, int height);
 private:
 	static Application* instance;
 	float lastFrameTime = 0.0f;
 	std::vector<KeyListener*> keyListeners;
+	std::vector<MouseButtonListener*> mouseButtonListeners;
 	std::vector<ScrollListener*> scrollListeners;
 	std::vector<WindowListener*> windowListeners;
 	glm::vec2 viewportSize = { 0.0f, 0.0f };
