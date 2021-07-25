@@ -15,8 +15,6 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
-#include "Renderer/OrthographicCamera.h"
-#include "OrthographicCameraController.h"
 #include "Renderer/Texture.h"
 
 class Editor : public Application, public KeyListener, public MouseButtonListener {
@@ -37,7 +35,6 @@ private:
 	void SaveSceneAs(const std::filesystem::path& path);
 private:
 	std::shared_ptr<Scene> activeScene;
-	OrthographicCameraController cameraController;
 
 	std::shared_ptr<VertexArray> triangleVA;
 	std::shared_ptr<Texture2D> textureCheckerboard;

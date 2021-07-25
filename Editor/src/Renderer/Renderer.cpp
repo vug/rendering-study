@@ -39,10 +39,6 @@ void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform
 	rendererData.viewProj = camera.GetProjection() * glm::inverse(cameraTransform);
 }
 
-void Renderer::BeginScene(OrthographicCamera& camera) {
-	rendererData.viewProj = camera.GetViewProjectionMatrix();
-}
-
 void Renderer::EndScene() {
 
 }

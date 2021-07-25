@@ -2,7 +2,6 @@
 
 #include "RenderCommand.h"
 #include "Camera.h"
-#include "OrthographicCamera.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "../Scene/Components.h"
@@ -11,7 +10,6 @@ class Renderer {
 public:
 	static void Init();
 
-	static void BeginScene(OrthographicCamera& camera); // TODO: remove
 	static void BeginScene(const Camera& camera, const glm::mat4& cameraTransform);
 	static void EndScene();
 

@@ -19,19 +19,15 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
-#include "Renderer/OrthographicCamera.h"
 
 Editor::Editor() : Application("Ugur's Editor"), 
-    cameraController(1280.0f / 720.0f), 
     activeScene(std::make_shared<Scene>()), 
     editorCamera(EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f)) { }
 
 void Editor::OnInit() {
-    RegisterScrollListener(&cameraController);
     RegisterScrollListener(&editorCamera);
     RegisterKeyListener(this);
     RegisterMouseButtonListener(this);
-    //RegisterWindowListener(&cameraController);
 
     ShaderLibrary::Instance().Load("assets/shaders/VertexPosColor.glsl");
     ShaderLibrary::Instance().Load("assets/shaders/SolidColor.glsl");
@@ -128,9 +124,6 @@ void Editor::OnImGuiRender() {
 
     ImGui::Separator();
     ImGui::Text("FPS: %.1f", framesPerSecond);
-    std::string zoomLevel = std::string("Zoom Level: ") + std::to_string(cameraController.GetZoomLevel());
-    ImGui::Text(zoomLevel.c_str());
-    ImGui::Checkbox("Show demo window", &showDemoWindow);
 
     ImGui::Separator();
     ImGui::Checkbox("Wireframe", &activeScene->renderWireframe);
@@ -141,6 +134,10 @@ void Editor::OnImGuiRender() {
         activeScene->renderFlatShading = false;
     if (ImGui::Button("Flat Shading", ImVec2{ 100.0, 25.0 }))
         activeScene->renderFlatShading = true;
+
+    ImGui::Separator();
+    ImGui::Checkbox("Show demo window", &showDemoWindow);
+
     ImGui::End();
 }
 
@@ -197,16 +194,11 @@ void Editor::OnImGuiViewportRender() {
 }
 
 void Editor::OnViewportResize(float width, float height) {
-    cameraController.OnViewportResized(width, height);
     activeScene->OnViewportResize((uint32_t)width, (uint32_t)height);
     editorCamera.SetViewportSize(width, height);
 }
 
 void Editor::OnUpdate(Timestep ts) {
-    if (GetIsViewportPaneFocused()) {
-        cameraController.OnUpdate(ts);
-    }
-
     editorCamera.OnUpdate(ts);
 
     RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
