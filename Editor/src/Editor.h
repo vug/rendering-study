@@ -18,7 +18,7 @@
 #include "OrthographicCameraController.h"
 #include "Renderer/Texture.h"
 
-class Editor : public Application, public KeyListener {
+class Editor : public Application, public KeyListener, public MouseButtonListener {
 public:
 	Editor();
 private:
@@ -29,6 +29,7 @@ private:
 	void OnShutdown() override;
 	void OnViewportResize(float width, float height) override;
 	virtual void OnKeyPress(int key, int action, int mods) override;
+	virtual void OnMouseButtonClicked(int button, int action, int mods) override;
 
 	void NewScene();
 	void OpenScene(const std::filesystem::path& fp);

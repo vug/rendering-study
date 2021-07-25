@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "entt/entt.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
 #include "imgui/ImGuizmo.h"
@@ -20,14 +21,13 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographicCamera.h"
 
-Editor::Editor() : Application("Ugur's Editor"), cameraController(1280.0f / 720.0f) { }
+Editor::Editor() : Application("Ugur's Editor"), cameraController(1280.0f / 720.0f), activeScene(std::make_shared<Scene>()) { }
 
 void Editor::OnInit() {
     RegisterScrollListener(&cameraController);
     RegisterKeyListener(this);
+    RegisterMouseButtonListener(this);
     //RegisterWindowListener(&cameraController);
-
-    activeScene = std::make_shared<Scene>();
 
     ShaderLibrary::Instance().Load("assets/shaders/VertexPosColor.glsl");
     ShaderLibrary::Instance().Load("assets/shaders/SolidColor.glsl");
@@ -279,6 +279,13 @@ void Editor::OnKeyPress(int key, int action, int mods) {
             if (mods & GLFW_MOD_CONTROL)
                 Application::Close();
         }
+    }
+}
+
+void Editor::OnMouseButtonClicked(int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !ImGuizmo::IsOver()) {
+        std::cout << "Mouse!" << std::endl;
+        sceneHierarchyPanel.SetSelectedEntity((entt::entity)hoveredEntityID);
     }
 }
 
