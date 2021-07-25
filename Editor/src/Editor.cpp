@@ -112,7 +112,7 @@ void Editor::OnImGuiRender() {
         if (hoveredEntityHandle.valid())
             name = hoveredEntityHandle.get<TagComponent>().Tag;
     }
-    ImGui::Text("Hovered Entity %s", name.c_str());
+    ImGui::Text("Hovered Entity: %s", name.c_str());
 
 
     ImGui::Text(fps.c_str());
@@ -140,9 +140,7 @@ void Editor::OnImGuiViewportRender() {
 
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
-        float windowWidth = (float)ImGui::GetWindowWidth();
-        float windowHeight = (float)ImGui::GetWindowHeight();
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+        ImGuizmo::SetRect(viewportBounds[0].x, viewportBounds[0].y, viewportBounds[1].x - viewportBounds[0].x, viewportBounds[1].y - viewportBounds[0].y);
 
         // Camera
         auto cameraEntity = activeScene->GetPrimaryCameraEntity();
