@@ -11,6 +11,7 @@ public:
 
 	void SetContext(const std::shared_ptr<Scene> scene);
 	entt::entity GetSelectedEntity() { return selectionContext; }
+	void SetSelectedEntity(entt::entity entity) { selectionContext = entity; }
 
 	void OnImguiRender();
 private:
