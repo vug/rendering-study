@@ -24,6 +24,28 @@ void TriangleExampleLayer::OnInit() {
     const auto triangleIB = std::make_shared<IndexBuffer>(triangleIndices, (uint32_t)(sizeof(triangleIndices) / sizeof(uint32_t)));
     triangleVA->SetIndexBuffer(triangleIB);
 
+
+    quadVertexArray.reset(new VertexArray());
+    float squareVertices[(3 + 2) * 4] = {
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+    };
+
+    const auto quadVertexBuffer = std::make_shared<VertexBuffer>(squareVertices, (uint32_t)sizeof(squareVertices));
+    quadVertexBuffer->SetLayout({
+        { ShaderDataType::Float3, "a_Position" },
+        { ShaderDataType::Float2, "a_TexCoord" },
+        });
+    quadVertexArray->AddVertexBuffer(quadVertexBuffer);
+    uint32_t squareIndices[3 * 2] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+    const auto squareIB = std::make_shared<IndexBuffer>(squareIndices, (uint32_t)(sizeof(squareIndices) / sizeof(uint32_t)));
+    quadVertexArray->SetIndexBuffer(squareIB);
+
     auto textureShader = ShaderLibrary::Instance().Load("assets/shaders/Texture.glsl");
     textureShader->Bind();
     textureShader->UploadUniformInt("u_Texture", diffuseTextureSlot);
@@ -35,10 +57,10 @@ void TriangleExampleLayer::OnUpdate(Timestep ts) {
     auto triangleShader = ShaderLibrary::Instance().Get("VertexPosColor");
     Renderer::Submit(triangleShader, triangleVA, glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
 
-    //auto textureShader = ShaderLibrary::Instance().Get("Texture");
-    //textureCheckerboard->Bind(diffuseTextureSlot);
-    //Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+    auto textureShader = ShaderLibrary::Instance().Get("Texture");
+    textureCheckerboard->Bind(diffuseTextureSlot);
+    Renderer::Submit(textureShader, quadVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
-    //textureWithAlpha->Bind(diffuseTextureSlot);
-    //Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
+    textureWithAlpha->Bind(diffuseTextureSlot);
+    Renderer::Submit(textureShader, quadVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f)));
 }

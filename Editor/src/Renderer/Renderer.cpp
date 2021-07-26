@@ -6,33 +6,12 @@
 
 // Hard-coded data for Renderer to provide ready-made draw commands such as DrawFlatQuad
 struct RendererData {
-	std::shared_ptr<VertexArray> quadVertexArray;
 	glm::mat4 viewProj;
 };
 static RendererData rendererData;
 
 void Renderer::Init() {
 	RenderCommand::Init();
-	rendererData.quadVertexArray.reset(new VertexArray());
-	float squareVertices[(3 + 2) * 4] = {
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	};
-
-	const auto quadVertexBuffer = std::make_shared<VertexBuffer>(squareVertices, (uint32_t)sizeof(squareVertices));
-	quadVertexBuffer->SetLayout({
-		{ ShaderDataType::Float3, "a_Position" },
-		{ ShaderDataType::Float2, "a_TexCoord" },
-	});
-	rendererData.quadVertexArray->AddVertexBuffer(quadVertexBuffer);
-	uint32_t squareIndices[3 * 2] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-	const auto squareIB = std::make_shared<IndexBuffer>(squareIndices, (uint32_t)(sizeof(squareIndices) / sizeof(uint32_t)));
-	rendererData.quadVertexArray->SetIndexBuffer(squareIB);
 }
 
 void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform) {

@@ -12,6 +12,7 @@ public:
 	virtual void OnUpdate(Timestep ts) override;
 private:
 	std::shared_ptr<VertexArray> triangleVA;
+	std::shared_ptr<VertexArray> quadVertexArray;
 	std::shared_ptr<Texture2D> textureCheckerboard;
 	std::shared_ptr<Texture2D> textureWithAlpha;
 	int diffuseTextureSlot = 0;
