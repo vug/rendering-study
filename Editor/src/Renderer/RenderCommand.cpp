@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-std::unordered_map<std::string, int> RenderCommand::frameStats = {};
+FrameStats RenderCommand::frameStats = {};
 
 void RenderCommand::Init(bool isWireframe, bool onlyFrontFaces) {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -32,7 +32,7 @@ void RenderCommand::Init(bool isWireframe, bool onlyFrontFaces) {
 		glDisable(GL_CULL_FACE);
 	}
 
-	frameStats = { {"draw_calls", 0},  {"triangles", 0}, {"lines", 0} };
+	frameStats = { 0, 0, 0 };
 }
 
 void RenderCommand::PrintInfo() {
@@ -56,12 +56,12 @@ void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray,
 	glDrawElements(primitiveType, count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * indexOffset));
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	frameStats["draw_calls"] += 1;
+	frameStats.drawCalls += 1;
 	if (primitiveType == GL_TRIANGLES) {
-		frameStats["triangles"] += count / 3;
+		frameStats.triangles += count / 3;
 	}
 	if (primitiveType == GL_LINE_LOOP || primitiveType == GL_LINE_STRIP) {
-		frameStats["lines"] += count;
+		frameStats.lines += count;
 	}
 }
 

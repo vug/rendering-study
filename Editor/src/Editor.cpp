@@ -101,9 +101,9 @@ void Editor::OnImGuiRender() {
 
     ImGui::Separator();
     auto& stats = RenderCommand::GetStats();
-    ImGui::Text("Draw Calls: %d", stats.at("draw_calls"));
-    ImGui::Text("Triangles: %d", stats.at("triangles"));
-    ImGui::Text("Lines: %d", stats.at("lines"));
+    ImGui::Text("Draw Calls: %d", stats.drawCalls);
+    ImGui::Text("Triangles: %d", stats.triangles);
+    ImGui::Text("Lines: %d", stats.lines);
 
     ImGui::Separator();
     ImGui::Text("Editor Camera");
