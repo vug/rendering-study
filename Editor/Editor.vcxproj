@@ -162,7 +162,6 @@
   <ItemGroup>
     <None Include="assets\scenes\Cubes.scene" />
     <None Include="assets\scenes\Example.scene" />
-    <None Include="assets\scenes\OtherScene.scene" />
     <None Include="assets\shaders\FlatShader.glsl" />
     <None Include="assets\shaders\SolidColor.glsl" />
     <None Include="assets\shaders\Texture.glsl" />

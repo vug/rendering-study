@@ -100,6 +100,12 @@ void Editor::OnImGuiRender() {
     ImGui::Text("Hovered Entity: %s", name.c_str());
 
     ImGui::Separator();
+    auto& stats = RenderCommand::GetStats();
+    ImGui::Text("Draw Calls: %d", stats.at("draw_calls"));
+    ImGui::Text("Triangles: %d", stats.at("triangles"));
+    ImGui::Text("Lines: %d", stats.at("lines"));
+
+    ImGui::Separator();
     ImGui::Text("Editor Camera");
     glm::vec3 pos = editorCamera.GetPosition();
     ImGui::Text("Position: %.1f, %.1f, %.1f", pos.x, pos.y, pos.z);
