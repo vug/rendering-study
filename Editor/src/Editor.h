@@ -39,10 +39,10 @@ private:
 	std::shared_ptr<Scene> activeScene;
 
 	EditorCamera editorCamera;
-	entt::entity mainCameraEntity;
-	entt::entity secondCameraEntity;
+
 
 	float entityMoveSpeed = 5.0f;
+
 	bool showDemoWindow = false;
 	
 	SceneHierarchyPanel sceneHierarchyPanel;

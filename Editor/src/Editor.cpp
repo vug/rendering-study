@@ -263,7 +263,7 @@ void Editor::OnKeyPress(int key, int action, int mods) {
             break;
         case GLFW_KEY_S:
             if (mods & (GLFW_MOD_SHIFT | GLFW_MOD_CONTROL))
-                shouldRenderOpenFileBrowser = true;
+                shouldRenderSaveFileBrowser = true;
             break;
         case GLFW_KEY_Q:
             if (mods & GLFW_MOD_CONTROL)
