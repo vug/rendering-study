@@ -123,10 +123,6 @@ namespace ComponentSerializer {
 		out << YAML::Key << "FixedAspectRatio" << YAML::Value << comp.FixedAspectRatio;
 	}
 
-	static void serialize(YAML::Emitter& out, QuadRendererComponent& comp) {
-		out << YAML::Key << "Color" << YAML::Value << comp.Color;
-	}
-
 	static void serialize(YAML::Emitter& out, LineComponent& comp) {
 		out << YAML::Key << "Vertices" << YAML::Value;
 		out << YAML::BeginSeq; // Vertices
@@ -228,10 +224,6 @@ namespace ComponentSerializer {
 		comp.FixedAspectRatio = node["FixedAspectRatio"].as<bool>();
 	}
 
-	static void deserialize(YAML::Node node, QuadRendererComponent& comp) {
-		comp.Color = node["Color"].as<glm::vec4>();
-	}
-
 	static void deserialize(YAML::Node node, LineComponent& comp) {
 		std::vector<glm::vec3> vertices;
 		for (auto vertex : node["Vertices"]) {
@@ -309,7 +301,6 @@ static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity>
 	ComponentSerializer::serializeIfExists<TagComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<TransformComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<CameraComponent>(out, handle);
-	ComponentSerializer::serializeIfExists<QuadRendererComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<LineComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<LineRendererComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<LineGeneratorComponent>(out, handle);
@@ -332,7 +323,6 @@ entt::entity SceneSerializer::DeserializeEntity(YAML::Node node) {
 	entt::basic_handle deserializedHandle = entt::basic_handle{ scene->Registry, deserializedEntity };
 
 	ComponentSerializer::deserializeIfExists<TransformComponent>(node, deserializedHandle);
-	ComponentSerializer::deserializeIfExists<QuadRendererComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<CameraComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<LineComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<LineRendererComponent>(node, deserializedHandle);

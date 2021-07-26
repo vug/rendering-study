@@ -50,10 +50,6 @@ void SceneHierarchyPanel::OnImguiRender() {
 				context->Reg().emplace<CameraComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
-			if (ImGui::MenuItem("Quad Renderer")) {
-				context->Reg().emplace<QuadRendererComponent>(selectionContext);
-				ImGui::CloseCurrentPopup();
-			}
 			if (ImGui::MenuItem("Line")) {
 				context->Reg().emplace<LineComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
@@ -306,20 +302,6 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 
 		if (shouldRemove)
 			context->Reg().remove<CameraComponent>(entity);
-	}
-
-	if (handle.all_of<QuadRendererComponent>()) {
-		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
-		bool isOpen = ImGui::TreeNodeEx("Quad Renderer", treeNodeFlags);
-		bool shouldRemove = AddComponentSettingsButton();
-
-		if (isOpen) {
-			glm::vec4& color = handle.get<QuadRendererComponent>().Color;
-			ImGui::ColorEdit4("Color", glm::value_ptr(color));
-			ImGui::TreePop();
-		}
-		if (shouldRemove)
-			context->Reg().remove<QuadRendererComponent>(entity);
 	}
 
 	if (handle.all_of<LineComponent>()) {

@@ -67,12 +67,6 @@ void Scene::OnUpdate(Timestep ts, EditorCamera& editorCamera) {
 		cameraTranslation = editorCamera.GetPosition();
 	}
 	
-
-	auto view1 = Registry.view<TransformComponent, QuadRendererComponent>();
-	for (auto [entity, transform, quad] : view1.each()) {
-		Renderer::DrawSolidQuad(transform.GetTransform(), quad.Color);
-	}
-
 	auto view2 = Registry.view<TransformComponent, LineComponent, LineRendererComponent>();
 	for (auto [entity, transform, line, lineRenderer] : view2.each()) {
 		Renderer::DrawLines(line.GetVertexArray(), transform.GetTransform(), lineRenderer.Color, lineRenderer.IsLooped);

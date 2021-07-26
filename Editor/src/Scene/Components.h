@@ -50,17 +50,6 @@ struct TransformComponent : public Component {
 	}
 };
 
-struct QuadRendererComponent : public Component {
-	static const inline char* GetName() { return "QuadRendererComponent"; }
-
-	glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
-
-	QuadRendererComponent() = default;
-	QuadRendererComponent(const QuadRendererComponent&) = default;
-	QuadRendererComponent(const glm::vec4& color) :
-		Color(color) {}
-};
-
 struct CameraComponent : public Component {
 	static const inline char* GetName() { return "CameraComponent"; }
 

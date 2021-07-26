@@ -33,21 +33,6 @@ void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_pt
 
 // High-Level Command Library
 
-void Renderer::DrawSolidQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const glm::vec4& color) {
-	glm::mat4 translate = glm::translate(glm::mat4(1.0f), position);
-	glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1));
-	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(size.x, size.y, 1.0f));
-	glm::mat4 transform = translate * rotate * scale;
-	Renderer::DrawSolidQuad(transform, color);
-}
-
-void Renderer::DrawSolidQuad(const glm::mat4& transform, const glm::vec4& color) {
-	std::shared_ptr<Shader> shader = ShaderLibrary::Instance().Get("SolidColor");
-	shader->Bind();
-	shader->UploadUniformFloat4("u_Color", color);
-	Renderer::Submit(shader, rendererData.quadVertexArray, transform);
-}
-
 void Renderer::DrawMesh(MeshComponent& mesh, MeshRendererComponent& meshRenderer, std::shared_ptr<Shader> shader, TransformComponent& transform) {
 	shader->Bind();
 	shader->UploadUniformFloat4("u_Color", meshRenderer.Color);
