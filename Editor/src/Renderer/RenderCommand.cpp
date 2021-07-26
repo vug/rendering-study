@@ -3,8 +3,11 @@
 #include <iostream>
 
 #include <GLFW/glfw3.h>
+#include <stb/stb_image_write.h>
 
 FrameStats RenderCommand::frameStats = {};
+bool RenderCommand::shouldDebugRenderSingleFrame = false;
+static int drawCallNo;
 
 void RenderCommand::Init(bool isWireframe, bool onlyFrontFaces) {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -33,6 +36,7 @@ void RenderCommand::Init(bool isWireframe, bool onlyFrontFaces) {
 	}
 
 	frameStats = { 0, 0, 0 };
+	drawCallNo = 1;
 }
 
 void RenderCommand::PrintInfo() {
@@ -56,12 +60,39 @@ void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray,
 	glDrawElements(primitiveType, count, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * indexOffset));
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	// Collect Frame Render Stats
 	frameStats.drawCalls += 1;
 	if (primitiveType == GL_TRIANGLES) {
 		frameStats.triangles += count / 3;
 	}
 	if (primitiveType == GL_LINE_LOOP || primitiveType == GL_LINE_STRIP) {
 		frameStats.lines += count;
+	}
+
+	// Save Framebuffer to a file after each draw call 
+	if (shouldDebugRenderSingleFrame) {
+		// Bound Framebuffer Size
+		GLint dims[4] = { 0 };
+		glGetIntegerv(GL_VIEWPORT, dims);
+		GLint width = dims[2];
+		GLint height = dims[3];
+		
+		// Read bound framebuffer pixel data into the buffer
+		GLsizei nrChannels = 4;
+		GLsizei stride = nrChannels * width;
+		stride += (stride % 4) ? (4 - stride % 4) : 0;
+		GLsizei bufferSize = stride * height;
+		std::vector<unsigned char> buffer(bufferSize);
+		glPixelStorei(GL_PACK_ALIGNMENT, 4);
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+
+		// Save buffer into a file
+		stbi_flip_vertically_on_write(true);
+		std::string filename = std::string("call-") + std::to_string(drawCallNo) + ".png";
+		stbi_write_png(filename.c_str(), width, height, nrChannels, buffer.data(), stride);
+
+		drawCallNo++;
 	}
 }
 

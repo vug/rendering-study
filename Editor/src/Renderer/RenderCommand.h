@@ -23,4 +23,5 @@ public:
 	static const FrameStats& GetStats() { return frameStats; }
 public:
 	static FrameStats frameStats;
+	static bool shouldDebugRenderSingleFrame;
 };

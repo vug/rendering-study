@@ -128,6 +128,11 @@ void Editor::OnImGuiRender() {
         activeScene->renderFlatShading = true;
 
     ImGui::Separator();
+    if (ImGui::Button("Save Frame's Draw Calls")) {
+        RenderCommand::shouldDebugRenderSingleFrame = true;
+    }
+
+    ImGui::Separator();
     ImGui::Checkbox("Show demo window", &showDemoWindow);
 
     ImGui::End();
@@ -233,6 +238,8 @@ void Editor::OnUpdate(Timestep ts) {
 
     for (auto& layer : layers)
         layer->OnUpdate(ts);
+
+    RenderCommand::shouldDebugRenderSingleFrame = false;
 }
 
 void Editor::OnShutdown() {
