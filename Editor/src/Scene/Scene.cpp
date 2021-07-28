@@ -20,9 +20,15 @@ void Scene::OnMeshCreated(entt::registry& registry, entt::entity entity) {
 	comp.ComputeVertexArray();
 }
 
+void Scene::OnMeshObjLoaderCreated(entt::registry& registry, entt::entity entity) {
+	MeshObjLoaderComponent& comp = registry.get<MeshObjLoaderComponent>(entity);
+	comp.meshComponent.entityID = (int)entity;
+}
+
 Scene::Scene() {
 	Registry.on_construct<CameraComponent>().connect<&Scene::OnCameraCreated>(this);
 	Registry.on_construct<MeshComponent>().connect<&Scene::OnMeshCreated>(this);
+	Registry.on_construct<MeshObjLoaderComponent>().connect<&Scene::OnMeshObjLoaderCreated>(this);
 }
 
 Scene::~Scene() {

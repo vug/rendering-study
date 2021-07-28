@@ -28,6 +28,7 @@ public:
 private:
 	void OnCameraCreated(entt::registry& registry, entt::entity entity);
 	void OnMeshCreated(entt::registry& registry, entt::entity entity);
+	void OnMeshObjLoaderCreated(entt::registry& registry, entt::entity entity);
 private:
 	entt::registry Registry;
 	// hack to prevent division by zero before first computation

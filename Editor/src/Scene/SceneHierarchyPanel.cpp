@@ -65,15 +65,19 @@ void SceneHierarchyPanel::OnImguiRender() {
 					std::cout << "Entity needs to have a LineComponent or LineGenerator before adding a LineRendererComponent" << std::endl;
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("Mesh (Manual)")) {
+				context->Reg().emplace<MeshComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Mesh (Load OBJ)")) {
+				context->Reg().emplace<MeshObjLoaderComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
 			if (ImGui::MenuItem("Mesh Renderer")) {
-				if (context->Reg().all_of<MeshComponent>(selectionContext))
+				if (context->Reg().any_of<MeshComponent, MeshObjLoaderComponent>(selectionContext))
 					context->Reg().emplace<MeshRendererComponent>(selectionContext);
 				else
 					std::cout << "Entity needs to have a MeshComponent before adding a MeshRendererComponent" << std::endl;
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Mesh")) {
-				context->Reg().emplace<MeshComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -370,8 +374,14 @@ void DrawComponentParametersUI(MeshComponent& mc) {
 	}
 }
 
-void DrawComponentParametersUI(MeshObjLoaderComponent& comp) {
-	ImGui::Text("Hi!");
+void DrawComponentParametersUI(MeshObjLoaderComponent& molc) {
+
+	char buffer[256] = { 0 };
+	strcpy_s(buffer, sizeof(buffer), molc.GetFilePath().c_str());
+
+	if (ImGui::InputText("OBJ File Path", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		molc.SetFilePath(std::string(buffer));
+	}
 }
 
 void DrawComponentParametersUI(MeshRendererComponent& mrc) {
