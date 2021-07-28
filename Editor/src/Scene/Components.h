@@ -177,7 +177,7 @@ public:
 			float y = attrib.vertices[vix + 1];
 			float z = attrib.vertices[vix + 2];
 			glm::vec3 position{ x, y, z };
-			std::cout << "Vertex-" << vix / 3 << ": " << x << ", " << y << ", " << z << std::endl;
+			//std::cout << "Vertex-" << vix / 3 << ": " << x << ", " << y << ", " << z << std::endl;
 
 			glm::vec3 normal{ 0,0,0 };
 			if (!attrib.normals.empty()) {
@@ -185,7 +185,7 @@ public:
 				float ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
 				float nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
 				normal = { nx, ny, nz };
-				std::cout << "Normal: " << nx << ", " << ny << ", " << nz << std::endl;
+				//std::cout << "Normal: " << nx << ", " << ny << ", " << nz << std::endl;
 			}
 
 			glm::vec2 texcoord{ 0,0 };
@@ -193,7 +193,7 @@ public:
 				float tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
 				float ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
 				texcoord = { tx, ty };
-				std::cout << "TexCoords of vertex below : " << tx << ", " << ty << std::endl;
+				//std::cout << "TexCoords of vertex below : " << tx << ", " << ty << std::endl;
 			}
 
 			//glm::vec3 color{ 0,0,0 }; // TODO: colors was not empty even though not provided.
@@ -228,8 +228,8 @@ public:
 					}
 				}
 				indices.push_back(triplet);
-				std::cout << "Triangle: " << triplet[0] << ", " << triplet[1] << ", " << triplet[2] << std::endl;
-				std::cout << "TriangleNormals: " << normalTriplet[0] << ", " << normalTriplet[1] << ", " << normalTriplet[2] << std::endl;
+				//std::cout << "Triangle: " << triplet[0] << ", " << triplet[1] << ", " << triplet[2] << std::endl;
+				//std::cout << "TriangleNormals: " << normalTriplet[0] << ", " << normalTriplet[1] << ", " << normalTriplet[2] << std::endl;
 				index_offset += fv;
 			}
 		}
