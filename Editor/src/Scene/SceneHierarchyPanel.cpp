@@ -211,8 +211,7 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	if (handle.all_of<TagComponent>()) {
 		std::string& tag = handle.get<TagComponent>().Tag;
 		
-		char buffer[256];
-		memset(buffer, 0, sizeof(buffer));
+		char buffer[256] = { 0 };
 		strcpy_s(buffer, sizeof(buffer), tag.c_str());
 		if (ImGui::InputText("Tag", buffer, sizeof(buffer))) {
 			tag = std::string(buffer);
