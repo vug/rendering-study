@@ -18,6 +18,8 @@ private:
 	void DrawEntityNode(entt::entity entity);
 	void DrawComponents(entt::entity entity);
 	static bool AddComponentSettingsButton();
+	template <typename TComp> // Has to be a Component
+	void DrawComponentUITreeNodeIfExists(entt::basic_handle<entt::entity> handle, void DrawCompParams(TComp&));
 private:
 	std::shared_ptr<Scene> context;
 	entt::entity selectionContext = entt::null;
