@@ -219,12 +219,12 @@ public:
 				// Loop over vertices in the face.
 				glm::uvec3 triplet;
 				glm::uvec3 normalTriplet;
-				for (size_t v = 0; v < fv; v++) {
+				for (uint32_t v = 0; v < fv; v++) {
 					tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-					triplet[v] = (uint32_t)idx.vertex_index;
+					triplet[v] = idx.vertex_index;
 
 					if (idx.normal_index >= 0) {
-						normalTriplet[v] = (uint32_t)idx.normal_index;
+						normalTriplet[v] = idx.normal_index;
 					}
 				}
 				indices.push_back(triplet);
