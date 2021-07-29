@@ -15,9 +15,14 @@ void Renderer::Init() {
 	RenderCommand::Init();
 }
 
-void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform, const Renderer::LightInfo& lightInfo) {
+void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform, const std::vector<Renderer::LightInfo>& lightInfos) {
 	rendererData.viewProj = camera.GetProjection() * glm::inverse(cameraTransform);
-	rendererData.lightInfo = lightInfo;
+	if (lightInfos.empty()) {
+		rendererData.lightInfo = { {0, 0, 0}, 0.0f };
+	}
+	else {
+		rendererData.lightInfo = lightInfos[0];
+	}
 }
 
 void Renderer::EndScene() {

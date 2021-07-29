@@ -51,11 +51,10 @@ void Scene::DestroyEntity(entt::entity entity) {
 void Scene::OnUpdate(Timestep ts, EditorCamera& editorCamera) {
 	RenderCommand::Init(renderWireframe, renderOnlyFront);
 
-	Renderer::LightInfo lightInfo = { {0, 0, 0}, 0.0f };
+	std::vector<Renderer::LightInfo> lightInfos;
 	auto viewLights = Registry.view<TransformComponent, LightComponent>();
 	for (auto [entity, transform, light] : viewLights.each()) {
-		 lightInfo = {transform.Translation, light.intensity};
-		break;
+		lightInfos.push_back({transform.Translation, light.intensity});
 	}
  
 	Camera* sceneCamera = nullptr;
@@ -73,10 +72,10 @@ void Scene::OnUpdate(Timestep ts, EditorCamera& editorCamera) {
 		}
 	}
 	if (sceneCamera) {
-		Renderer::BeginScene(sceneCamera->GetProjection(), cameraTransform, lightInfo);
+		Renderer::BeginScene(sceneCamera->GetProjection(), cameraTransform, lightInfos);
 	}
 	else {
-		Renderer::BeginScene(editorCamera.GetProjection(), editorCamera.GetViewMatrix(), lightInfo);
+		Renderer::BeginScene(editorCamera.GetProjection(), editorCamera.GetViewMatrix(), lightInfos);
 		cameraTranslation = editorCamera.GetPosition();
 	}
 	
