@@ -63,17 +63,22 @@ in vec3 g_Normal;
 in flat int g_EntityID;
 
 uniform vec4 u_Color;
-uniform vec3 u_LightPos;
-uniform float u_LightIntensity;
+
+#define MAX_LIGHTS 10
+uniform int u_LightCount;
+uniform vec3 u_LightPositions[MAX_LIGHTS];
+uniform float u_LightIntensities[MAX_LIGHTS];
 
 void main() {
     vec3 lightPos, lightDir;
     float flatShade = 0.0;
 
-    // Single Light
-    lightPos = u_LightPos;
-    lightDir = normalize(lightPos - g_WorldPosition);
-    flatShade += clamp(dot(lightDir, g_Normal) * u_LightIntensity, 0.0, 1.0);
+    for(int i = 0; i < MAX_LIGHTS; i++) {
+        lightDir = normalize(u_LightPositions[i] - g_WorldPosition);
+        flatShade += clamp(dot(lightDir, g_Normal) * u_LightIntensities[i], 0.0, 1.0);
+
+        if (i == MAX_LIGHTS) break;
+    }
 
     color = vec4(u_Color.rgb * flatShade, u_Color.a);
     color2 = g_EntityID;

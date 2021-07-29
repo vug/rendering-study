@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"
@@ -7,7 +9,7 @@
 // Hard-coded data for Renderer to provide ready-made draw commands such as DrawFlatQuad
 struct RendererData {
 	glm::mat4 viewProj;
-	Renderer::LightInfo lightInfo;
+	std::vector<Renderer::LightInfo> lightInfos;
 };
 static RendererData rendererData;
 
@@ -18,10 +20,10 @@ void Renderer::Init() {
 void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform, const std::vector<Renderer::LightInfo>& lightInfos) {
 	rendererData.viewProj = camera.GetProjection() * glm::inverse(cameraTransform);
 	if (lightInfos.empty()) {
-		rendererData.lightInfo = { {0, 0, 0}, 0.0f };
+		rendererData.lightInfos = { { {0, 0, 0}, 0.0f } };
 	}
 	else {
-		rendererData.lightInfo = lightInfos[0];
+		rendererData.lightInfos = lightInfos;
 	}
 }
 
@@ -33,8 +35,17 @@ void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_pt
 	shader->Bind();
 	shader->UploadUniformMat4("u_ViewProjection", rendererData.viewProj);
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
-	shader->UploadUniformFloat3("u_LightPos", rendererData.lightInfo.position);
-	shader->UploadUniformFloat("u_LightIntensity", rendererData.lightInfo.intensity);
+
+	std::vector<glm::vec3> lightPositions;
+	std::transform(rendererData.lightInfos.begin(), rendererData.lightInfos.end(),
+		std::back_inserter(lightPositions), [](LightInfo li) -> glm::vec3 { return li.position; });
+	std::vector<float> lightIntensities;
+	std::transform(rendererData.lightInfos.begin(), rendererData.lightInfos.end(),
+		std::back_inserter(lightIntensities), [](LightInfo li) -> float { return li.intensity; });
+
+	shader->UploadUniformFloat3s("u_LightPositions", lightPositions);
+	shader->UploadUniformFloats("u_LightIntensities", lightIntensities);
+	shader->UploadUniformInt("u_LightCount", rendererData.lightInfos.size());
 
 	vertexArray->Bind();
 	RenderCommand::DrawIndexed(vertexArray, indexCount, primitiveType, indexOffset);
