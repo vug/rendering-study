@@ -50,6 +50,10 @@ void SceneHierarchyPanel::OnImguiRender() {
 				context->Reg().emplace<CameraComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("Light")) {
+				context->Reg().emplace<LightComponent>(selectionContext);
+				ImGui::CloseCurrentPopup();
+			}
 			if (ImGui::MenuItem("Line")) {
 				context->Reg().emplace<LineComponent>(selectionContext);
 				ImGui::CloseCurrentPopup();
@@ -271,6 +275,10 @@ void DrawComponentParametersUI(CameraComponent& cameraComponent) {
 	}
 }
 
+void DrawComponentParametersUI(LightComponent& lc) {
+	ImGui::DragFloat("Intensity", &lc.intensity);
+}
+
 void DrawComponentParametersUI(LineComponent& lc) {
 	std::vector<glm::vec3>& vertices = lc.Vertices;
 	int numVertices = (int)vertices.size();
@@ -434,6 +442,7 @@ void SceneHierarchyPanel::DrawComponents(entt::entity entity) {
 	}
 
 	DrawComponentUITreeNodeIfExists<CameraComponent>(handle, DrawComponentParametersUI);
+	DrawComponentUITreeNodeIfExists<LightComponent>(handle, DrawComponentParametersUI);
 	DrawComponentUITreeNodeIfExists<LineComponent>(handle, DrawComponentParametersUI);
 	DrawComponentUITreeNodeIfExists<LineGeneratorComponent>(handle, DrawComponentParametersUI);
 	DrawComponentUITreeNodeIfExists<LineRendererComponent>(handle, DrawComponentParametersUI);

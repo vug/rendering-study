@@ -365,4 +365,11 @@ private:
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 
+class LightComponent : public Component {
+public:
+	static const inline char* GetName() { return "LightComponent"; }
+public:
+	float intensity = 1.0f;
+};
+
 
