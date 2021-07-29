@@ -198,6 +198,26 @@ void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::UploadUniformFloats(const std::string& name, const std::vector<float>& values) {
+	GLint location = glGetUniformLocation(rendererID, name.c_str());
+	glUniform1fv(location, values.size(), values.data());
+}
+
+void Shader::UploadUniformFloat2s(const std::string& name, const std::vector<glm::vec2>& values) {
+	GLint location = glGetUniformLocation(rendererID, name.c_str());
+	glUniform2fv(location, values.size() * 2, glm::value_ptr(values.data()[0]));
+}
+
+void Shader::UploadUniformFloat3s(const std::string& name, const std::vector<glm::vec3>& values) {
+	GLint location = glGetUniformLocation(rendererID, name.c_str());
+	glUniform3fv(location, values.size() * 3, glm::value_ptr(values.data()[0]));
+}
+
+void Shader::UploadUniformFloat4s(const std::string& name, const std::vector<glm::vec4>& values) {
+	GLint location = glGetUniformLocation(rendererID, name.c_str());
+	glUniform4fv(location, values.size() * 4, glm::value_ptr(values.data()[0]));
+}
+
 // Shader Library
 void ShaderLibrary::Add(const std::string& name, const std::shared_ptr<Shader>& shader) {
 	assert(!Exists(name)); // Shader already exists!

@@ -27,6 +27,11 @@ public:
 	void UploadUniformMat2(const std::string& name, const glm::mat2& matrix);
 	void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 	void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+	void UploadUniformFloats(const std::string& name, const std::vector<float>& values);
+	void UploadUniformFloat2s(const std::string& name, const std::vector<glm::vec2>& values);
+	void UploadUniformFloat3s(const std::string& name, const std::vector<glm::vec3>& values);
+	void UploadUniformFloat4s(const std::string& name, const std::vector<glm::vec4>& values);
 private:
 	std::string ReadFile(const std::string& filepath);
 	std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
