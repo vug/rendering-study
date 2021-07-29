@@ -122,7 +122,7 @@ public:
 
 	void ComputeVertexArray() {
 		for (auto& v : Vertices) { v.EntityID = entityID; }
-		vertexArray->GetVertexBuffers()[0]->Update(Vertices.data(), (uint32_t)(sizeof(MeshVertex) * 3 * Vertices.size()));
+		vertexArray->GetVertexBuffers()[0]->Update(Vertices.data(), (uint32_t)(sizeof(MeshVertex) * Vertices.size()));
 
 		uint32_t* flat_index_array = static_cast<uint32_t*>(glm::value_ptr(Indices.front()));
 		vertexArray->GetIndexBuffer()->Update(flat_index_array, (uint32_t)(3 * Indices.size()));
@@ -164,6 +164,7 @@ public:
 
 		auto& attrib = reader.GetAttrib();
 		auto& shapes = reader.GetShapes();
+		assert(shapes.size() == 1);
 		auto& materials = reader.GetMaterials();
 
 		std::cout << "Num vertices: " << attrib.vertices.size() << std::endl;
@@ -239,11 +240,10 @@ public:
 	}
 
 	void SetFilePath(const std::string& path) {
-		std::vector<MeshComponent::MeshVertex> vertices;
-		std::vector<glm::uvec3> indices;
+		std::vector<MeshComponent::MeshVertex>& vertices = meshComponent.Vertices;
+		std::vector<glm::uvec3>& indices = meshComponent.Indices;
+		vertices.clear(); indices.clear();
 		if (!ReadObjFile(path, vertices, indices)) return;
-		meshComponent.Vertices = vertices;
-		meshComponent.Indices = indices;
 		meshComponent.ComputeVertexArray();
 	}
 
