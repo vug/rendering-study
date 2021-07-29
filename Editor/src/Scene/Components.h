@@ -250,9 +250,9 @@ public:
 	const std::string& GetFilePath() const { return filepath; }
 public:
 	MeshComponent meshComponent;
+	std::string filepath = "path to OBJ file";
 private:
 	//std::vector<glm::vec3> Vertices;
-	std::string filepath = "some_mesh.obj";
 	std::shared_ptr<VertexArray> vertexArray = nullptr;
 };
 

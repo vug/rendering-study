@@ -191,6 +191,10 @@ namespace ComponentSerializer {
 		out << YAML::Key << "IsTransparent" << YAML::Value << comp.IsTransparent;
 	}
 
+	static void serialize(YAML::Emitter& out, MeshObjLoaderComponent& comp) {
+		out << YAML::Key << "Filepath" << YAML::Value << comp.filepath;
+	}
+
 	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
 	static void serializeIfExists(YAML::Emitter& out, entt::basic_handle<entt::entity> handle) {
 		if (handle.all_of<TComp>()) {
@@ -283,6 +287,10 @@ namespace ComponentSerializer {
 		comp.IsTransparent = node["IsTransparent"].as<bool>();
 	}
 
+	static void deserialize(YAML::Node node, MeshObjLoaderComponent& comp) {
+		comp.SetFilePath(node["Filepath"].as<std::string>());
+	}
+
 	template <typename TComp, typename = std::enable_if_t<std::is_base_of_v<Component, TComp>>>
 	static void deserializeIfExists(YAML::Node nodeEntity, entt::basic_handle<entt::entity> handle) {
 		YAML::Node nodeComp = nodeEntity[TComp::GetName()];
@@ -305,6 +313,7 @@ static void SerializeEntity(YAML::Emitter& out, entt::basic_handle<entt::entity>
 	ComponentSerializer::serializeIfExists<LineRendererComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<LineGeneratorComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<MeshComponent>(out, handle);
+	ComponentSerializer::serializeIfExists<MeshObjLoaderComponent>(out, handle);
 	ComponentSerializer::serializeIfExists<MeshRendererComponent>(out, handle);
 
 	out << YAML::EndMap; // Entity
@@ -328,6 +337,7 @@ entt::entity SceneSerializer::DeserializeEntity(YAML::Node node) {
 	ComponentSerializer::deserializeIfExists<LineRendererComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<LineGeneratorComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<MeshComponent>(node, deserializedHandle);
+	ComponentSerializer::deserializeIfExists<MeshObjLoaderComponent>(node, deserializedHandle);
 	ComponentSerializer::deserializeIfExists<MeshRendererComponent>(node, deserializedHandle);
 
 	return deserializedEntity;

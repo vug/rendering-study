@@ -1,0 +1,50 @@
+Scene: Untitled Scene
+Entities:
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: torus2
+    TransformComponent:
+      Translation: [0.357953995, 1.19353176e-08, -0.423581183]
+      Rotation: [0.671952248, 0.869173884, 2.3086189e-08]
+      Scale: [0.5, 0.499999911, 0.5]
+    MeshObjLoaderComponent:
+      Filepath: assets/meshes/torus.obj
+    MeshRendererComponent:
+      Color: [1, 0.101960786, 0.737254918, 0.356862754]
+      IsTransparent: true
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: torus1
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-0.399680376, 0.75049156, 0]
+      Scale: [0.5, 0.5, 0.5]
+    MeshObjLoaderComponent:
+      Filepath: assets/meshes/torus.obj
+    MeshRendererComponent:
+      Color: [0, 1, 1, 0.525490224]
+      IsTransparent: true
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: suzanne
+    TransformComponent:
+      Translation: [1.11426032, -0.103697076, 0.151325092]
+      Rotation: [0, 0.648737609, 0]
+      Scale: [0.999999881, 1, 0.999999881]
+    MeshObjLoaderComponent:
+      Filepath: assets/meshes/suzanne.obj
+    MeshRendererComponent:
+      Color: [1, 0.628027678, 0.367647052, 1]
+      IsTransparent: false
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: teapot
+    TransformComponent:
+      Translation: [-0.500638306, -0.627968073, 0.845465302]
+      Rotation: [0, 1.06988645, 0]
+      Scale: [0.249999925, 0.25, 0.249999925]
+    MeshObjLoaderComponent:
+      Filepath: assets/meshes/teapot-4k.obj
+    MeshRendererComponent:
+      Color: [0.787771821, 0.897058845, 0.153907165, 1]
+      IsTransparent: false
