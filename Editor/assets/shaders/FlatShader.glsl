@@ -63,25 +63,17 @@ in vec3 g_Normal;
 in flat int g_EntityID;
 
 uniform vec4 u_Color;
+uniform vec3 u_LightPos;
+uniform float u_LightIntensity;
 
 void main() {
     vec3 lightPos, lightDir;
     float flatShade = 0.0;
 
-    // Light 1
-    lightPos = vec3(2.0, 4.0, 4.0);
+    // Single Light
+    lightPos = u_LightPos;
     lightDir = normalize(lightPos - g_WorldPosition);
-    flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
-
-    // Light 2
-    lightPos = vec3(-3.0, -0.5, 2.0);
-    lightDir = normalize(lightPos - g_WorldPosition);
-    flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
-
-    // Light 3
-    lightPos = vec3(0.0, 0.0, -3.0);
-    lightDir = normalize(lightPos - g_WorldPosition);
-    flatShade += clamp(dot(lightDir, g_Normal), 0.0, 1.0);
+    flatShade += clamp(dot(lightDir, g_Normal) * u_LightIntensity, 0.0, 1.0);
 
     color = vec4(u_Color.rgb * flatShade, u_Color.a);
     color2 = g_EntityID;

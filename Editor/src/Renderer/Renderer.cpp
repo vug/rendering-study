@@ -7,6 +7,7 @@
 // Hard-coded data for Renderer to provide ready-made draw commands such as DrawFlatQuad
 struct RendererData {
 	glm::mat4 viewProj;
+	Renderer::LightInfo lightInfo;
 };
 static RendererData rendererData;
 
@@ -14,8 +15,9 @@ void Renderer::Init() {
 	RenderCommand::Init();
 }
 
-void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform) {
+void Renderer::BeginScene(const Camera& camera, const glm::mat4& cameraTransform, const Renderer::LightInfo& lightInfo) {
 	rendererData.viewProj = camera.GetProjection() * glm::inverse(cameraTransform);
+	rendererData.lightInfo = lightInfo;
 }
 
 void Renderer::EndScene() {
@@ -26,6 +28,8 @@ void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_pt
 	shader->Bind();
 	shader->UploadUniformMat4("u_ViewProjection", rendererData.viewProj);
 	shader->UploadUniformMat4("u_Transform", transform); // ModelMatrix
+	shader->UploadUniformFloat3("u_LightPos", rendererData.lightInfo.position);
+	shader->UploadUniformFloat("u_LightIntensity", rendererData.lightInfo.intensity);
 
 	vertexArray->Bind();
 	RenderCommand::DrawIndexed(vertexArray, indexCount, primitiveType, indexOffset);

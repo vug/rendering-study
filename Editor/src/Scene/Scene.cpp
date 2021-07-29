@@ -51,6 +51,13 @@ void Scene::DestroyEntity(entt::entity entity) {
 void Scene::OnUpdate(Timestep ts, EditorCamera& editorCamera) {
 	RenderCommand::Init(renderWireframe, renderOnlyFront);
 
+	Renderer::LightInfo lightInfo = { {0, 0, 0}, 0.0f };
+	auto viewLights = Registry.view<TransformComponent, LightComponent>();
+	for (auto [entity, transform, light] : viewLights.each()) {
+		 lightInfo = {transform.Translation, light.intensity};
+		break;
+	}
+ 
 	Camera* sceneCamera = nullptr;
 	glm::mat4 cameraTransform;
 	glm::vec3 cameraTranslation;
@@ -66,10 +73,10 @@ void Scene::OnUpdate(Timestep ts, EditorCamera& editorCamera) {
 		}
 	}
 	if (sceneCamera) {
-		Renderer::BeginScene(sceneCamera->GetProjection(), cameraTransform);
+		Renderer::BeginScene(sceneCamera->GetProjection(), cameraTransform, lightInfo);
 	}
 	else {
-		Renderer::BeginScene(editorCamera.GetProjection(), editorCamera.GetViewMatrix());
+		Renderer::BeginScene(editorCamera.GetProjection(), editorCamera.GetViewMatrix(), lightInfo);
 		cameraTranslation = editorCamera.GetPosition();
 	}
 	

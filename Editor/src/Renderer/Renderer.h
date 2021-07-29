@@ -8,9 +8,14 @@
 
 class Renderer {
 public:
+	struct LightInfo {
+		glm::vec3 position;
+		float intensity;
+	};
+
 	static void Init();
 
-	static void BeginScene(const Camera& camera, const glm::mat4& cameraTransform);
+	static void BeginScene(const Camera& camera, const glm::mat4& cameraTransform, const LightInfo& lightInfo);
 	static void EndScene();
 
 	static void Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f), GLenum primitiveType = GL_TRIANGLES, uint32_t indexOffset = 0, uint32_t indexCount = 0);
